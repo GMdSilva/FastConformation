@@ -1,0 +1,21 @@
+{
+    "msa_path": "test_jackhammer.a3m",
+    "output_path": ".",
+    "jobname": "test_job",
+    "seq_pairs": [
+        [
+            8,
+            16
+        ],
+        [
+            32,
+            64
+        ]
+    ],
+    "seeds": 10,
+    "platform": "cpu",
+    "save_all": true,
+    "sequences_file": "test_seqs.fasta",
+    "tmp_dir": "tmp2",
+    "homooligomers": 1
+}
