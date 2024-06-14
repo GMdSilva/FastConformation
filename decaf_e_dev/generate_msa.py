@@ -48,7 +48,8 @@ def load_config(file_path):
         'output_path': './',
         'jobname': "prediction_run",
         'homooligomers': 1,
-        'tmp_dir': './tmp'
+        'tmp_dir': "./tmp",
+        'use_ramdisk': False
     }
 
     try:
@@ -91,17 +92,17 @@ def save_formatted_sequences_to_file(formatted_sequences, output_file):
             f.write(sequence)
 
 
-def prepare_os(tmp_dir):
+def prepare_os(tmp_dir, use_ramdisk):
     os.makedirs(tmp_dir, exist_ok=True)
-    if create_ram_disk:
+    if use_ramdisk:
         create_ram_disk()
 
 
-def build_msa(sequence, jobname, complete_output_dir, homooligomer, tmp_dir):
+def build_msa(sequence, jobname, complete_output_dir, homooligomer, tmp_dir, use_ramdisk):
     prepped_msa = get_msa.prep_inputs(sequence, jobname, homooligomer,  output_dir=complete_output_dir)
 
     get_msa.prep_msa(prepped_msa, msa_method='jackhmmer', add_custom_msa=False, msa_format="fas",
-                     pair_mode="unpaired", pair_cov=50, pair_qid=20, TMP_DIR=tmp_dir)
+                     pair_mode="unpaired", pair_cov=50, pair_qid=20, TMP_DIR=tmp_dir, use_ramdisk=use_ramdisk)
 
 
 def main():
@@ -116,6 +117,8 @@ def main():
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--homooligomers', type=int,
                         help="Number of copies of the protein, defaults to 1 (monomer)")
+    parser.add_argument('--use_ramdisk', type=bool, help="If you have root access,"
+                                                         "mounts a ramdisk for dramatically speeding up jackhmmer.")
     parser.add_argument('--tmp_dir', type=str, help="Temporary directory to handle IO (default: ./tmp)")
 
     args = parser.parse_args()
@@ -130,6 +133,7 @@ def main():
     jobname = args.jobname if args.jobname else config.get('jobname')
     homooligomers = args.homooligomers if args.homooligomers else config.get('homooligomers')
     tmp_dir = args.tmp_dir if args.tmp_dir else config.get('tmp_dir')
+    use_ramdisk = args.use_ramdisk if args.use_ramdisk else config.get('use_ramdisk')
 
     if sequences_file is None:
         raise ValueError("Sequences file must be provided via --sequences_file or in the config file.")
@@ -147,8 +151,9 @@ def main():
     print(f"Job Name: {jobname}")
     print(f"Homooligomer: {homooligomers}")
     print(f"Temporary Directory: {tmp_dir}")
+    print(f"Use ramdisk? {use_ramdisk}")
 
-    prepare_os(tmp_dir)
+    prepare_os(tmp_dir, use_ramdisk)
 
     sequences = read_fasta(sequences_file)
 
@@ -160,7 +165,7 @@ def main():
 
         complete_output_dir = f"{output_path}/{sequence_name}"
 
-        build_msa(sequence_string, jobname, complete_output_dir, homooligomers, tmp_dir)
+        build_msa(sequence_string, jobname, complete_output_dir, homooligomers, tmp_dir, use_ramdisk)
         converted_msa = convert_msa(f"{complete_output_dir}/msa.pickle")
         save_formatted_sequences_to_file(converted_msa, f"{complete_output_dir}/{jobname}_{sequence_name}.a3m")
 

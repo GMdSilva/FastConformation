@@ -26,7 +26,8 @@ dependencies = [
     "tqdm",
     "mdanalysis",
     "jax",
-    "jaxlib"
+    "jaxlib",
+    "absl-py"
 ]
 
 # Update the urls once the hosting is set up.

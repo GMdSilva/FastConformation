@@ -91,7 +91,7 @@ def prep_inputs(sequence, jobname="test", homooligomer="1", output_dir=None, cle
 # prep_msa
 #######################################################################################################################################
 
-def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=True):
+def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=True, use_ramdisk=False):
     fasta_path = f"{prefix}.fasta"
     with open(fasta_path, 'wt') as f:
         f.write(f'>query\n{sequence}')
@@ -135,7 +135,8 @@ def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=T
                 get_tblout=True,
                 num_streamed_chunks=num_jackhmmer_chunks['uniref90'],
                 streaming_callback=jackhmmer_chunk_callback,
-                z_value=135301051)
+                z_value=135301051,
+                use_ramdisk=use_ramdisk)
             dbs.append(('uniref90', jackhmmer_uniref90_runner.query(fasta_path)))
 
             pbar.set_description('Searching smallbfd')
@@ -145,7 +146,8 @@ def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=T
                 get_tblout=True,
                 num_streamed_chunks=num_jackhmmer_chunks['smallbfd'],
                 streaming_callback=jackhmmer_chunk_callback,
-                z_value=65984053)
+                z_value=65984053,
+                use_ramdisk=use_ramdisk)
             dbs.append(('smallbfd', jackhmmer_smallbfd_runner.query(fasta_path)))
 
             pbar.set_description('Searching mgnify')
@@ -155,7 +157,8 @@ def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=T
                 get_tblout=True,
                 num_streamed_chunks=num_jackhmmer_chunks['mgnify'],
                 streaming_callback=jackhmmer_chunk_callback,
-                z_value=304820129)
+                z_value=304820129,
+                use_ramdisk=use_ramdisk)
             dbs.append(('mgnify', jackhmmer_mgnify_runner.query(fasta_path)))
 
         # --- Extract the MSAs and visualize ---
@@ -201,7 +204,7 @@ def prep_msa(I, msa_method="mmseqs2", add_custom_msa=False, msa_format="fas",
              hhfilter_loc="hhfilter", reformat_loc="reformat.pl", TMP_DIR="tmp",
              custom_msa=None, precomputed=None,
              mmseqs_host_url="https://a3m.mmseqs.com",
-             verbose=True):
+             verbose=True, use_ramdisk=False):
     # make temp directory
     os.makedirs(TMP_DIR, exist_ok=True)
 
@@ -241,7 +244,7 @@ def prep_msa(I, msa_method="mmseqs2", add_custom_msa=False, msa_format="fas",
 
                 print(f"running jackhmmer on seq_{n}")
                 # run jackhmmer
-                msas_, mtxs_, names_ = ([sum(x, ())] for x in run_jackhmmer(seq, prefix))
+                msas_, mtxs_, names_ = ([sum(x, ())] for x in run_jackhmmer(seq, prefix, use_ramdisk=use_ramdisk))
 
                 # pad sequences
                 for msa_, mtx_ in zip(msas_, mtxs_):
@@ -263,7 +266,7 @@ def prep_msa(I, msa_method="mmseqs2", add_custom_msa=False, msa_format="fas",
                 _seq = I["seqs"][a]
                 _prefix = os.path.join(TMP_DIR, cf.get_hash(_seq))
 
-                _msas, _mtxs, _names = run_jackhmmer(_seq, _prefix)
+                _msas, _mtxs, _names = run_jackhmmer(_seq, _prefix, use_ramdisk=use_ramdisk)
                 _msa, _mtx, _lab = pairmsa.get_uni_jackhmmer(_msas[0], _mtxs[0], _names[0],
                                                              filter_qid=pair_qid / 100,
                                                              filter_cov=pair_cov / 100)

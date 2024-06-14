@@ -34,6 +34,7 @@ class Jackhmmer:
                *,
                binary_path: str,
                database_path: str,
+               use_ramdisk: bool = False,
                n_cpu: int = 8,
                n_iter: int = 1,
                e_value: float = 0.0001,
@@ -69,6 +70,7 @@ class Jackhmmer:
       streaming_callback: Callback function run after each chunk iteration with
         the iteration number as argument.
     """
+    self.use_ramdisk = use_ramdisk
     self.binary_path = binary_path
     self.database_path = database_path
     self.num_streamed_chunks = num_streamed_chunks
@@ -168,7 +170,10 @@ class Jackhmmer:
     db_basename = os.path.basename(self.database_path)
     print(f'Querying {db_basename}')
     db_remote_chunk = lambda db_idx: f'{self.database_path}.{db_idx}'
-    db_local_chunk = lambda db_idx: f'/tmp/ramdisk/{db_basename}.{db_idx}'
+    if self.use_ramdisk:
+        db_local_chunk = lambda db_idx: f'/tmp/ramdisk/{db_basename}.{db_idx}'
+    else:
+        db_local_chunk = lambda db_idx: f'{db_basename}.{db_idx}'
 
     # Remove existing files to prevent OOM
     for f in glob.glob(db_local_chunk('[0-9]*')):
