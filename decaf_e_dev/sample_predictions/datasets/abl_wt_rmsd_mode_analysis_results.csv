@@ -1,0 +1,11 @@
+,mode_label,representative_Frame,RMSD_value_(A),mode_density,trial,rmsd_range_label,pdb_filename
+0,mode_1,74,0.6869756295530298,0.2438184594183793,abl_wt_64_128,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_64_128_frame_74_rmsd_vs_ref_0A.pdb
+1,mode_2,159,7.875684895947235,0.001798189489266016,abl_wt_64_128,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_64_128_frame_159_rmsd_vs_ref_7A.pdb
+2,mode_3,155,23.087288121764324,0.00739067457207309,abl_wt_64_128,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_64_128_frame_155_rmsd_vs_ref_23A.pdb
+3,mode_1,34,0.6951078267679253,0.200371151586605,abl_wt_128_256,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_128_256_frame_34_rmsd_vs_ref_0A.pdb
+4,mode_2,110,14.845516710582276,0.005604731744649925,abl_wt_128_256,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_128_256_frame_110_rmsd_vs_ref_14A.pdb
+5,mode_3,123,23.211635647153216,0.006585336060970679,abl_wt_128_256,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_128_256_frame_123_rmsd_vs_ref_23A.pdb
+6,mode_1,81,0.7050035558678301,0.12172056126093928,abl_wt_256_512,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_256_512_frame_81_rmsd_vs_ref_0A.pdb
+7,mode_2,157,22.876149864538903,0.014005997383989529,abl_wt_256_512,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_256_512_frame_157_rmsd_vs_ref_22A.pdb
+8,mode_1,67,0.6966862483565076,0.12182218593565225,abl_wt_512_1024,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_512_1024_frame_67_rmsd_vs_ref_0A.pdb
+9,mode_2,156,22.846504213346165,0.014857089844977547,abl_wt_512_1024,backbone and resid 159-165,sample_predictions/representative_structures/abl_wt_512_1024_frame_156_rmsd_vs_ref_22A.pdb
