@@ -125,7 +125,9 @@ def main():
     save_all = args.save_all if 'save_all' in args and args.save_all else config.get('save_all', False)
     platform = args.platform if args.platform else config.get('platform', 'cpu')
 
-    os.environ['JAX_PLATFORMS'] = platform
+    if platform == 'cpu':
+        os.environ['JAX_PLATFORMS'] = platform
+
     env = os.environ.copy()
     env["PATH"] += os.pathsep + "localcolabfold/colabfold-conda/bin"
     env["PATH"] += os.pathsep + "/home/gabriel/localcolabfold/colabfold-conda/bin"  ## TODO: remove path
