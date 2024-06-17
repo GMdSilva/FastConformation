@@ -1,0 +1,41 @@
+{
+    "msa_path": "seq_1.a3m",
+    "output_path": "sample_predictions",
+    "jobname": "abl_wt",
+    "seq_pairs": [
+        [
+            64,
+            128
+        ],
+        [
+            128,
+            256
+        ],
+        [
+            256,
+            512
+        ],
+        [
+            512,
+            1024
+        ]
+    ],
+    "seeds": 10,
+    "platform": "gpu",
+    "save_all": false,
+    "models": [
+        1,
+        2,
+        3,
+        4,
+        5
+    ],
+    "recycles": 4,
+    "subset_msa_to": 3,
+    "sequences_file": "test_seqs.fasta",
+    "tmp_dir": "tmp2",
+    "homooligomers": 1,
+    "analysis_range": "backbone and resid 150-175",
+    "analysis_range_name": "aloop",
+    "align_range": "backbone"
+}

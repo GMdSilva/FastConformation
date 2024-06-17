@@ -19,4 +19,6 @@ else
     echo "$INSTALL_DIR is already in PATH"
 fi
 
-echo "Installation and PATH update complete. Please restart your terminal or run 'source $PROFILE_FILE' to apply changes."
+pip install --upgrade jax jaxlib
+
+echo "Installation complete."
