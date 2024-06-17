@@ -8,5 +8,8 @@
     "save_all": true,
     "sequences_file": "test_seqs.fasta",
     "tmp_dir": "tmp2",
-    "homooligomers": 1
+    "homooligomers": 1,
+    "analysis_range": "backbone and resid 150-175",
+    "analysis_range_name": "aloop",
+    "align_range": "backbone"
 }
