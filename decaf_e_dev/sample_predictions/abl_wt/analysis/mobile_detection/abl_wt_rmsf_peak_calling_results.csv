@@ -1,0 +1,2 @@
+peak_label,starting_residue,ending_residue,length,rmsf_value,prominence,width_height,trial
+detected_peak_1,159,165,27,5.309438191101711,5.001496204297067,2.808690088953177,abl_wt_64_128

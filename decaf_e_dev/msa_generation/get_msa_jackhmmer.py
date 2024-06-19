@@ -80,9 +80,9 @@ def prep_inputs(sequence, jobname="test", homooligomer="1", output_dir=None, cle
             f"Run Alphafold may crash, unless you trim to the protein(s) to a short length. (See trim options below).")
 
     if verbose:
-        print(f"homooligomer: {I['homooligomer']}")
+        print(f"\nhomooligomer: {I['homooligomer']}")
         print(f"total_length: {len(I['full_sequence'])}")
-        print(f"output_dir: {I['output_dir']}")
+        print(f"output_dir: {I['output_dir']}\n")
 
     return I
 
@@ -212,49 +212,39 @@ def prep_msa(I, msa_method="mmseqs2", add_custom_msa=False, msa_format="fas",
     I["msas"] = []
     I["deletion_matrices"] = []
 
+    _blank_seq = ["-" * L for L in I["lengths"]]
+    _blank_mtx = [[0] * L for L in I["lengths"]]
 
-    if msa_method == "precomputed":
-        I.update(pickle.load(open(precomputed, "rb")))
+    def _pad(ns, vals, mode):
+        if mode == "seq": _blank = _blank_seq.copy()
+        if mode == "mtx": _blank = _blank_mtx.copy()
+        if isinstance(ns, list):
+            for n, val in zip(ns, vals): _blank[n] = val
+        else:
+            _blank[ns] = vals
+        if mode == "seq": return "".join(_blank)
+        if mode == "mtx": return sum(_blank, [])
 
-    elif msa_method == "single_sequence":
-        if len(I["msas"]) == 0:
-            I["msas"].append([I["sequence"]])
-            I["deletion_matrices"].append([[0] * len(I["sequence"])])
+    if len(I["seqs"]) == 1 or "unpaired" in pair_mode:
+        # gather msas
+        for n, seq in enumerate(I["seqs"]):
+            # tmp directory
+            prefix = cf.get_hash(seq)
+            prefix = os.path.join(TMP_DIR, prefix)
 
-    else:
-        _blank_seq = ["-" * L for L in I["lengths"]]
-        _blank_mtx = [[0] * L for L in I["lengths"]]
+            print(f"Running jackhmmer")
+            # run jackhmmer
+            msas_, mtxs_, names_ = ([sum(x, ())] for x in run_jackhmmer(seq, prefix, use_ramdisk=use_ramdisk))
 
-        def _pad(ns, vals, mode):
-            if mode == "seq": _blank = _blank_seq.copy()
-            if mode == "mtx": _blank = _blank_mtx.copy()
-            if isinstance(ns, list):
-                for n, val in zip(ns, vals): _blank[n] = val
-            else:
-                _blank[ns] = vals
-            if mode == "seq": return "".join(_blank)
-            if mode == "mtx": return sum(_blank, [])
+            # pad sequences
+            for msa_, mtx_ in zip(msas_, mtxs_):
+                msa, mtx = [I["sequence"]], [[0] * len(I["sequence"])]
+                for s, m in zip(msa_, mtx_):
+                    msa.append(_pad(n, s, "seq"))
+                    mtx.append(_pad(n, m, "mtx"))
 
-        if len(I["seqs"]) == 1 or "unpaired" in pair_mode:
-            # gather msas
-            for n, seq in enumerate(I["seqs"]):
-                # tmp directory
-                prefix = cf.get_hash(seq)
-                prefix = os.path.join(TMP_DIR, prefix)
-
-                print(f"running jackhmmer on seq_{n}")
-                # run jackhmmer
-                msas_, mtxs_, names_ = ([sum(x, ())] for x in run_jackhmmer(seq, prefix, use_ramdisk=use_ramdisk))
-
-                # pad sequences
-                for msa_, mtx_ in zip(msas_, mtxs_):
-                    msa, mtx = [I["sequence"]], [[0] * len(I["sequence"])]
-                    for s, m in zip(msa_, mtx_):
-                        msa.append(_pad(n, s, "seq"))
-                        mtx.append(_pad(n, m, "mtx"))
-
-                    I["msas"].append(msa)
-                    I["deletion_matrices"].append(mtx)
+                I["msas"].append(msa)
+                I["deletion_matrices"].append(mtx)
 
         # PAIR_MSA
         if len(I["seqs"]) > 1 and (pair_mode == "paired" or pair_mode == "unpaired+paired"):

@@ -3,94 +3,104 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
-import matplotlib.cm as cm
+import matplotlib.cm
 
 from scipy.signal import find_peaks
 
 from MDAnalysis.analysis import rms, align
 
+from tqdm import tqdm
+
+TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
+
 
 def calculate_rmsf_and_call_peaks(jobname,
                                   prediction_dicts,
                                   align_range,
-                                  output_path):
+                                  output_path,
+                                  peak_width,
+                                  prominence,
+                                  threshold):
+    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+        for result in prediction_dicts:
+            pbar.set_description(f'Running RMSF peak analysis for {result}')
+            u = prediction_dicts[result]['mda_universe']
+            max_seq = prediction_dicts[result]['max_seq']
+            extra_seq = prediction_dicts[result]['extra_seq']
 
-    for result in prediction_dicts:
+            average = align.AverageStructure(u, u, select=align_range, ref_frame=0).run()
+            ref = average.results.universe
+            align.AlignTraj(u, ref, select=align_range, in_memory=True).run()
+            atom_sel = u.select_atoms(align_range)
+            r = rms.RMSF(atom_sel).run()
 
-        u = prediction_dicts[result]['mda_universe']
-        max_seq = prediction_dicts[result]['max_seq']
-        extra_seq = prediction_dicts[result]['extra_seq']
-        print(f"Running peak detection for RMSF of {jobname} {max_seq} {extra_seq} after alignment to {align_range}")
+            rmsf_values = r.results.rmsf
+            resids = atom_sel.resids
 
-        average = align.AverageStructure(u, u, select=align_range, ref_frame=0).run()
-        ref = average.results.universe
-        aligner = align.AlignTraj(u, ref, select=align_range, in_memory=True).run()
-        atom_sel = u.select_atoms(align_range)
-        R = rms.RMSF(atom_sel).run()
+            mean_rmsf = np.mean(rmsf_values)
+            std_rmsf = np.std(rmsf_values)
+            threshold = mean_rmsf + threshold * std_rmsf
 
-        rmsf_values = R.results.rmsf
-        resids = atom_sel.resids
+            # Detect peaks
+            peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence, height=threshold)
 
-        mean_rmsf = np.mean(rmsf_values)
-        std_rmsf = np.std(rmsf_values)
-        threshold = mean_rmsf + 2 * std_rmsf  # You can adjust the multiplier as needed
+            plt.figure(figsize=(8, 3))
+            plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
+            plt.xlabel('Data Point (Not Residue Number)', fontsize=14)
+            plt.ylabel('RMSF ($\AA$)', fontsize=14)
+            plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+            plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
 
-        # Detect peaks
-        peaks, properties = find_peaks(rmsf_values, width=3, prominence=1, height=threshold)
+            plt.plot(rmsf_values)
+            plt.plot(peaks, rmsf_values[peaks], "x")
+            plt.vlines(x=peaks, ymin=rmsf_values[peaks] - properties["prominences"],
+                       ymax=rmsf_values[peaks], color="C1")
+            plt.hlines(y=properties["width_heights"], xmin=properties["left_ips"],
+                       xmax=properties["right_ips"], color="C1")
 
-        plt.figure(figsize=(8, 3))
-        plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
-        plt.xlabel('Data Point (Not Residue Number)', fontsize=14)
-        plt.ylabel('RMSF ($\AA$)', fontsize=14)
-        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+            plt.tight_layout()
 
-        plt.plot(rmsf_values)
-        plt.plot(peaks, rmsf_values[peaks], "x")
-        plt.vlines(x=peaks, ymin=rmsf_values[peaks] - properties["prominences"],
-                   ymax=rmsf_values[peaks], color="C1")
-        plt.hlines(y=properties["width_heights"], xmin=properties["left_ips"],
-                   xmax=properties["right_ips"], color="C1")
+            full_output_path = (f"{output_path}/"
+                                f"{jobname}/"
+                                f"analysis/"
+                                f"mobile_detection/"
+                                f"{jobname}_"
+                                f"{max_seq}_"
+                                f"{extra_seq}_"
+                                f"rmsf_peaks.png")
 
-        plt.tight_layout()
-        plt.savefig(f'{output_path}/plots/{jobname}_{max_seq}_{extra_seq}_rmsf_{align_range}_peaks.png', dpi=300)
-        print(f"Saved peak calling with RMSF plot for {output_path}/{jobname} {max_seq} {extra_seq}"
-              f" after alignment to {align_range}"
-              f" at {output_path}/plots/{jobname}_{max_seq}_{extra_seq}_rmsf_{align_range}_peaks.png")
+            plt.savefig(full_output_path, dpi=300)
 
-        detected_peaks = {}
-        peak_counter = 0
-        # Extract resid values for each peak
-        for i, peak in enumerate(peaks):
-            left_ip = int(properties["left_ips"][i])
-            right_ip = int(properties["right_ips"][i])
-            peak_resids = resids[left_ip:right_ip + 1]
+            detected_peaks = {}
+            peak_counter = 0
+            # Extract resid values for each peak
+            for i, peak in enumerate(peaks):
+                left_ip = int(properties["left_ips"][i])
+                right_ip = int(properties["right_ips"][i])
+                peak_resids = resids[left_ip:right_ip + 1]
 
-            peak_prop = {f'starting_residue': peak_resids[0],
-                         f'ending_residue': peak_resids[-1],
-                         f'length': len(peak_resids),
-                         f'peak_value': rmsf_values[peak],
-                         f'prominence': properties["prominences"][i],
-                         f'width_height': properties["width_heights"][i]}
+                peak_prop = {f'starting_residue': peak_resids[0],
+                             f'ending_residue': peak_resids[-1],
+                             f'length': len(peak_resids),
+                             f'peak_value': rmsf_values[peak],
+                             f'prominence': properties["prominences"][i],
+                             f'width_height': properties["width_heights"][i]}
 
-            peak_counter += 1
+                peak_counter += 1
 
-            detected_peaks[f'detected_peak_{peak_counter}'] = peak_prop
+                detected_peaks[f'detected_peak_{peak_counter}'] = peak_prop
 
-            print(f"Peaks detected for {jobname} {max_seq} {extra_seq}: {peak_prop}")
-
-        prediction_dicts[result]['detected_peaks'] = detected_peaks
+            prediction_dicts[result]['detected_peaks'] = detected_peaks
+            pbar.update(n=1)
 
     return prediction_dicts
 
 
 def calculate_rmsf_multiple(jobname,
-                   prediction_dicts,
-                   align_range,
-                   output_path,
-                   colors=('red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta')):
+                            prediction_dicts,
+                            align_range,
+                            output_path):
 
-    print(f"Calculating RMSF for all results in {output_path}/{jobname}* after alignment to {align_range}")
     labels = []
     plt.figure(figsize=(8, 3))
     plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
@@ -98,70 +108,92 @@ def calculate_rmsf_multiple(jobname,
     plt.ylabel('RMSF ($\AA$)', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
     plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+    colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
+    print('')
+    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+        for idx, (result, data) in enumerate(prediction_dicts.items()):
+            pbar.set_description(f'Measuring RMSF for {result}')
+            u = data['mda_universe']
+            average = align.AverageStructure(u, u, select=align_range, ref_frame=0).run()
+            ref = average.results.universe
 
-    for idx, (result, data) in enumerate(prediction_dicts.items()):
-        u = data['mda_universe']
-        average = align.AverageStructure(u, u, select=align_range, ref_frame=0).run()
-        ref = average.results.universe
+            align.AlignTraj(u, ref, select=align_range, in_memory=True).run()
 
-        aligner = align.AlignTraj(u, ref, select=align_range, in_memory=True).run()
+            atom_sel = u.select_atoms(align_range)
+            r = rms.RMSF(atom_sel).run()
 
-        atom_sel = u.select_atoms(align_range)
-        R = rms.RMSF(atom_sel).run()
-
-        plt.plot(atom_sel.resids, R.results.rmsf, color=colors[idx % len(colors)], label=result)
-        labels.append(result)  # Add the result to labels list
+            plt.plot(atom_sel.resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
+            labels.append(result)  # Add the result to labels list
+            pbar.update(n=1)
 
     plt.legend()  # Add the legend at the end
     plt.tight_layout()
-    plt.savefig(f"{output_path}/plots/{jobname}_rmsf_{align_range}_all_results.png", dpi=300)
-    print(f"Saved all RMSFs plot to {output_path}/plots/{jobname}_rmsf_{align_range}.png")
+
+    full_output_path = (f"{output_path}/"
+                        f"{jobname}/"
+                        f"analysis/"
+                        f"rmsf_plddt/"
+                        f"{jobname}_rmsf_all.png")
+
+    plt.savefig(full_output_path, dpi=300)
     plt.close()
 
 
 def plot_plddt_rmsf_corr(jobname,
                          prediction_dicts,
-                         plddt_dicts,
+                         plddt_dict,
                          output_path):
+    print('')
+    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+        for result in prediction_dicts:
+            pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
+            max_seq = prediction_dicts[result]['max_seq']
+            extra_seq = prediction_dicts[result]['extra_seq']
+            plddt_data = plddt_dict[result]['all_plddts']
 
-    for result, plddt_dict in zip(prediction_dicts, plddt_dicts):
-        max_seq = prediction_dicts[result]['max_seq']
-        extra_seq = prediction_dicts[result]['extra_seq']
+            arrays = np.array(plddt_data)
+            plddt_avg = np.mean(arrays, axis=0)
 
-        plddt_data = plddt_dicts[result]['all_plddts']
-        arrays = np.array(list(plddt_data.values()))
-        plddt_avg = np.mean(arrays, axis=0)
+            u = prediction_dicts[result]['mda_universe']
+            average = align.AverageStructure(u, u, select='name CA', ref_frame=0).run()
+            ref = average.results.universe
+            align.AlignTraj(u, ref, select='name CA', in_memory=True).run()
 
-        u = prediction_dicts[result]['mda_universe']
-        average = align.AverageStructure(u, u, select='name CA', ref_frame=0).run()
-        ref = average.results.universe
-        aligner = align.AlignTraj(u, ref, select='name CA', in_memory=True).run()
+            atom_sel = u.select_atoms('name CA')
+            r = rms.RMSF(atom_sel).run()
 
-        atom_sel = u.select_atoms('name CA')
-        R = rms.RMSF(atom_sel).run()
+            norm = Normalize(vmin=0, vmax=len(r.results.rmsf))
+            cmap = matplotlib.cm.get_cmap('viridis')
+            colors = cmap(norm(np.arange(len(r.results.rmsf))))
 
-        norm = Normalize(vmin=0, vmax=len(R.results.rmsf))
-        cmap = cm.get_cmap('viridis')
-        colors = cmap(norm(np.arange(len(R.results.rmsf))))
+            plt.scatter(r.results.rmsf, plddt_avg, c=colors)
 
-        plt.scatter(R.results.rmsf, plddt_avg, c=colors)
+            plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+            plt.xlabel('C-Alpha RMSF (A)', fontsize=14)
+            plt.ylabel('Average pLDDT', fontsize=14)
+            plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+            plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+            plt.tight_layout()
+            plt.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
 
-        plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
-        plt.xlabel('C-Alpha RMSF (A)', fontsize=14)
-        plt.ylabel('Average pLDDT', fontsize=14)
-        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
-        plt.tight_layout()
-        plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
-        plt.savefig(f"{output_path}/plots/{jobname}_{max_seq}_{extra_seq}_plddt_rmsf_corr.png", dpi=300)
-        plt.close()
+            full_output_path = (f"{output_path}/"
+                                f"{jobname}/"
+                                f"analysis/"
+                                f"rmsf_plddt/"
+                                f"{jobname}_"
+                                f"{max_seq}_"
+                                f"{extra_seq}_"
+                                f"plddt_rmsf_corr.png")
 
+            plt.savefig(full_output_path, dpi=300)
+            plt.close()
+            pbar.update(n=1)
 
 
 def plot_plddt_line(jobname,
                     plddt_dict,
-                    output_path,
-                    colors=('red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta')):
+                    output_path):
+    colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
     labels = []
     plt.figure(figsize=(8, 3))
     plt.title(f'{jobname}', fontsize=16)
@@ -170,20 +202,27 @@ def plot_plddt_line(jobname,
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
     plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
 
-    for idx, (result, data) in enumerate(plddt_dict.items()):
-        plddt_data = data['all_plddts']
-        arrays = np.array(list(plddt_data.values()))
+    for idx, result in enumerate(plddt_dict):
+        plddt_data = plddt_dict[result]['all_plddts']
+        arrays = np.array(plddt_data)
         plddt_avg = np.mean(arrays, axis=0)
         plt.plot(plddt_avg, color=colors[idx % len(colors)], label=result)
         labels.append(result)  # Add the result to labels list
 
     plt.legend()  # Add the legend at the end
     plt.tight_layout()
-    plt.savefig(f"{output_path}/plots/{jobname}_plddt.png", dpi=300)
+    full_output_path = (f"{output_path}/"
+                        f"{jobname}/"
+                        f"analysis/"
+                        f"rmsf_plddt/"
+                        f"{jobname}_"
+                        f"all_plddt.png")
+
+    plt.savefig(full_output_path, dpi=300)
     plt.close()
 
 
-def build_dataset_rmsf_peaks(jobname, results_dict, output_path):
+def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):
     trials = []
     peak_labels = []
     peak_starting_residues = []
@@ -214,6 +253,13 @@ def build_dataset_rmsf_peaks(jobname, results_dict, output_path):
                        'width_height': peak_width_heights,
                        'trial': trials})
 
-    df.to_csv(f"{output_path}/datasets/{jobname}_rmsf_peak_calling_results.csv")
-    print(f"Saved peak calling output of all results at {output_path}/{jobname}* "
-          f"to {output_path}/datasets/{jobname}_rmsf_peak_calling_results.csv")
+    full_output_path = (f"{output_path}/"
+                        f"{jobname}/"
+                        f"analysis/"
+                        f"mobile_detection/"
+                        f"{jobname}_"
+                        f"rmsf_peak_calling_results.csv")
+
+    df.to_csv(full_output_path, index=False)
+    print(f"\nSaved peak calling output of all results at {output_path}/{jobname}/predictions/{engine}/ to "
+          f"{full_output_path}\n")

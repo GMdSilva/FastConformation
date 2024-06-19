@@ -23,7 +23,7 @@ from urllib import request
 
 from absl import logging
 
-from msa_generation import utils
+from msa_generation import msa_utils
 # Internal import (7716).
 
 
@@ -94,7 +94,7 @@ class Jackhmmer:
   def _query_chunk(self, input_fasta_path: str, database_path: str
                    ) -> Mapping[str, Any]:
     """Queries the database chunk using Jackhmmer."""
-    with utils.tmpdir_manager(base_dir='../tmp') as query_tmp_dir:
+    with msa_utils.tmpdir_manager(base_dir='tmp') as query_tmp_dir:
       sto_path = os.path.join(query_tmp_dir, 'output.sto')
 
       # The F1/F2/F3 are the expected proportion to pass each of the filtering
@@ -135,7 +135,7 @@ class Jackhmmer:
       logging.info('Launching subprocess "%s"', ' '.join(cmd))
       process = subprocess.Popen(
           cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      with utils.timing(
+      with msa_utils.timing(
           f'Jackhmmer ({os.path.basename(database_path)}) query'):
         _, stderr = process.communicate()
         retcode = process.wait()

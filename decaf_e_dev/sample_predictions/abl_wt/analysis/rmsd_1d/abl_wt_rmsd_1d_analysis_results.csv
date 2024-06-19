@@ -1,0 +1,11 @@
+mode_label,representative_Frame,RMSD,mode_peak_density,trial,rmsd_range_label,pdb_filename
+mode_1,74,0.6869760937043449,0.2438184585964762,abl_wt_64_128,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_64_128_frame_74_rmsd_vs_ref_0A.pdb
+mode_2,159,7.875685227350262,0.00179818956373385,abl_wt_64_128,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_64_128_frame_159_rmsd_vs_ref_7A.pdb
+mode_3,155,23.08728817226654,0.007390674490991718,abl_wt_64_128,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_64_128_frame_155_rmsd_vs_ref_23A.pdb
+mode_1,34,0.6951079741591463,0.20037115550170562,abl_wt_128_256,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_128_256_frame_34_rmsd_vs_ref_0A.pdb
+mode_2,110,14.845516618133615,0.0056047318889078145,abl_wt_128_256,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_128_256_frame_110_rmsd_vs_ref_14A.pdb
+mode_3,123,23.211635412904485,0.0065853361813637155,abl_wt_128_256,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_128_256_frame_123_rmsd_vs_ref_23A.pdb
+mode_1,81,0.7050038613504651,0.12172056173222114,abl_wt_256_512,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_256_512_frame_81_rmsd_vs_ref_0A.pdb
+mode_2,157,22.87614995992941,0.014005997378545543,abl_wt_256_512,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_256_512_frame_157_rmsd_vs_ref_22A.pdb
+mode_1,67,0.6966865093090665,0.12182218503060069,abl_wt_512_1024,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_512_1024_frame_67_rmsd_vs_ref_0A.pdb
+mode_2,156,22.846504175802846,0.014857089670878107,abl_wt_512_1024,backbone and resid 159-165,sample_predictions/abl_wt/analysis/representative_structures/rmsd_1d/abl_wt_512_1024_frame_156_rmsd_vs_ref_22A.pdb

@@ -1,7 +1,18 @@
 {
-    "msa_path": "seq_1.a3m",
+    "_comment": "GENERAL CONFIGURATIONS",
     "output_path": "sample_predictions",
     "jobname": "abl_wt",
+
+    "_comment2": "CONFIGURATIONS TO BUILD MSA",
+    "sequence_path": "abl1.fasta",
+    "tmp_dir": "tmp",
+    "homooligomers": 1,
+    "use_ramdisk": true,
+
+    "_comment3": "CONFIGURATIONS TO MAKE PREDICTIONS",
+    "engine": "alphafold2",
+    "msa_path": null,
+    "msa_from": "mmseqs2",
     "seq_pairs": [
         [
             64,
@@ -21,7 +32,7 @@
         ]
     ],
     "seeds": 10,
-    "platform": "gpu",
+    "platform": "cpu",
     "save_all": false,
     "models": [
         1,
@@ -31,11 +42,36 @@
         5
     ],
     "recycles": 4,
-    "subset_msa_to": 3,
-    "sequences_file": "test_seqs.fasta",
-    "tmp_dir": "tmp2",
-    "homooligomers": 1,
-    "analysis_range": "backbone and resid 150-175",
+    "subset_msa_to": null,
+
+    "_comment4": "GENERAL ANALYSIS CONFIGURATIONS",
+    "align_range": "backbone",
+    "ref1d": null,
+    "ref2d1": null,
+    "ref2d2": null,
+
+    "_comment5": "RMSF ANALYSIS CONFIGURATIONS",
+    "detect_mobile": true,
+    "peak_width": 3,
+    "peak_prominence": 1,
+    "peak_height": 2,
+
+    "_comment6": "RMSD ANALYSIS CONFIGURATIONS",
+    "analysis_range": "backbone and resid 159-165",
     "analysis_range_name": "aloop",
-    "align_range": "backbone"
+
+    "_comment7": "RMSD_2D OR TMSCORE_2D CONFIGURATIONS",
+    "mode_results": null,
+    "n_stdevs": 3,
+
+    "_comment8": "TMSCORE CONFIGURATIONS",
+    "slice_predictions": "backbone and resid 10-259",
+
+    "_comment10": "PCA CONFIGURATIONS",
+    "n_pca_clusters": 3,
+
+    "_comment11": "TRAJECTORY SAVING CONFIGURATIONS",
+    "reorder": "rmsd_1d",
+    "traj_format": "pdb"
+
 }

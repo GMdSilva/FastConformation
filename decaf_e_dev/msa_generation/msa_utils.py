@@ -42,6 +42,7 @@ def timing(msg: str):
   toc = time.time()
   logging.info('Finished %s in %.3f seconds', msg, toc - tic)
 
+
 def create_ram_disk():
   password = getpass("Enter your sudo password to create Ram Disk for running HMMER faster: ")
 
@@ -52,6 +53,7 @@ def create_ram_disk():
   # Mount the ramdisk
   command_mount = "sudo mount -t tmpfs -o size=9G ramdisk /tmp/ramdisk"
   subprocess.run(['sudo', '-S'] + command_mount.split(), input=password.encode())
+
 
 def read_fasta(file_path):
   if not os.path.exists(file_path):
@@ -87,12 +89,12 @@ def read_fasta(file_path):
   return sequences
 
 
-def save_dict_to_fasta(seq_dict, output_path):
+def save_dict_to_fasta(seq_dict, output_path, jobname):
   for seq_name, seq in seq_dict.items():
-    filename = f"{seq_name}.fasta"
-    with open(f'{output_path}/{filename}', 'w') as file:
-      file.write(f">{seq_name}\n")
+    with open(f'{output_path}/{jobname}/target_seq/{jobname}.fasta', 'w') as file:
+      file.write(f">{jobname}\n")
       file.write(f"{seq}\n")
+      return ## TODO this is a hack to get just the first sequence, replace with something more elegant
 
 
 def create_directory(path):
