@@ -14,7 +14,7 @@ rm Mambaforge-Linux-x86_64.sh
 source "${DECAFDIR}/conda/etc/profile.d/conda.sh"
 export PATH="${DECAFDIR}/conda/condabin:${PATH}"
 conda update -n base conda -y
-conda create -c conda-forge -c bioconda -c biocore \
+conda create -p "$DECAFDIR/decaf_e_dev-conda" -c conda-forge -c bioconda -c biocore \
     git python=3.10 openmm==7.7.0 pdbfixer \
     kalign2=2.04 hhsuite=3.3.0 mmseqs2=15.6f452 hmmer scikit-learn mdanalysis seaborn scipy -y
 conda activate "$DECAFDIR/decaf_e_dev-conda"
@@ -40,6 +40,8 @@ sed -i -e "s#appdirs.user_cache_dir(__package__ or \"colabfold\")#\"${DECAFDIR}/
 sed -i -e "s#from io import StringIO#from io import StringIO\nfrom silence_tensorflow import silence_tensorflow\nsilence_tensorflow()#g" batch.py
 # remove cache directory
 rm -rf __pycache__
+
+sudo apt install tm-align
 
 # Download weights
 "$DECAFDIR/decaf_e_dev-conda/bin/python3" -m colabfold.download
