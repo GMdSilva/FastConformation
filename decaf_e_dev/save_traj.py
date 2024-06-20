@@ -1,6 +1,9 @@
 import os
 import argparse
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from ensemble_analysis.analysis_utils import create_directory
 from ensemble_analysis.analysis_utils import load_predictions
 from ensemble_analysis.analysis_utils import load_config
@@ -72,8 +75,10 @@ def main():
                   'analysis_range': analysis_range,
                   'analysis_range_name': analysis_range_name}
 
+    # load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
+    # save predictions as a trajectory, optionally reordered by X analysis (RMSD 1D, TMSCORE 1D, PCA, etc.)
     save_trajs(pre_analysis_dict, input_dict, reorder, traj_format)
 
 

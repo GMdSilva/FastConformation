@@ -89,8 +89,13 @@ def main():
                   'analysis_range_name': analysis_range_name,
                   'align_range': align_range}
 
+    # load predictions to ram
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
+
+    # run 1D RMSD analysis
     rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d)
+
+    # build and save results dataset
     build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)
 
 

@@ -9,9 +9,10 @@ from sklearn.cluster import KMeans
 
 from MDAnalysis.analysis import align, pca
 
+from tqdm import tqdm
+
 from ensemble_analysis.analysis_utils import parabola
 
-from tqdm import tqdm
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 

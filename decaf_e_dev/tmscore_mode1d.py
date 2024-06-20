@@ -71,8 +71,13 @@ def main():
                   'output_path': output_path,
                   'seq_pairs': seq_pairs}
 
+    # load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
+
+    # runs 1D TM-Score analysis
     tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions)
+
+    # builds results dataset and saves to disk
     build_dataset_tmscore_modes(tmscore_mode_analysis_dict, input_dict)
 
 

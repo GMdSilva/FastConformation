@@ -116,8 +116,13 @@ def main():
                   'analysis_range_name': analysis_range_name,
                   'align_range': align_range,}
 
+    # load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
+
+    # rum 2D RMSD analysis
     twod = TwodRMSD(pre_analysis_dict, input_dict, ref2d1, ref2d2)
+
+    # build and save results dataset
     twod.get_2d_rmsd(mode_results, n_stdevs, n_clusters)
 
 

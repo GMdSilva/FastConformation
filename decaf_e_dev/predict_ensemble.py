@@ -2,7 +2,6 @@ import subprocess
 import os
 import argparse
 import json
-import sys
 
 from msa_generation.msa_utils import create_directory
 
@@ -180,6 +179,7 @@ def main():
 
     env = os.environ.copy()
     env["PATH"] += os.pathsep + "localcolabfold/colabfold-conda/bin"
+    env["PATH"] += os.pathsep + "../localcolabfold/colabfold-conda/bin"
     env["PATH"] += os.pathsep + "/home/gabriel/localcolabfold/colabfold-conda/bin"  ## TODO: remove path
 
     # Print out the configurations for debugging
@@ -197,12 +197,15 @@ def main():
     print(f"MSA From: {msa_from}")
     print("***************************************************************\n")
 
+    # subsets MSA to X sequences
     if subset_msa_to:
         print(f"Subsetting MSA to: {subset_msa_to} sequences\n")
         msa_path = f'{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m'
 
+    # runs predictions
     run_multiple_prediction(msa_path, output_path, jobname, seq_pairs, env, seeds, save_all)
 
+    # removes temporary MSA if subset
     if subset_msa_to:
         os.remove(f"{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m")
 

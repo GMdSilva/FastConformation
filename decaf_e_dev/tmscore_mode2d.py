@@ -92,8 +92,13 @@ def main():
                   'seq_pairs': seq_pairs,
                   'predictions_path': predictions_path}
 
+    # loads predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
+
+    # runs 2D TM-Score analysis
     twod = TwoTMScore(pre_analysis_dict, input_dict, ref2d1, ref2d2, slice_predictions)
+
+    # builds results dataset and saves to disk
     twod.get_2d_tmscore(mode_results, n_stdevs, n_clusters)
 
 

@@ -11,6 +11,7 @@ from MDAnalysis.analysis import rms, align
 
 from tqdm import tqdm
 
+
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
 

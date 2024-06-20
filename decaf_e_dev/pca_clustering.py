@@ -69,7 +69,9 @@ def main():
         print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
+    # load predictions to ram
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
+    # run pca_analysis
     pca_from_ensemble(jobname, pre_analysis_dict, output_path, align_range, analysis_range, int(n_pca_clusters))
 
 

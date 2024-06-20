@@ -30,11 +30,6 @@ def load_config(file_path):
         return default_config
 
 
-def save_config(config, file_path):
-    with open(file_path, 'w') as file:
-        json.dump(config, file, indent=4)
-
-
 def reformat_sequences(input_msa):
     formatted_sequences = []
     for idx, sequence in enumerate(input_msa[0]):
@@ -58,9 +53,8 @@ def save_formatted_sequences_to_file(formatted_sequences, output_file):
             f.write(sequence)
 
 
-def prepare_os(use_ramdisk):
-    if use_ramdisk:
-        create_ram_disk()
+def prepare_os():
+    create_ram_disk()
 
 
 def build_msa(sequence, jobname, complete_output_dir, homooligomer, tmp_dir, use_ramdisk):
@@ -126,11 +120,17 @@ def main():
     print(f"Use ramdisk? {use_ramdisk}")
     print("***************************************************************\n")
 
-    prepare_os(use_ramdisk)
+    # optionally create ramdisk
+    if use_ramdisk:
+        prepare_os()
 
+    # sets output directory for MSA
     complete_output_dir = f"{output_path}/{jobname}/msas/jackhmmer/"
 
+    # builds jackhmmer MSA from target sequence
     build_msa(sequence_string, jobname, complete_output_dir, homooligomers, tmp_dir='tmp', use_ramdisk=use_ramdisk)
+
+    # reformats MSA to something colabfold_batch can use
     converted_msa = convert_msa(f"{complete_output_dir}/msa.pickle")
     save_formatted_sequences_to_file(converted_msa, f"{complete_output_dir}/{jobname}.a3m")
 

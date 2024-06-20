@@ -160,7 +160,10 @@ def main():
     print(f"Output Path: {output_path}")
     print("***************************************************************")
 
+    # loads target sequence
     single_sequence_path = f'{output_path}/{jobname}/target_seq/{jobname}.fasta'
+
+    # gets mmseqs2 MSA
     get_mmseqs_msa(single_sequence_path, output_path, jobname, env)
 
     print(f'\nSaved {jobname} mmseqs2 MSA to {output_path}/{jobname}/msas/mmseqs2/{jobname}.a3m\n')

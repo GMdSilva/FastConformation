@@ -1,14 +1,18 @@
 import pandas as pd
 import numpy as np
+
 import matplotlib.pyplot as plt
+
 from sklearn.cluster import KMeans
 from scipy.optimize import curve_fit
 
 from tqdm import tqdm
-TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
 from ensemble_analysis.analysis_utils import parabola
 from ensemble_analysis.rmsd import calculate_rmsd
+
+
+TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
 
 class TwodRMSD:

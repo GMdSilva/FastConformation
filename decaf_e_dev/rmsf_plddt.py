@@ -85,21 +85,26 @@ def main():
     print(f"Align Range: {align_range}")
     print(f"Detect Mobile Segments? {detect_mobile}")
     if detect_mobile:
-        print(f"Peak Height: {peak_height}")
         print(f"Peak Width: {peak_width}")
         print(f"Peak Prominence: {peak_prominence}")
     if starting_residue:
         print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
+    # load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
+    # runs RMSF analysis for all predictions
     calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path)
 
+    # gets pLDDTs for all predictions
     plddt_dict = load_predictions_json(predictions_path, seq_pairs, jobname)
     plot_plddt_line(jobname, plddt_dict, output_path, starting_residue)
+
+    # runs pLDDT/RMSF correlation for all predictions
     plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path)
 
+    # runs mobile residue range detection with RMSF data and save dataset to disk
     if detect_mobile:
         print(f'\nAutomatically detecting mobile segments')
         rmsf_peak_calling_dict = calculate_rmsf_and_call_peaks(jobname,

@@ -16,6 +16,7 @@ def parabola(x, a, b, c):
 
 
 def create_directory(path):
+    # removes directory if it already exists
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
@@ -33,7 +34,6 @@ def load_config(config_file):
 
 
 def load_frames(file_list):
-    """ Load frames from a list of files """
     universes = [mda.Universe(f) for f in file_list]
     return universes
 
@@ -52,8 +52,6 @@ def load_pdb_files_as_universe(folder_path, reindex):
     # Get a list of all PDB files in the folder, sorted alphabetically
     pdb_files = sorted(glob(os.path.join(folder_path, '*.pdb')))
 
-
-
     # Check if there are any PDB files in the folder
     if not pdb_files:
         raise FileNotFoundError("No PDB files found in the specified folder.")
@@ -62,19 +60,17 @@ def load_pdb_files_as_universe(folder_path, reindex):
     topology = pdb_files[0]
 
     if reindex:
-        # Construct the command
+        # predictions are usually 1-indexed, allow user to reindex so that the first residue = reindex
         command = f"pdb_reres -{reindex} {topology} > temp.pdb"
-        # Run the command
         subprocess.run(command, shell=True, check=True)
         topology = 'temp.pdb'
 
-    # Load all PDB files as a Universe using the first file as the topology
     u = mda.Universe(topology, *pdb_files, dt=1)
 
     if reindex:
+        # removes temporary topology from reindexing
         os.remove("temp.pdb")
 
-    # Print some information about the loaded universe
     print(f"Loaded {len(u.trajectory)} predictions from {folder_path}")
     return u
 
@@ -92,6 +88,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
                   'extra_seq': extra_seq,
                   'jobname': jobname,
                   'mda_universe': universe}
+
         predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
     return predictions_dict
 
@@ -153,6 +150,7 @@ def save_traj(universe, traj_output_path, jobname, max_seq, extra_seq, traj_form
 
 
 def auto_select_2d_references(references_dataset_path, analysis_type):
+    # gets the 2 most distant mode representatives as references
     df_references = pd.read_csv(references_dataset_path)
     # Get unique values in the 'trial' column
     unique_trials = df_references['trial'].unique()

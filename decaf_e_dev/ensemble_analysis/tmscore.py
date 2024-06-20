@@ -1,10 +1,11 @@
-from glob import glob
 import subprocess
 import os
 import re
+import shutil
+
 import pandas as pd
 import numpy as np
-import shutil
+from glob import glob
 
 import matplotlib.pyplot as plt
 

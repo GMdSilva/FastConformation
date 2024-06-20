@@ -24,11 +24,14 @@ dependencies = [
     "seaborn",
     "tqdm",
     "mdanalysis",
+    "matplotlib==3.7.3",
+    "pdb-tools",
+    "absl-py",
     "jax",
     "jaxlib",
     "absl-py",
     "scipy",
-    "sklearn",
+    "scikit-learn",
     "pandas",
     "numpy"
 ]
