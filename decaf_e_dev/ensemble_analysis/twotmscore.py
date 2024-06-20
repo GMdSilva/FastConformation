@@ -86,7 +86,7 @@ class TwoTMScore:
         ref_paths = (self.ref_gr, self.ref_alt)
 
         if self.slice_predictions:
-            predictions_path_trial = f"{self.input_dict['predictions_path']}/{trial}/tmp_pdb"
+            predictions_path_trial = f"{self.input_dict['predictions_path']}/tmp_pdb"
             create_directory(predictions_path_trial)
             self.slice_models(universe, self.slice_predictions, predictions_path_trial)
 
@@ -219,8 +219,8 @@ class TwoTMScore:
 
         plt.title(title, fontsize=16)
         plt.legend()
-        plt.xlabel('RMSD vs. Ref1 (A)', fontsize=14)
-        plt.ylabel('RMSD vs. Ref2 (A)', fontsize=14)
+        plt.xlabel('TM-Score vs. Ref1', fontsize=14)
+        plt.ylabel('TM-Score vs. Ref2', fontsize=14)
         plt.tick_params(axis='both', which='major', labelsize=12)
         plt.tight_layout()
 

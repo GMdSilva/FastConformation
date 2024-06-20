@@ -101,7 +101,10 @@ def main():
     print(f"Reference 1: {ref2d1}")
     print(f"Reference 2: {ref2d2}")
     print(f"Number of Standard Devs. to Consider Points Close to fit Line: {n_stdevs}")
-    print(f"Number of Standard Devs. to Consider Points Close to fit Line: {n_clusters}")
+    if n_clusters:
+        print(f"Number of Clusters: {n_clusters}")
+    else:
+        print(f"Number of Clusters: Number of Detected 1D RMSD Modes + 1")
     if starting_residue:
         print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")

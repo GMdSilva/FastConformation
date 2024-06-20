@@ -47,7 +47,7 @@ class TwodRMSD:
         fitted_curve_values = parabola(rmsd_2d_data[:, 0], *popt)
         distances = np.abs(rmsd_2d_data[:, 1] - fitted_curve_values)
 
-        threshold = np.mean(distances) + n_stdevs * np.std(distances)  # Mean + 2*Std as threshold
+        threshold = np.mean(distances) + n_stdevs * np.std(distances)
 
         close_points = distances < threshold
         x_close = rmsd_2d_data[close_points, 0]

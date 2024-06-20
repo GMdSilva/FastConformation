@@ -137,7 +137,7 @@ def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions) -> dict
     return modes_dict
 
 
-def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predictions=None):
+def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predictions):
     jobname = input_dict['jobname']
     output_path = input_dict['output_path']
     predictions_path = input_dict['predictions_path']
@@ -153,14 +153,16 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
             input_dict['extra_seq'] = extra_seq
 
             if slice_predictions:
-                predictions_path = f'{predictions_path}/{jobname}_{max_seq}_{extra_seq}/tmp_pdb'
-                create_directory(predictions_path)
-                slice_models(universe, slice_predictions, predictions_path)
+                create_directory(f'{predictions_path}/tmp_pdb')
+                slice_models(universe, slice_predictions,  f'{predictions_path}/tmp_pdb')
+                prediction_dicts[prediction]['tmscore_dict'] = run_tmscore(f'{predictions_path}/tmp_pdb', custom_ref)
 
-            prediction_dicts[prediction]['tmscore_dict'] = run_tmscore(predictions_path, custom_ref)
+            else:
+                prediction_dicts[prediction]['tmscore_dict'] = run_tmscore(predictions_path, custom_ref)
 
             if slice_predictions:
-                shutil.rmtree(predictions_path)
+                shutil.rmtree(f'{predictions_path}/tmp_pdb')
+
 
             tmscore_df = pd.DataFrame.from_dict(prediction_dicts[prediction]['tmscore_dict'], orient='columns')
             full_df_path = f"{output_path}/{jobname}/analysis/tmscore_1d/{jobname}_{max_seq}_{extra_seq}_tmscore_1d_df.csv"

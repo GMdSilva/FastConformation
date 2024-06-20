@@ -63,7 +63,7 @@
 
     "_comment7": "RMSD_2D OR TMSCORE_2D CONFIGURATIONS",
     "mode_results": null,
-    "n_stdevs": 3,
+    "n_stdevs": 5,
 
     "_comment8": "TMSCORE CONFIGURATIONS",
     "slice_predictions": "backbone and resid 210-459",
