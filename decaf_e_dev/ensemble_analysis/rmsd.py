@@ -124,7 +124,6 @@ def rmsd_kde(rmsd_data: list, input_dict: dict) -> dict:
 def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d):
     jobname = input_dict['jobname']
     rmsd_range = input_dict['analysis_range']
-    rmsd_range_name = input_dict['analysis_range_name']
     align_range = input_dict['align_range']
     output_path = input_dict['output_path']
 

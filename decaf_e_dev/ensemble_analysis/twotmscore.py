@@ -163,8 +163,8 @@ class TwoTMScore:
         plt.savefig(plot_path, dpi=300)
         plt.close()
 
-    def cluster_2d_data(self, tmscore_2d_data):
-        kmeans = KMeans(n_clusters=3)
+    def cluster_2d_data(self, tmscore_2d_data, n_clusters):
+        kmeans = KMeans(n_clusters)
         close_points_2d = np.array([self.filtering_dict['x_close'], self.filtering_dict['y_close']]).T
 
         kmeans.fit(close_points_2d)
@@ -199,7 +199,7 @@ class TwoTMScore:
         }
 
     def plot_and_save_2d_data(self):
-        colors = ('red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta')
+        colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
         unique_labels = self.clustering_dict['unique_labels']
         correct_labels = self.clustering_dict['correct_labels']
         cluster_counts = self.clustering_dict['cluster_counts']
@@ -250,7 +250,7 @@ class TwoTMScore:
         df = pd.DataFrame(records)
         return df
 
-    def get_2d_tmscore(self, tmscore_mode_df_path, n_stdevs):
+    def get_2d_tmscore(self, tmscore_mode_df_path, n_stdevs, n_clusters):
         df = pd.read_csv(tmscore_mode_df_path)
         unique_trials = df['trial'].unique()
 
@@ -258,6 +258,9 @@ class TwoTMScore:
         print('')
         with tqdm(total=len(self.prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
             for trial in unique_trials:
+                if not n_clusters:
+                    unique_df = df[df['trial'] == trial]
+                    n_clusters_trial = len(unique_df['mode_label']) + 1
                 pbar.set_description(f'Running 2D TM-Score analysis for {trial}')
                 self.input_dict['trial'] = trial
                 self.input_dict['max_seq'] = self.prediction_dicts[trial]['max_seq']
@@ -267,9 +270,9 @@ class TwoTMScore:
                 if len(tmscore_2d_data) > 0:
                     self.fit_and_filter_data(tmscore_2d_data, n_stdevs)
                     self.plot_filtering_data(tmscore_2d_data)
-                    self.cluster_2d_data(tmscore_2d_data)
-                    df = self.plot_and_save_2d_data()
-                    df_all_trials = pd.concat([df_all_trials, df], ignore_index=True)
+                    self.cluster_2d_data(tmscore_2d_data, n_clusters_trial)
+                    df_to_save = self.plot_and_save_2d_data()
+                    df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
 
                 pbar.update(n=1)
 

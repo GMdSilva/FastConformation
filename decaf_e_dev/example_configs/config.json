@@ -55,9 +55,10 @@
     "peak_width": 3,
     "peak_prominence": 1,
     "peak_height": 2,
+    "starting_residue": 200,
 
     "_comment6": "RMSD ANALYSIS CONFIGURATIONS",
-    "analysis_range": "backbone and resid 159-165",
+    "analysis_range": "backbone and resid 358-365",
     "analysis_range_name": "aloop",
 
     "_comment7": "RMSD_2D OR TMSCORE_2D CONFIGURATIONS",
@@ -65,13 +66,15 @@
     "n_stdevs": 3,
 
     "_comment8": "TMSCORE CONFIGURATIONS",
-    "slice_predictions": "backbone and resid 10-259",
+    "slice_predictions": "backbone and resid 210-459",
 
     "_comment10": "PCA CONFIGURATIONS",
     "n_pca_clusters": 3,
 
     "_comment11": "TRAJECTORY SAVING CONFIGURATIONS",
     "reorder": "rmsd_1d",
-    "traj_format": "pdb"
+    "traj_format": "pdb",
+
+    "n_clusters": null
 
 }

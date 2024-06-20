@@ -108,8 +108,8 @@ class TwodRMSD:
         plt.savefig(plot_path, dpi=300)
         plt.close()
 
-    def cluster_2d_data(self, rmsd_2d_data):
-        kmeans = KMeans(n_clusters=3)
+    def cluster_2d_data(self, rmsd_2d_data, n_clusters):
+        kmeans = KMeans(n_clusters)
         close_points_2d = np.array([self.filtering_dict['x_close'],
                                     self.filtering_dict['y_close']]).T
 
@@ -151,7 +151,7 @@ class TwodRMSD:
         outliers = self.clustering_dict['outliers']
 
         plt.figure(figsize=(5, 4))
-        colors = ['blue', 'purple', 'green']
+        colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
 
         for i in unique_labels:
             cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
@@ -200,13 +200,16 @@ class TwodRMSD:
         df = pd.DataFrame(records)
         return df
 
-    def get_2d_rmsd(self, rmsd_mode_df_path, n_stdevs):
+    def get_2d_rmsd(self, rmsd_mode_df_path, n_stdevs, n_clusters):
         df = pd.read_csv(rmsd_mode_df_path)
         unique_trials = df['trial'].unique()
 
         df_all_trials = pd.DataFrame()
         with tqdm(total=len(self.prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
             for trial in unique_trials:
+                if not n_clusters:
+                    unique_df = df[df['trial'] == trial]
+                    n_clusters_trial = len(unique_df['mode_label']) + 1
                 pbar.set_description(f'Running 2D RMSD analysis for {trial}')
                 self.input_dict['trial'] = trial
                 self.input_dict['max_seq'] = self.prediction_dicts[trial]['max_seq']
@@ -216,9 +219,9 @@ class TwodRMSD:
                 if len(rmsd_2d_data) > 0:
                     self.fit_and_filter_data(rmsd_2d_data, n_stdevs)
                     self.plot_filtering_data(rmsd_2d_data)
-                    self.cluster_2d_data(rmsd_2d_data)
-                    df = self.plot_and_save_2d_data()
-                    df_all_trials = pd.concat([df_all_trials, df], ignore_index=True)
+                    self.cluster_2d_data(rmsd_2d_data, n_clusters_trial)
+                    df_to_save = self.plot_and_save_2d_data()
+                    df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
 
                 pbar.update(n=1)
 

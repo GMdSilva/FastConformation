@@ -25,6 +25,8 @@ def main():
     parser.add_argument('--engine', type=str, choices=['alphafold2', 'openfold'],
                         help="The engine previously used to generate predictions (AlphaFold2 or OpenFold), "
                              "used to find predictions if predictions_path is not supplied")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--align_range', type=str, help="The atom alignment range for RMSF calculations "
                                                         "(MDAnalysis Syntax)")
     parser.add_argument('--analysis_range', type=str, help="The atom range for RMSD calculations "
@@ -51,6 +53,7 @@ def main():
     analysis_range = args.analysis_range if args.analysis_range else config.get('analysis_range')
     analysis_range_name = args.analysis_range_name if args.analysis_range_name else config.get('analysis_range_name')
     ref1d = args.ref1d if args.ref1d else config.get('ref1d')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -75,6 +78,8 @@ def main():
         print(f"Reference Structure: {ref1d}")
     else:
         print(f"Reference Structure: Top Ranked Prediction")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
     input_dict = {'jobname': jobname,
@@ -84,7 +89,7 @@ def main():
                   'analysis_range_name': analysis_range_name,
                   'align_range': align_range}
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
     rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d)
     build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)
 

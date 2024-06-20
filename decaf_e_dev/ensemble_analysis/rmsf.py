@@ -21,7 +21,8 @@ def calculate_rmsf_and_call_peaks(jobname,
                                   peak_width,
                                   prominence,
                                   threshold):
-    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+
+    with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running RMSF peak analysis for {result}')
             u = prediction_dicts[result]['mda_universe']
@@ -42,21 +43,21 @@ def calculate_rmsf_and_call_peaks(jobname,
             threshold = mean_rmsf + threshold * std_rmsf
 
             # Detect peaks
-            peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence, height=threshold)
+            peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
             plt.figure(figsize=(8, 3))
             plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
-            plt.xlabel('Data Point (Not Residue Number)', fontsize=14)
+            plt.xlabel('Residue Number', fontsize=14)
             plt.ylabel('RMSF ($\AA$)', fontsize=14)
             plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
             plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
 
-            plt.plot(rmsf_values)
-            plt.plot(peaks, rmsf_values[peaks], "x")
-            plt.vlines(x=peaks, ymin=rmsf_values[peaks] - properties["prominences"],
+            plt.plot(resids, rmsf_values)
+            plt.plot(resids[peaks], rmsf_values[peaks], "x", color="C1")
+            plt.vlines(x=resids[peaks], ymin=rmsf_values[peaks] - properties["prominences"],
                        ymax=rmsf_values[peaks], color="C1")
-            plt.hlines(y=properties["width_heights"], xmin=properties["left_ips"],
-                       xmax=properties["right_ips"], color="C1")
+            plt.hlines(y=properties["width_heights"], xmin=resids[properties["left_ips"].astype(int)],
+                       xmax=resids[properties["right_ips"].astype(int)], color="C1")
 
             plt.tight_layout()
 
@@ -109,8 +110,8 @@ def calculate_rmsf_multiple(jobname,
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
     plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
     colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
-    print('')
-    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+
+    with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for idx, (result, data) in enumerate(prediction_dicts.items()):
             pbar.set_description(f'Measuring RMSF for {result}')
             u = data['mda_universe']
@@ -122,7 +123,9 @@ def calculate_rmsf_multiple(jobname,
             atom_sel = u.select_atoms(align_range)
             r = rms.RMSF(atom_sel).run()
 
-            plt.plot(atom_sel.resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
+            resids = atom_sel.resids
+
+            plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
             labels.append(result)  # Add the result to labels list
             pbar.update(n=1)
 
@@ -143,8 +146,8 @@ def plot_plddt_rmsf_corr(jobname,
                          prediction_dicts,
                          plddt_dict,
                          output_path):
-    print('')
-    with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
+
+    with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
             max_seq = prediction_dicts[result]['max_seq']
@@ -162,11 +165,14 @@ def plot_plddt_rmsf_corr(jobname,
             atom_sel = u.select_atoms('name CA')
             r = rms.RMSF(atom_sel).run()
 
-            norm = Normalize(vmin=0, vmax=len(r.results.rmsf))
-            cmap = matplotlib.cm.get_cmap('viridis')
-            colors = cmap(norm(np.arange(len(r.results.rmsf))))
+            rmsf_values = r.results.rmsf
+            resids = atom_sel.resids
 
-            plt.scatter(r.results.rmsf, plddt_avg, c=colors)
+            norm = Normalize(vmin=resids.min(), vmax=resids.max())
+            cmap = matplotlib.cm.get_cmap('viridis')
+            colors = cmap(norm(resids))
+
+            plt.scatter(rmsf_values, plddt_avg, c=colors)
 
             plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
             plt.xlabel('C-Alpha RMSF (A)', fontsize=14)
@@ -190,9 +196,11 @@ def plot_plddt_rmsf_corr(jobname,
             pbar.update(n=1)
 
 
+
 def plot_plddt_line(jobname,
                     plddt_dict,
-                    output_path):
+                    output_path,
+                    custom_start_residue):
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
     labels = []
     plt.figure(figsize=(8, 3))
@@ -206,7 +214,13 @@ def plot_plddt_line(jobname,
         plddt_data = plddt_dict[result]['all_plddts']
         arrays = np.array(plddt_data)
         plddt_avg = np.mean(arrays, axis=0)
-        plt.plot(plddt_avg, color=colors[idx % len(colors)], label=result)
+
+        # Create residue numbers array
+        residue_numbers = np.arange(len(plddt_avg))
+        if custom_start_residue is not None:
+            residue_numbers += custom_start_residue
+
+        plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
         labels.append(result)  # Add the result to labels list
 
     plt.legend()  # Add the legend at the end

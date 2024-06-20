@@ -28,6 +28,8 @@ def main():
     parser.add_argument('--engine', type=str, choices=['alphafold2', 'openfold'],
                         help="The engine previously used to generate predictions (AlphaFold2 or OpenFold), "
                              "used to find predictions if predictions_path is not supplied")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--align_range', type=str, help="The atom alignment range for RMSF calculations "
                                                         "(MDAnalysis Syntax)")
     parser.add_argument('--detect_mobile', type=bool, help="Pass True to detect mobile residue ranges")
@@ -38,6 +40,7 @@ def main():
                                                             "for mobile residue range detection")
     parser.add_argument('--peak_height', type=int, help="Sets the RMSF peak height threshold "
                                                             "for mobile residue range detection")
+
 
     # TODO ALLOW USER TO OPTIMIZE PEAK_WIDTH, PROMINENCE, AND HEIGHT ON THE FLY
 
@@ -58,6 +61,7 @@ def main():
     peak_width = args.peak_width if args.peak_width else config.get('peak_width')
     peak_prominence = args.peak_prominence if args.peak_prominence else config.get('peak_prominence')
     peak_height = args.peak_height if args.peak_height else config.get('peak_height')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -84,14 +88,16 @@ def main():
         print(f"Peak Height: {peak_height}")
         print(f"Peak Width: {peak_width}")
         print(f"Peak Prominence: {peak_prominence}")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path)
 
     plddt_dict = load_predictions_json(predictions_path, seq_pairs, jobname)
-    plot_plddt_line(jobname, plddt_dict, output_path)
+    plot_plddt_line(jobname, plddt_dict, output_path, starting_residue)
     plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path)
 
     if detect_mobile:

@@ -20,6 +20,8 @@ def main():
                         help="Path to read AF2 predictions and save results to (default: current directory)")
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--seq_pairs', type=str, help="The job name")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--slice_predictions', type=str, help="The job name")
     parser.add_argument('--ref1', type=str, help="The job name")
     parser.add_argument('--engine', type=str, help="The job name")
@@ -38,6 +40,7 @@ def main():
     slice_predictions = args.slice_predictions if args.slice_predictions else config.get('slice_predictions')
     ref1 = args.ref1 if args.ref1 else config.get('ref1')
     engine = args.engines if args.engine else config.get('engine')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -55,10 +58,12 @@ def main():
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")
     print(f"Engine: {engine}")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     if ref1:
         print(f"Reference: {ref1}")
     if slice_predictions:
-        print(f"Setting analysis range to: {slice_predictions}")
+        print(f"Setting Analysis Range to: {slice_predictions}")
     print("***************************************************************\n")
 
     input_dict = {'jobname': jobname,
@@ -66,7 +71,7 @@ def main():
                   'output_path': output_path,
                   'seq_pairs': seq_pairs}
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
     tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions)
     build_dataset_tmscore_modes(tmscore_mode_analysis_dict, input_dict)
 

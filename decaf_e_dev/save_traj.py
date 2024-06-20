@@ -18,6 +18,8 @@ def main():
                         help="Path to read AF2 predictions and save results to (default: current directory)")
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--seq_pairs', type=str, help="The job name")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--analysis_range', type=str, help="The job name")
     parser.add_argument('--analysis_range_name', type=str, help="The job name")
     parser.add_argument('--reorder', type=str, help="The job name")
@@ -40,6 +42,7 @@ def main():
     reorder = args.reorder if args.reorder else config.get('reorder')
     traj_format = args.traj_format if args.traj_format else config.get('traj_format')
     engine = args.engines if args.engine else config.get('engine')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -59,6 +62,8 @@ def main():
     print(f"Reorder by: {reorder}")
     print(f"Traj format: {traj_format}")
     print(f"Engine: {engine}")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
     input_dict = {'jobname': jobname,
@@ -67,7 +72,7 @@ def main():
                   'analysis_range': analysis_range,
                   'analysis_range_name': analysis_range_name}
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     save_trajs(pre_analysis_dict, input_dict, reorder, traj_format)
 

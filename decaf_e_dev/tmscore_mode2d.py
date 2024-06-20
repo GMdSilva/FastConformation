@@ -24,12 +24,15 @@ def main():
                         help="Path to read AF2 predictions and save results to (default: current directory)")
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--seq_pairs', type=str, help="The job name")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--slice_predictions', type=str, help="The job name")
     parser.add_argument('--engine', type=str, help="The job name")
     parser.add_argument('--ref2d1', type=str, help="The job name")
     parser.add_argument('--ref2d2', type=str, help="The job name")
     parser.add_argument('--n_stdevs', type=str, help="The job name")
-
+    parser.add_argument('--n_clusters', type=str, help="Number of standard deviations "
+                                                     "to consider when calculating close points to fit curve")
     args = parser.parse_args()
 
     # Load configuration from file if provided
@@ -44,9 +47,11 @@ def main():
     jobname = args.jobname if args.jobname else config.get('jobname')
     ref2d1 = args.ref1 if args.ref2d1 else config.get('ref2d1')
     ref2d2 = args.ref2 if args.ref2d2 else config.get('ref2d2')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
     slice_predictions = args.slice_predictions if args.slice_predictions else config.get('slice_predictions')
     engine = args.engines if args.engine else config.get('engine')
     n_stdevs = args.n_stdevs if args.n_stdevs else config.get('n_stdevs')
+    n_clusters = args.n_clusters if args.n_clusters else config.get('n_clusters')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -69,11 +74,14 @@ def main():
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")
     print(f"Engine: {engine}")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     if slice_predictions:
-        print(f"Setting analysis range to: {slice_predictions}")
+        print(f"Setting Analysis Range to: {slice_predictions}")
     print(f"Reference 1: {ref2d1}")
     print(f"Reference 2: {ref2d2}")
     print(f"Number of Standard Devs. to Consider Point Closeness: {n_stdevs}")
+    print(f"Number of Standard Devs. to Consider Point Closeness: {n_clusters}")
     print("***************************************************************\n")
 
     input_dict = {'jobname': jobname,
@@ -81,9 +89,9 @@ def main():
                   'seq_pairs': seq_pairs,
                   'predictions_path': predictions_path}
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
     twod = TwoTMScore(pre_analysis_dict, input_dict, ref2d1, ref2d2, slice_predictions)
-    twod.get_2d_tmscore(mode_results, n_stdevs)
+    twod.get_2d_tmscore(mode_results, n_stdevs, n_clusters)
 
 
 if __name__ == "__main__":

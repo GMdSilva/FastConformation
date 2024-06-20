@@ -1,5 +1,6 @@
 import os
 import argparse
+import pandas as pd
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -30,6 +31,8 @@ def main():
     parser.add_argument('--engine', type=str, choices=['alphafold2', 'openfold'],
                         help="The engine previously used to generate predictions (AlphaFold2 or OpenFold), "
                              "used to find predictions if predictions_path is not supplied")
+    parser.add_argument('--starting_residue', type=int,
+                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--align_range', type=str, help="The atom alignment range for RMSF calculations "
                                                         "(MDAnalysis Syntax)")
     parser.add_argument('--analysis_range', type=str, help="The atom range for RMSD calculations "
@@ -45,6 +48,8 @@ def main():
                                                   "for RMSD calculations "
                                                   "(if not provided, chooses from mode datasetn)")
     parser.add_argument('--n_stdevs', type=str, help="Number of standard deviations "
+                                                     "to consider when calculating close points to fit curve")
+    parser.add_argument('--n_clusters', type=str, help="Number of standard deviations "
                                                      "to consider when calculating close points to fit curve")
 
     args = parser.parse_args()
@@ -66,6 +71,8 @@ def main():
     ref2d1 = args.ref1 if args.ref2d1 else config.get('ref2d1')
     ref2d2 = args.ref2 if args.ref2d2 else config.get('ref2d2')
     n_stdevs = args.n_stdevs if args.n_stdevs else config.get('n_stdevs')
+    n_clusters = args.n_clusters if args.n_clusters else config.get('n_clusters')
+    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -78,6 +85,7 @@ def main():
 
     if not ref2d1 and not ref2d2:
         ref2d1, ref2d2 = auto_select_2d_references(mode_results, 'RMSD')
+
     create_directory(f'{output_path}/{jobname}/analysis/rmsd_2d')
 
     print("\nConfigurations:")
@@ -93,6 +101,9 @@ def main():
     print(f"Reference 1: {ref2d1}")
     print(f"Reference 2: {ref2d2}")
     print(f"Number of Standard Devs. to Consider Points Close to fit Line: {n_stdevs}")
+    print(f"Number of Standard Devs. to Consider Points Close to fit Line: {n_clusters}")
+    if starting_residue:
+        print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
     input_dict = {'jobname': jobname,
@@ -102,9 +113,9 @@ def main():
                   'analysis_range_name': analysis_range_name,
                   'align_range': align_range,}
 
-    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname)
+    pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
     twod = TwodRMSD(pre_analysis_dict, input_dict, ref2d1, ref2d2)
-    twod.get_2d_rmsd(mode_results, n_stdevs)
+    twod.get_2d_rmsd(mode_results, n_stdevs, n_clusters)
 
 
 if __name__ == "__main__":

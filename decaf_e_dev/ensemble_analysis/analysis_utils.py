@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 
 import pandas as pd
 
@@ -37,7 +38,7 @@ def load_frames(file_list):
     return universes
 
 
-def load_pdb_files_as_universe(folder_path):
+def load_pdb_files_as_universe(folder_path, reindex):
     """
     Load all PDB files in the specified folder as a Universe,
     using the first PDB file (sorted alphabetically) as the topology.
@@ -51,6 +52,8 @@ def load_pdb_files_as_universe(folder_path):
     # Get a list of all PDB files in the folder, sorted alphabetically
     pdb_files = sorted(glob(os.path.join(folder_path, '*.pdb')))
 
+
+
     # Check if there are any PDB files in the folder
     if not pdb_files:
         raise FileNotFoundError("No PDB files found in the specified folder.")
@@ -58,22 +61,32 @@ def load_pdb_files_as_universe(folder_path):
     # Use the first PDB file as the topology
     topology = pdb_files[0]
 
+    if reindex:
+        # Construct the command
+        command = f"pdb_reres -{reindex} {topology} > temp.pdb"
+        # Run the command
+        subprocess.run(command, shell=True, check=True)
+        topology = 'temp.pdb'
+
     # Load all PDB files as a Universe using the first file as the topology
     u = mda.Universe(topology, *pdb_files, dt=1)
+
+    if reindex:
+        os.remove("temp.pdb")
 
     # Print some information about the loaded universe
     print(f"Loaded {len(u.trajectory)} predictions from {folder_path}")
     return u
 
 
-def load_predictions(predictions_path, seq_pairs, jobname):
+def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
     predictions_dict = {}
     for seq_pair in seq_pairs:
         max_seq = seq_pair[0]
         extra_seq = seq_pair[1]
         folder_path = f"{predictions_path}/{jobname}_{max_seq}_{extra_seq}"
 
-        universe = load_pdb_files_as_universe(folder_path)
+        universe = load_pdb_files_as_universe(folder_path, starting_residue)
 
         params = {'max_seq': max_seq,
                   'extra_seq': extra_seq,
