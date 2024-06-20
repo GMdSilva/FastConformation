@@ -9,10 +9,10 @@ import re
 
 from tqdm import tqdm
 
-from msa_generation import jackhmmer
-from msa_generation import parsers
-from msa_generation import colabfold as cf
-from msa_generation import pairmsa
+from decaf_e_dev.msa_generation import jackhmmer
+from decaf_e_dev.msa_generation import parsers
+from decaf_e_dev.msa_generation import colabfold as cf
+from decaf_e_dev.msa_generation import pairmsa
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
