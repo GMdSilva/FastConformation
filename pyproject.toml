@@ -20,14 +20,17 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 
-
 dependencies = [
     "seaborn",
     "tqdm",
     "mdanalysis",
     "jax",
     "jaxlib",
-    "absl-py"
+    "absl-py",
+    "scipy",
+    "sklearn",
+    "pandas",
+    "numpy"
 ]
 
 # Update the urls once the hosting is set up.

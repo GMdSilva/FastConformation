@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-import seaborn as sns
 
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score

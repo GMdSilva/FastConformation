@@ -19,6 +19,4 @@ else
     echo "$INSTALL_DIR is already in PATH"
 fi
 
-pip install --upgrade jax jaxlib
-
-echo "Installation complete."
+echo "Installation of colabfold complete."

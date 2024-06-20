@@ -1,0 +1,4 @@
+matplotlib==3.7.3
+hmmer @ https://biocore.github.io/hmmer/hmmer-3.3.tar.gz
+pdb-tools
+absl-py
