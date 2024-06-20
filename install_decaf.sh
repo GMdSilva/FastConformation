@@ -21,7 +21,7 @@ conda activate "$DECAFDIR/decaf_e_dev-conda"
 
 # install ColabFold and Jaxlib
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \
-    "colabfold[alphafold-minus-jax] @ git+https://github.com/sokrypton/ColabFold"
+    "colabfold[alphafold-minus-jax] @ git+https://github.com/GMdSilva/ColabFold"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install "colabfold[alphafold]"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade "jax[cuda12]"==0.4.28
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade tensorflow

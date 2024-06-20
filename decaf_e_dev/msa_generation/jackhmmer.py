@@ -23,7 +23,7 @@ from urllib import request
 
 from absl import logging
 
-from msa_generation import msa_utils
+from decaf_e_dev.msa_generation import msa_utils
 # Internal import (7716).
 
 
