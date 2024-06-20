@@ -3,7 +3,7 @@
 type wget 2>/dev/null || { echo "wget is not installed. Please install it using apt or yum." ; exit 1 ; }
 
 CURRENTPATH=`pwd`
-COLABFOLDDIR="${CURRENTPATH}/decaf_e_dev"
+DECAFDIR="${CURRENTPATH}/decaf_e_dev"
 
 mkdir -p "${DECAFDIR}"
 cd "${DECAFDIR}"
