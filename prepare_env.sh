@@ -94,8 +94,8 @@ if confirm "Do you want to install dependencies?"; then
     echo "Installing local-colabfold."
     bash scripts/install_colabfold.sh
 
-    echo "Installing hmmer."
-    bash scripts/install_hmmer_aptget.sh
+#    echo "Installing hmmer."
+#    bash scripts/install_hmmer_aptget.sh
 
     echo "Installing Python dependencies..."
     pip install -r requirements.txt
