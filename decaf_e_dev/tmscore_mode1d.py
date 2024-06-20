@@ -4,9 +4,9 @@ import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
-from ensemble_analysis.analysis_utils import create_directory, load_predictions
-from ensemble_analysis.analysis_utils import load_config
-from ensemble_analysis.tmscore import build_dataset_tmscore_modes, tmscore_mode_analysis
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions
+from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
+from decaf_e_dev.ensemble_analysis.tmscore import build_dataset_tmscore_modes, tmscore_mode_analysis
 
 
 def main():

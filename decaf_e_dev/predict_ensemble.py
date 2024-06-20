@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 
-from msa_generation.msa_utils import create_directory
+from decaf_e_dev.msa_generation.msa_utils import create_directory
 
 
 def validate_inputs(msa_path, output_path, jobname, seq_pairs, seeds):

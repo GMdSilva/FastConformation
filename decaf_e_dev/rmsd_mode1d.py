@@ -4,10 +4,10 @@ import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
-from ensemble_analysis.analysis_utils import create_directory
-from ensemble_analysis.analysis_utils import load_predictions
-from ensemble_analysis.analysis_utils import load_config
-from ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
+from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
+from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
+from decaf_e_dev.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
 
 ## TODO: add sanity checks, rewrite help snipets
 

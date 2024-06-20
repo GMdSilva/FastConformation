@@ -16,7 +16,7 @@ import MDAnalysis as mda
 
 from tqdm import tqdm
 
-from ensemble_analysis.analysis_utils import create_directory
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 

@@ -14,9 +14,9 @@ rm Mambaforge-Linux-x86_64.sh
 source "${DECAFDIR}/conda/etc/profile.d/conda.sh"
 export PATH="${DECAFDIR}/conda/condabin:${PATH}"
 conda update -n base conda -y
-conda create -p "$DECAFDIR/decaf_e_dev-conda" -c conda-forge -c bioconda -c biocore \
+conda create -c conda-forge -c bioconda -c biocore \
     git python=3.10 openmm==7.7.0 pdbfixer \
-    kalign2=2.04 hhsuite=3.3.0 mmseqs2=15.6f452 hmmer scikit-learn mdanalysis tqdm seaborn pandas scipy -y
+    kalign2=2.04 hhsuite=3.3.0 mmseqs2=15.6f452 hmmer scikit-learn mdanalysis seaborn scipy -y
 conda activate "$DECAFDIR/decaf_e_dev-conda"
 
 # install ColabFold and Jaxlib
@@ -26,7 +26,6 @@ conda activate "$DECAFDIR/decaf_e_dev-conda"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade "jax[cuda12]"==0.4.28
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade tensorflow
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install silence_tensorflow
-"$DECAFDIR/decaf_e_dev-conda/bin/pip" install absl-py
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install pdb-tools
 
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \
@@ -50,5 +49,3 @@ echo "Installation of decaf_e_dev finished."
 echo "Add ${DECAFDIR}/decaf_e_dev-conda/bin to your PATH environment variable to run 'decaf_e_dev'."
 echo -e "i.e. for Bash:\n\texport PATH=\"${DECAFDIR}/decaf_e_dev-conda/bin:\$PATH\""
 echo "For more details, please run 'decaf_e_dev --help'."
-
-sudo apt install tm-align

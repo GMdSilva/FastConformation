@@ -4,10 +4,10 @@ import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
-from ensemble_analysis.analysis_utils import create_directory
-from ensemble_analysis.analysis_utils import load_predictions
-from ensemble_analysis.analysis_utils import load_config
-from ensemble_analysis.traj import save_trajs
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
+from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
+from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
+from decaf_e_dev.ensemble_analysis.traj import save_trajs
 def main():
 
     parser = argparse.ArgumentParser(description="Builds trajectory from PDB predictions, "
