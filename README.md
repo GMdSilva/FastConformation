@@ -6,6 +6,11 @@ decaf_e_dev
 
 
 placeholder
+## Installation
+conda create -n decaf_dev
+conda activate decaf_dev
+
+
 
 ### Copyright
 
