@@ -9,15 +9,15 @@ STYLES = r"""
     QListWidget {
         min-width: 294px;
         background: none;
-        font-size: 10pt;
+        font-size: 13pt;
         color: #333333;
     }
     QListWidget::item {
-        width: 68px;
-        height: 100px;
+        width: 80px;
+        height: 110px;
         border-radius: 4px;
-        margin: 1px;
-        padding: 4px;
+        margin: 10px;
+        padding: 10px;
         background: #f5f5f5;
         color: #333333;
     }

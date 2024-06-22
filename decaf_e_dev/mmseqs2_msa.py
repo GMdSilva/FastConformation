@@ -111,26 +111,11 @@ def copy_msa_and_clean(src_file_path, dest_dir_path):
     # Delete the source directory and all its contents
     shutil.rmtree(src_dir_path)
 
-
-def main():
-    parser = argparse.ArgumentParser(description="Assemble MSA for target sequence with mmseqs2")
-    parser.add_argument('--config_file', type=str, help="Path to the configuration file")
-    parser.add_argument('--jobname', type=str, help="The job name")
-    parser.add_argument('--sequence_path', type=str,
-                        help="Path to a .fasta file containing the target sequence for MSA building")
-    parser.add_argument('--output_path', type=str,
-                        help="Path to save results to")
-
-    args = parser.parse_args()
-
-    # Load configuration from file if provided
-    config_file = args.config_file if args.config_file else 'config.json'
-    config = load_config(config_file)
-
-    # Override config with command line arguments if provided
-    jobname = args.jobname if args.jobname else config.get('jobname')
-    sequence_path = args.sequence_path if args.sequence_path else config.get('sequence_path')
-    output_path = args.output_path if args.output_path else config.get('output_path')
+def run_mmseqs2_msa(config):
+    jobname = config['jobname']
+    sequence_path = config['sequence_path']
+    output_path = config['output_path']
+    use_ramdisk = config['use_ramdisk']
     platform = 'cpu'
 
     os.environ['JAX_PLATFORMS'] = platform
@@ -154,7 +139,6 @@ def main():
 
     print("Configurations:")
     print("***************************************************************")
-    print(f"Used Config File? {args.config_file is not None}")
     print(f"Job Name: {jobname}")
     print(f"Sequence File path: {sequence_path}")
     print(f"Output Path: {output_path}")
@@ -167,6 +151,27 @@ def main():
     get_mmseqs_msa(single_sequence_path, output_path, jobname, env)
 
     print(f'\nSaved {jobname} mmseqs2 MSA to {output_path}/{jobname}/msas/mmseqs2/{jobname}.a3m\n')
+
+def main():
+    parser = argparse.ArgumentParser(description="Assemble MSA for target sequence with mmseqs2")
+    parser.add_argument('--config_file', type=str, help="Path to the configuration file")
+    parser.add_argument('--jobname', type=str, help="The job name")
+    parser.add_argument('--sequence_path', type=str, help="Path to a .fasta file containing the target sequence for MSA building")
+    parser.add_argument('--output_path', type=str, help="Path to save results to")
+
+    args = parser.parse_args()
+
+    # Load configuration from file if provided
+    config_file = args.config_file if args.config_file else 'config.json'
+    config = load_config(config_file)
+
+    # Override config with command line arguments if provided
+    config['jobname'] = args.jobname if args.jobname else config.get('jobname')
+    config['sequence_path'] = args.sequence_path if args.sequence_path else config.get('sequence_path')
+    config['output_path'] = args.output_path if args.output_path else config.get('output_path')
+    config['use_ramdisk'] = True  # or set this based on your needs or add as an argument
+
+    run_mmseqs2_msa(config)
 
 if __name__ == "__main__":
     main()

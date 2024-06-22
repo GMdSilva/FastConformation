@@ -32,7 +32,7 @@ class MainFrame(QMainWindow):
         self.apply_styles()
 
     def apply_styles(self):
-                self.setStyleSheet("""
+        self.setStyleSheet("""
             QWidget {
                 background-color: #f5f5f5;
                 color: #333333;

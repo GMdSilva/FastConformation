@@ -6,7 +6,8 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QFileDialog, QListWidget, QPushButton
 from icons import Icons
 from build_msa import MSAOptionsWidget
-from make_predictions import MakePredictionsWidget
+from decaf_e_dev.make_predictions import MakePredictionsWidget
+from analysis_config import AnalysisConfigWidget
 @dataclass
 class Category:
     widget: Callable
@@ -14,10 +15,6 @@ class Category:
 
 
 CATEGORIES = {
-    "Select Output Path": Category(
-        widget=lambda: DirectorySelector(),  # No viewer argument required
-        tool_tip="Select an output directory",
-    ),
     "Build MSA": Category(
         widget=lambda: MSAOptionsWidget(),
         tool_tip="Select parameters to build MSA",
@@ -25,6 +22,10 @@ CATEGORIES = {
     "Make Predictions": Category(
         widget=lambda: MakePredictionsWidget(),
         tool_tip="Select parameters to make predictions",
+    ),
+    "Analysis": Category(
+        widget=lambda: AnalysisConfigWidget(),
+        tool_tip="Select parameters to analyze results",
     ),
 }
 

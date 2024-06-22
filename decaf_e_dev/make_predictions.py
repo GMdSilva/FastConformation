@@ -91,6 +91,11 @@ class MakePredictionsWidget(QWidget):
         self.setLayout(layout)
         self.setWindowTitle("Advanced MSA Options")
 
+        # Run Button
+        self.run_button = QPushButton("Run")
+        self.run_button.clicked.connect(self.run_prediction)
+        layout.addWidget(self.run_button, 11, 1)
+        
     def select_msa_path(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -120,3 +125,6 @@ class MakePredictionsWidget(QWidget):
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+    def run_prediction(self):
+        print("run_pred")
