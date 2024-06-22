@@ -52,7 +52,7 @@ class MainWidget(QWidget):
         layout.addWidget(icon_grid)
 
         self.setLayout(layout)
-        self.setWindowTitle("Voltage Imaging Analysis")
+        self.setWindowTitle("DECAF")
     
     def _on_item_clicked(self, item):
         name = item.text()
