@@ -127,6 +127,60 @@ def save_config(config, file_path):
     with open(file_path, 'w') as file:
         json.dump(config, file, indent=4)
 
+def run_ensemble_prediction(config):
+    msa_path = config['msa_path']
+    output_path = config['output_path']
+    jobname = config['jobname']
+    seq_pairs = config['seq_pairs']
+    seeds = config['seeds']
+    save_all = config['save_all']
+    platform = config['platform']
+    subset_msa_to = config['subset_msa_to']
+    msa_from = config['msa_from']
+
+    if msa_path == None:
+        msa_path = f'{output_path}/{jobname}/msas/{msa_from}/{jobname}.a3m'
+
+    print('\n')
+
+    create_directory(f'{output_path}/{jobname}/predictions/alphafold2')
+
+    if subset_msa_to:
+        subset_msa(msa_path, output_path, subset_msa_to)
+
+    if platform == 'cpu':
+        os.environ['JAX_PLATFORMS'] = platform
+
+    env = os.environ.copy()
+    env["PATH"] += os.pathsep + "localcolabfold/colabfold-conda/bin"
+    env["PATH"] += os.pathsep + "../localcolabfold/colabfold-conda/bin"
+    env["PATH"] += os.pathsep + "/home/gabriel/localcolabfold/colabfold-conda/bin"  ## TODO: remove path
+
+    # Print out the configurations for debugging
+    print("\nConfigurations:")
+    print("***************************************************************")
+    print(f"Job Name: {jobname}")
+    print(f"MSA Path: {msa_path}")
+    print(f"Output Path: {output_path}")
+    print(f"Sequence Pairs: {seq_pairs}")
+    print(f"Seeds: {seeds}")
+    print(f"Save All: {save_all}")
+    if subset_msa_to:
+        print(f"Subset MSA to: {subset_msa_to}")
+    print(f"MSA From: {msa_from}")
+    print("***************************************************************\n")
+
+    # subsets MSA to X sequences
+    if subset_msa_to:
+        print(f"Subsetting MSA to: {subset_msa_to} sequences\n")
+        msa_path = f'{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m'
+
+    # runs predictions
+    run_multiple_prediction(msa_path, output_path, jobname, seq_pairs, env, seeds, save_all)
+
+    # removes temporary MSA if subset
+    if subset_msa_to:
+        os.remove(f"{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m")
 
 def main():
     parser = argparse.ArgumentParser(description="Run multiple ensemble predictions.")
@@ -154,61 +208,17 @@ def main():
     config = load_config(config_file)
 
     # Override config with command line arguments if provided
-    msa_path = args.msa_path if args.msa_path else config.get('msa_path')
-    output_path = args.output_path if args.output_path else config.get('output_path')
-    jobname = args.jobname if args.jobname else config.get('jobname')
-    seq_pairs = args.seq_pairs if args.seq_pairs else config.get('seq_pairs')
-    seeds = args.seeds if args.seeds else config.get('seeds', 10)
-    save_all = args.save_all if 'save_all' in args and args.save_all else config.get('save_all', False)
-    platform = args.platform if args.platform else config.get('platform', 'cpu')
-    subset_msa_to = args.subset_msa_to if args.subset_msa_to else config.get('subset_msa_to')
-    msa_from = args.msa_from if args.msa_from else config.get('msa_from')
+    config['msa_path'] = args.msa_path if args.msa_path else config.get('msa_path')
+    config['output_path'] = args.output_path if args.output_path else config.get('output_path')
+    config['jobname'] = args.jobname if args.jobname else config.get('jobname')
+    config['seq_pairs'] = args.seq_pairs if args.seq_pairs else config.get('seq_pairs')
+    config['seeds'] = args.seeds if args.seeds else config.get('seeds', 10)
+    config['save_all'] = args.save_all if 'save_all' in args and args.save_all else config.get('save_all', False)
+    config['platform'] = args.platform if args.platform else config.get('platform', 'cpu')
+    config['subset_msa_to'] = args.subset_msa_to if args.subset_msa_to else config.get('subset_msa_to')
+    config['msa_from'] = args.msa_from if args.msa_from else config.get('msa_from')
 
-    if msa_path == None:
-        msa_path = f'{output_path}/{jobname}/msas/{msa_from}/{jobname}.a3m'
-
-    print('\n')
-
-    create_directory(f'{output_path}/{jobname}/predictions/alphafold2')
-
-    if subset_msa_to:
-        subset_msa(msa_path, output_path, subset_msa_to)
-
-    if platform == 'cpu':
-        os.environ['JAX_PLATFORMS'] = platform
-
-    env = os.environ.copy()
-    env["PATH"] += os.pathsep + "localcolabfold/colabfold-conda/bin"
-    env["PATH"] += os.pathsep + "../localcolabfold/colabfold-conda/bin"
-    env["PATH"] += os.pathsep + "/home/gabriel/localcolabfold/colabfold-conda/bin"  ## TODO: remove path
-
-    # Print out the configurations for debugging
-    print("\nConfigurations:")
-    print("***************************************************************")
-    print(f"Used Config File? {args.config_file is not None}")
-    print(f"Job Name: {jobname}")
-    print(f"MSA Path: {msa_path}")
-    print(f"Output Path: {output_path}")
-    print(f"Sequence Pairs: {seq_pairs}")
-    print(f"Seeds: {seeds}")
-    print(f"Save All: {save_all}")
-    if subset_msa_to:
-        print(f"Subset MSA to: {subset_msa_to}")
-    print(f"MSA From: {msa_from}")
-    print("***************************************************************\n")
-
-    # subsets MSA to X sequences
-    if subset_msa_to:
-        print(f"Subsetting MSA to: {subset_msa_to} sequences\n")
-        msa_path = f'{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m'
-
-    # runs predictions
-    run_multiple_prediction(msa_path, output_path, jobname, seq_pairs, env, seeds, save_all)
-
-    # removes temporary MSA if subset
-    if subset_msa_to:
-        os.remove(f"{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m")
-
+    run_ensemble_prediction(config)
 
 if __name__ == "__main__":
     main()

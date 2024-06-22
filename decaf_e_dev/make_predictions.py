@@ -1,12 +1,6 @@
-import warnings
-from dataclasses import dataclass
-from typing import Callable
-
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import (
-    QApplication, QLabel, QVBoxLayout, QWidget, QPushButton,
-    QLineEdit, QCheckBox, QFileDialog, QComboBox, QListWidget, QGridLayout, QHBoxLayout
-)
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QCheckBox
+import sys
+from predict_ensemble import run_ensemble_prediction
 
 class MakePredictionsWidget(QWidget):
     def __init__(self, *args, **kwargs):
@@ -30,7 +24,7 @@ class MakePredictionsWidget(QWidget):
         # MSA From
         self.msa_from_label = QLabel("MSA From:")
         self.msa_from_dropdown = QComboBox()
-        self.msa_from_dropdown.addItems(["mmseqs2", "other_source1", "other_source2"])
+        self.msa_from_dropdown.addItems(["mmseqs2", "jackhmmer"])
 
         # Seq Pairs
         self.seq_pairs_label = QLabel("Sequence Pairs:")
@@ -51,14 +45,6 @@ class MakePredictionsWidget(QWidget):
         self.save_all_label = QLabel("Save All:")
         self.save_all_checkbox = QCheckBox()
         self.save_all_checkbox.setChecked(False)
-
-        # Models
-        self.models_label = QLabel("Models:")
-        self.models_input = QLineEdit("[1, 2, 3, 4, 5]")
-
-        # Recycles
-        self.recycles_label = QLabel("Recycles:")
-        self.recycles_input = QLineEdit("4")
 
         # Subset MSA To
         self.subset_msa_to_label = QLabel("Subset MSA To:")
@@ -81,10 +67,6 @@ class MakePredictionsWidget(QWidget):
         layout.addWidget(self.platform_dropdown, 6, 1)
         layout.addWidget(self.save_all_label, 7, 0)
         layout.addWidget(self.save_all_checkbox, 7, 1)
-        layout.addWidget(self.models_label, 8, 0)
-        layout.addWidget(self.models_input, 8, 1)
-        layout.addWidget(self.recycles_label, 9, 0)
-        layout.addWidget(self.recycles_input, 9, 1)
         layout.addWidget(self.subset_msa_to_label, 10, 0)
         layout.addWidget(self.subset_msa_to_input, 10, 1)
 
@@ -99,7 +81,7 @@ class MakePredictionsWidget(QWidget):
     def select_msa_path(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select MSA File", "", "MSA Files (*.m3a);;All Files (*)", options=options)
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select MSA File", "", "MSA Files (*.a3m);;All Files (*)", options=options)
         if file_path:
             self.msa_path_input.setText(file_path)
 
@@ -127,4 +109,32 @@ class MakePredictionsWidget(QWidget):
                 child.widget().deleteLater()
 
     def run_prediction(self):
-        print("run_pred")
+        config = {
+            'msa_path': self.msa_path_input.text(),
+            'output_path': 'output_path',  # Set this as needed
+            'jobname': 'jobname',  # Set this as needed
+            'seq_pairs': self.get_seq_pairs(),
+            'seeds': int(self.seeds_input.text()),
+            'save_all': self.save_all_checkbox.isChecked(),
+            'platform': self.platform_dropdown.currentText(),
+            'subset_msa_to': int(self.subset_msa_to_input.text()) if self.subset_msa_to_input.text() else None,
+            'msa_from': self.msa_from_dropdown.currentText()
+        }
+
+        run_ensemble_prediction(config)
+
+    def get_seq_pairs(self):
+        seq_pairs = []
+        for i in range(self.seq_pairs_layout.count()):
+            layout = self.seq_pairs_layout.itemAt(i).layout()
+            seq1 = layout.itemAt(0).widget().text()
+            seq2 = layout.itemAt(1).widget().text()
+            seq_pairs.append([int(seq1), int(seq2)])
+        return seq_pairs
+
+
+
+
+
+
+
