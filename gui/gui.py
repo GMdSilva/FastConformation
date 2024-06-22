@@ -150,7 +150,7 @@ class MainFrame(QMainWindow):
         self.main_widget = MainWidget()
         self.layout.addWidget(self.main_widget)
 
-        self.setWindowTitle('Main Frame with Handy Widget')
+        self.setWindowTitle('DECAF_E')
         self.showFullScreen()
 
 if __name__ == '__main__':
