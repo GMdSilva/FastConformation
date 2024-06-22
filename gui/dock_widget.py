@@ -5,18 +5,13 @@ from directory_selector import DirectorySelector
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QFileDialog, QListWidget, QPushButton
 from icons import Icons
+from build_msa import MSAOptionsWidget
+from make_predictions import MakePredictionsWidget
 @dataclass
 class Category:
     widget: Callable
     tool_tip: str = ""
 
-# Assuming preprocessing and segmentation are defined elsewhere
-# Placeholder for these functions for this example
-def preprocessing():
-    pass
-
-def segmentation():
-    pass
 
 CATEGORIES = {
     "Select Output Path": Category(
@@ -24,12 +19,12 @@ CATEGORIES = {
         tool_tip="Select an output directory",
     ),
     "Build MSA": Category(
-        widget=preprocessing,
+        widget=lambda: MSAOptionsWidget(),
         tool_tip="Select parameters to build MSA",
     ),
     "Make Predictions": Category(
-        widget=segmentation, 
-        tool_tip="Run ensemble prediction"
+        widget=lambda: MakePredictionsWidget(),
+        tool_tip="Select parameters to make predictions",
     ),
 }
 
@@ -57,6 +52,12 @@ class MainWidget(QWidget):
     def _on_item_clicked(self, item):
         name = item.text()
         widget = CATEGORIES[name].widget()
+        
+        # Clear any existing widgets before adding new one
+        while self.layout().count() > 2:
+            item = self.layout().takeAt(2)
+            item.widget().deleteLater()
+
         # Add the widget to the layout
         layout = self.layout()
         layout.addWidget(widget)
