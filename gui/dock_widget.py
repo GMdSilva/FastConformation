@@ -52,6 +52,8 @@ class MainWidget(QWidget):
     def _on_item_clicked(self, item):
         name = item.text()
         widget = CATEGORIES[name].widget()
+        font = widget.font()
+        font.setPointSize(10)
         
         # Clear any existing widgets before adding new one
         while self.layout().count() > 2:
@@ -61,13 +63,3 @@ class MainWidget(QWidget):
         # Add the widget to the layout
         layout = self.layout()
         layout.addWidget(widget)
-
-
-if __name__ == "__main__":
-    import sys
-    import os
-
-    app = QApplication(sys.argv)
-    main_window = MainWidget()
-    main_window.show()
-    sys.exit(app.exec_())

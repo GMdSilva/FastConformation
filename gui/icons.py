@@ -6,25 +6,29 @@ from qtpy.QtWidgets import QListWidget, QListWidgetItem
 
 ICON_ROOT = Path(__file__).parent / "icons"
 STYLES = r"""
-    QListWidget{
-        min-width: 294;
+    QListWidget {
+        min-width: 294px;
         background: none;
-        font-size: 8pt;
-        color: #eee;
+        font-size: 10pt;
+        color: #333333;
     }
     QListWidget::item {
-        width: 68;
-        height: 100;
-        border-radius: 0;
-        margin: 1;
-        padding: 4;
-        background: #414851;
+        width: 68px;
+        height: 100px;
+        border-radius: 4px;
+        margin: 1px;
+        padding: 4px;
+        background: #f5f5f5;
+        color: #333333;
     }
-    QListWidget::item::hover {
-        background: #5A626C;
+    QListWidget::item:hover {
+        background: #e7f3ff;
+    }
+    QListWidget::item:selected {
+        background: #007BFF;
+        color: white;
     }
 """
-
 
 def _get_icon(name):
     path = ICON_ROOT / f'{name.lower().replace(" ", "_")}.png'
@@ -40,7 +44,7 @@ class Icons(QListWidget):
         self.setViewMode(self.IconMode)  # make items icons
         self.setResizeMode(self.Adjust)  # re-layout when view is resized.
         self.setUniformItemSizes(True)  # better performance
-        self.setIconSize(QSize(64, 64))
+        self.setIconSize(QSize(100, 100))
         self.setWordWrap(True)
         self.setStyleSheet(STYLES)
 
