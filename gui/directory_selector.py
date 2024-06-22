@@ -1,6 +1,5 @@
 import os
 
-import napari
 from qtpy.QtWidgets import (
     QFileDialog,
     QLabel,
@@ -9,8 +8,6 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
-from .utils import read
 
 
 class DirectorySelector(QWidget):
