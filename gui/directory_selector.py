@@ -1,20 +1,9 @@
 import os
-
-from qtpy.QtWidgets import (
-    QFileDialog,
-    QLabel,
-    QListWidget,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
-
+from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QFileDialog, QListWidget, QPushButton
 
 class DirectorySelector(QWidget):
-    def __init__(self, viewer: napari.Viewer, *args, **kwargs):
-        super().__init__()
-
-        self.viewer = viewer
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.init_ui()
 
     def init_ui(self):
@@ -58,6 +47,8 @@ class DirectorySelector(QWidget):
         if selected_item:
             file_name = selected_item.text()
             file_path = os.path.join(self.selected_directory, file_name)
-            image_data = read(file_path)
-            layer_name = file_name
-            self.viewer.add_image(image_data, name=layer_name)
+            # Here, you need to define your own read function
+            # image_data = read(file_path)
+            # For this example, I'll just print the file path
+            print(f"Selected file: {file_path}")
+            # Add your logic to handle the file here
