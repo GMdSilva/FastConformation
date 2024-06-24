@@ -7,6 +7,10 @@ from qtpy.QtWidgets import (
     QApplication, QLabel, QVBoxLayout, QWidget, QPushButton,
     QLineEdit, QCheckBox, QFileDialog, QComboBox
 )
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'decaf_e_dev')))
+
 from jackhmmer_msa import build_jackhmmer_msa
 from mmseqs2_msa import run_mmseqs2_msa
 
