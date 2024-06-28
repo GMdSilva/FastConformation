@@ -2,7 +2,6 @@ import os
 import argparse
 import json
 import pickle
-
 from decaf_e_dev.msa_generation import get_msa_jackhmmer
 from decaf_e_dev.msa_generation.msa_utils import create_ram_disk, read_fasta, create_directory, save_dict_to_fasta
 
