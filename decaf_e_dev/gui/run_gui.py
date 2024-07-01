@@ -4,7 +4,7 @@ from typing import Callable
 from pathlib import Path
 from decaf_e_dev.gui.dock_widget import MainWidget
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QAction
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
@@ -16,15 +16,51 @@ class MainFrame(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        self.layout = QHBoxLayout(self.central_widget)
+        self.layout = QVBoxLayout(self.central_widget)
 
-        # Add an expanding placeholder widget to push the main_widget to the right
-        self.placeholder = QWidget()
-        self.placeholder.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.layout.addWidget(self.placeholder)
-
-        self.main_widget = MainWidget()
+        # Add the main widget
+        self.main_widget = MainWidget(self)
         self.layout.addWidget(self.main_widget)
+
+        # Add the toolbar
+        self.toolbar = QToolBar()
+        self.toolbar.setMovable(False)
+        self.toolbar.setStyleSheet("""
+            QToolBar {
+                background-color: #333333;
+                color: white;
+                padding: 10px;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 0 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QPushButton:pressed {
+                background-color: #777777;
+            }
+        """)
+
+        self.addToolBar(Qt.TopToolBarArea, self.toolbar)
+
+        self.home_button = QPushButton("Home Page")
+        self.submit_new_job_button = QPushButton("Submit New Job")
+        self.job_status_button = QPushButton("Job Status")
+
+        self.home_button.clicked.connect(self.show_home_page)
+        self.submit_new_job_button.clicked.connect(self.show_new_job_page)
+        self.job_status_button.clicked.connect(self.show_job_status_page)
+
+        self.toolbar.addWidget(self.home_button)
+        self.toolbar.addWidget(self.submit_new_job_button)
+        self.toolbar.addWidget(self.job_status_button)
+        self.toolbar.setVisible(False)  # Initially hidden
 
         self.setWindowTitle('DECAF_E')
         self.showFullScreen()
@@ -46,6 +82,7 @@ class MainFrame(QMainWindow):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                margin: 5px;
             }
             QPushButton:hover {
                 background-color: #0056b3;
@@ -74,6 +111,18 @@ class MainFrame(QMainWindow):
                 color: #333333;
             }
         """)
+
+    def show_home_page(self):
+        self.main_widget.create_welcome_page()
+        self.toolbar.setVisible(False)
+
+    def show_new_job_page(self):
+        self.main_widget.show_new_job_page()
+        self.toolbar.setVisible(True)
+
+    def show_job_status_page(self):
+        self.main_widget.show_job_status_page()
+        self.toolbar.setVisible(True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

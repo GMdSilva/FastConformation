@@ -1,3 +1,4 @@
+
 import warnings
 from dataclasses import dataclass
 from typing import Callable
@@ -6,8 +7,6 @@ from qtpy.QtWidgets import (
     QLabel, QVBoxLayout, QWidget, QApplication, QFileDialog, QListWidget, QPushButton, QHBoxLayout
 )
 from qtpy.QtGui import QPixmap
-
-# Assuming these imports are correct
 from decaf_e_dev.gui.directory_selector import DirectorySelector
 from decaf_e_dev.gui.icons import Icons
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
@@ -35,12 +34,13 @@ CATEGORIES = {
 }
 
 class MainWidget(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
 
         # Main layout
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignTop)
+        self.layout.setAlignment(Qt.AlignCenter)
 
         # Create the welcome page
         self.create_welcome_page()
@@ -69,20 +69,28 @@ class MainWidget(QWidget):
         self.layout.addWidget(image)
 
         # Add the buttons
-        button_layout = QHBoxLayout()
-        new_job_button = QPushButton("Submit New Job")
-        job_status_button = QPushButton("Job Status")
+        self.button_layout = QHBoxLayout()
+        self.new_job_button = QPushButton("Submit New Job")
+        self.job_status_button = QPushButton("Job Status")
 
-        new_job_button.clicked.connect(self.show_new_job_page)
-        job_status_button.clicked.connect(self.show_job_status_page)
+        self.new_job_button.clicked.connect(self.show_new_job_page)
+        self.job_status_button.clicked.connect(self.show_job_status_page)
 
-        button_layout.addWidget(new_job_button)
-        button_layout.addWidget(job_status_button)
-        self.layout.addLayout(button_layout)
+        self.button_layout.addWidget(self.new_job_button)
+        self.button_layout.addWidget(self.job_status_button)
+        self.layout.addLayout(self.button_layout)
 
     def show_new_job_page(self):
         # Clear the layout
         self.clear_layout(self.layout)
+
+        # Remove home page buttons
+        self.new_job_button.setVisible(False)
+        self.job_status_button.setVisible(False)
+
+        # Show top buttons
+        if self.parent:
+            self.parent.toolbar.setVisible(True)
 
         widget = QLabel("Select")
         font = widget.font()
@@ -97,8 +105,17 @@ class MainWidget(QWidget):
         self.layout.addWidget(icon_grid)
 
     def show_job_status_page(self):
-        # Placeholder for Job Status page
+        # Clear the layout
         self.clear_layout(self.layout)
+
+        # Remove home page buttons
+        self.new_job_button.setVisible(False)
+        self.job_status_button.setVisible(False)
+
+        # Show top buttons
+        if self.parent:
+            self.parent.toolbar.setVisible(True)
+
         label = QLabel("Job Status Page")
         label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(label)
@@ -121,10 +138,3 @@ class MainWidget(QWidget):
             widget = item.widget()
             if widget:
                 widget.deleteLater()
-
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    main_widget = MainWidget()
-    main_widget.show()
-    sys.exit(app.exec_())
