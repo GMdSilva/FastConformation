@@ -1,59 +1,30 @@
 import os
-import argparse
-
 import warnings
-warnings.filterwarnings("ignore")
-
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
 from decaf_e_dev.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
 
-## TODO: add sanity checks, rewrite help snipets
+warnings.filterwarnings("ignore")
 
-def main():
-    parser = argparse.ArgumentParser(description="Runs state detection analysis using RMSD vs. a single reference (1D)")
-
-    parser.add_argument('--config_file', type=str, help="Path to the configuration file")
-    parser.add_argument('--jobname', type=str, help="The job name")
-    parser.add_argument('--output_path', type=str, help="Path to save results to")
-    parser.add_argument('--seq_pairs', type=str, help="A list of [max_seq, extra_seq] pairs "
-                                                      "previously used to generate the predictions")
-    parser.add_argument('--predictions_path', type=str,
-                        help="Path to read PDB files of predictions, expects format: /jobname_maxseq_extraseq/ "
-                             "(if not provided, will search automatically based on other parameters)")
-    parser.add_argument('--engine', type=str, choices=['alphafold2', 'openfold'],
-                        help="The engine previously used to generate predictions (AlphaFold2 or OpenFold), "
-                             "used to find predictions if predictions_path is not supplied")
-    parser.add_argument('--starting_residue', type=int,
-                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
-    parser.add_argument('--align_range', type=str, help="The atom alignment range for RMSF calculations "
-                                                        "(MDAnalysis Syntax)")
-    parser.add_argument('--analysis_range', type=str, help="The atom range for RMSD calculations "
-                                                           "after alignment to --align_range")
-    parser.add_argument('--analysis_range_name', type=str, help="The name of the atom range "
-                                                                "(e.g. kinase core, helix 1, etc.)")
-    parser.add_argument('--ref1d', type=str, help="Path to the .pdb file defining the reference structure "
-                                                  "for RMSD calculations "
-                                                  "(if not provided, picks top ranked prediction)")
-
-    args = parser.parse_args()
+def run_rmsd_analysis(config_file=None, jobname=None, output_path=None, seq_pairs=None,
+                      predictions_path=None, engine=None, align_range=None,
+                      analysis_range=None, analysis_range_name=None,
+                      ref1d=None, starting_residue=None):
 
     # Load configuration from file if provided
-    config_file = args.config_file if args.config_file else 'config.json'
+    config_file = config_file if config_file else 'config.json'
     config = load_config(config_file)
 
-    # Override config with command line arguments if provided
-    jobname = args.jobname if args.jobname else config.get('jobname')
-    output_path = args.output_path if args.output_path else config.get('output_path')
-    seq_pairs = args.seq_pairs if args.seq_pairs else config.get('seq_pairs')
-    predictions_path = args.predictions_path if args.predictions_path else config.get('predictions_path')
-    engine = args.engines if args.engine else config.get('engine')
-    align_range = args.align_range if args.align_range else config.get('align_range')
-    analysis_range = args.analysis_range if args.analysis_range else config.get('analysis_range')
-    analysis_range_name = args.analysis_range_name if args.analysis_range_name else config.get('analysis_range_name')
-    ref1d = args.ref1d if args.ref1d else config.get('ref1d')
-    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
+    # Override config with function arguments if provided
+    jobname = jobname if jobname else config.get('jobname')
+    output_path = output_path if output_path else config.get('output_path')
+    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
+    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
+    engine = engine if engine else config.get('engine')
+    align_range = align_range if align_range else config.get('align_range')
+    analysis_range = analysis_range if analysis_range else config.get('analysis_range')
+    analysis_range_name = analysis_range_name if analysis_range_name else config.get('analysis_range_name')
+    ref1d = ref1d if ref1d else config.get('ref1d')
+    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -66,7 +37,7 @@ def main():
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {args.config_file is not None}")
+    print(f"Used Config File? {config_file is not None}")
     print(f"Output Path: {output_path}")
     print(f"max_seq:extra_seq Pairs: {seq_pairs}")
     print(f"Predictions Path: {predictions_path}")
@@ -82,22 +53,20 @@ def main():
         print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
-    input_dict = {'jobname': jobname,
-                  'output_path': output_path,
-                  'seq_pairs': seq_pairs,
-                  'analysis_range': analysis_range,
-                  'analysis_range_name': analysis_range_name,
-                  'align_range': align_range}
+    input_dict = {
+        'jobname': jobname,
+        'output_path': output_path,
+        'seq_pairs': seq_pairs,
+        'analysis_range': analysis_range,
+        'analysis_range_name': analysis_range_name,
+        'align_range': align_range
+    }
 
-    # load predictions to ram
+    # Load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
-    # run 1D RMSD analysis
+    # Run 1D RMSD analysis
     rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d)
 
-    # build and save results dataset
+    # Build and save results dataset
     build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)
-
-
-if __name__ == "__main__":
-    main()

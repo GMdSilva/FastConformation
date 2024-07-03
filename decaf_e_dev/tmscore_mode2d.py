@@ -1,57 +1,30 @@
 import os
-import argparse
-
 import warnings
-warnings.filterwarnings("ignore")
-
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
-from decaf_e_dev.ensemble_analysis.analysis_utils import auto_select_2d_references
+from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config, auto_select_2d_references
 from decaf_e_dev.ensemble_analysis.twotmscore import TwoTMScore
 
+warnings.filterwarnings("ignore")
 
-def main():
-    parser = argparse.ArgumentParser(description="Build jackhmmer MSA for a list of sequences.")
-
-    parser.add_argument('--config_file', type=str, default='config.json',
-                        help="OPTIONAL: Path to load configuration from file (default: config.json)")
-    parser.add_argument('--output_path', type=str,
-                        help="Path to read AF2 predictions and save results to (default: current directory)")
-    parser.add_argument('--predictions_path', type=str,
-                        help="Path to read AF2 predictions and save results to (default: current directory)")
-    parser.add_argument('--mode_results', type=str,
-                        help="Path to read AF2 predictions and save results to (default: current directory)")
-    parser.add_argument('--jobname', type=str, help="The job name")
-    parser.add_argument('--seq_pairs', type=str, help="The job name")
-    parser.add_argument('--starting_residue', type=int,
-                        help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
-    parser.add_argument('--slice_predictions', type=str, help="The job name")
-    parser.add_argument('--engine', type=str, help="The job name")
-    parser.add_argument('--ref2d1', type=str, help="The job name")
-    parser.add_argument('--ref2d2', type=str, help="The job name")
-    parser.add_argument('--n_stdevs', type=str, help="The job name")
-    parser.add_argument('--n_clusters', type=str, help="Number of standard deviations "
-                                                     "to consider when calculating close points to fit curve")
-    args = parser.parse_args()
+def run_2d_tmscore_analysis(config_file=None, output_path=None, predictions_path=None, mode_results=None, jobname=None, seq_pairs=None,
+                            starting_residue=None, slice_predictions=None, ref2d1=None, ref2d2=None, engine=None, n_stdevs=None, n_clusters=None):
 
     # Load configuration from file if provided
-    config_file = args.config_file if args.config_file else 'config.json'
+    config_file = config_file if config_file else 'config.json'
     config = load_config(config_file)
 
-    # Override config with command line arguments if provided
-    output_path = args.output_path if args.output_path else config.get('output_path')
-    predictions_path = args.predictions_path if args.predictions_path else config.get('predictions_path')
-    mode_results = args.mode_results if args.mode_results else config.get('mode_results')
-    seq_pairs = args.seq_pairs if args.seq_pairs else config.get('seq_pairs')
-    jobname = args.jobname if args.jobname else config.get('jobname')
-    ref2d1 = args.ref1 if args.ref2d1 else config.get('ref2d1')
-    ref2d2 = args.ref2 if args.ref2d2 else config.get('ref2d2')
-    starting_residue = args.starting_residue if args.starting_residue else config.get('starting_residue')
-    slice_predictions = args.slice_predictions if args.slice_predictions else config.get('slice_predictions')
-    engine = args.engines if args.engine else config.get('engine')
-    n_stdevs = args.n_stdevs if args.n_stdevs else config.get('n_stdevs')
-    n_clusters = args.n_clusters if args.n_clusters else config.get('n_clusters')
+    # Override config with function arguments if provided
+    output_path = output_path if output_path else config.get('output_path')
+    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
+    mode_results = mode_results if mode_results else config.get('mode_results')
+    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
+    jobname = jobname if jobname else config.get('jobname')
+    ref2d1 = ref2d1 if ref2d1 else config.get('ref2d1')
+    ref2d2 = ref2d2 if ref2d2 else config.get('ref2d2')
+    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
+    slice_predictions = slice_predictions if slice_predictions else config.get('slice_predictions')
+    engine = engine if engine else config.get('engine')
+    n_stdevs = n_stdevs if n_stdevs else config.get('n_stdevs')
+    n_clusters = n_clusters if n_clusters else config.get('n_clusters')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -69,7 +42,7 @@ def main():
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {args.config_file is not None}")
+    print(f"Used Config File? {config_file is not None}")
     print(f"Predictions Path: {predictions_path}")
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")
@@ -100,7 +73,3 @@ def main():
 
     # builds results dataset and saves to disk
     twod.get_2d_tmscore(mode_results, n_stdevs, n_clusters)
-
-
-if __name__ == "__main__":
-    main()

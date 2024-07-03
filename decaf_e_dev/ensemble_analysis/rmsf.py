@@ -1,16 +1,11 @@
 import pandas as pd
 import numpy as np
-
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 import matplotlib.cm
-
 from scipy.signal import find_peaks
-
 from MDAnalysis.analysis import rms, align
-
 from tqdm import tqdm
-
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
@@ -22,7 +17,6 @@ def calculate_rmsf_and_call_peaks(jobname,
                                   peak_width,
                                   prominence,
                                   threshold):
-
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running RMSF peak analysis for {result}')
@@ -72,6 +66,7 @@ def calculate_rmsf_and_call_peaks(jobname,
                                 f"rmsf_peaks.png")
 
             plt.savefig(full_output_path, dpi=300)
+            plt.show()
 
             detected_peaks = {}
             peak_counter = 0
@@ -102,7 +97,6 @@ def calculate_rmsf_multiple(jobname,
                             prediction_dicts,
                             align_range,
                             output_path):
-
     labels = []
     plt.figure(figsize=(8, 3))
     plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
@@ -140,14 +134,13 @@ def calculate_rmsf_multiple(jobname,
                         f"{jobname}_rmsf_all.png")
 
     plt.savefig(full_output_path, dpi=300)
-    plt.close()
+    plt.show()
 
 
 def plot_plddt_rmsf_corr(jobname,
                          prediction_dicts,
                          plddt_dict,
                          output_path):
-
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
@@ -193,9 +186,9 @@ def plot_plddt_rmsf_corr(jobname,
                                 f"plddt_rmsf_corr.png")
 
             plt.savefig(full_output_path, dpi=300)
+            plt.show()
             plt.close()
             pbar.update(n=1)
-
 
 
 def plot_plddt_line(jobname,
@@ -234,7 +227,7 @@ def plot_plddt_line(jobname,
                         f"all_plddt.png")
 
     plt.savefig(full_output_path, dpi=300)
-    plt.close()
+    plt.show()
 
 
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):
