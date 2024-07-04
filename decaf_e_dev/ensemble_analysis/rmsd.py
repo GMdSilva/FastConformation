@@ -96,8 +96,8 @@ def rmsd_kde(rmsd_data: list, input_dict: dict) -> dict:
     for mode in most_distant_modes:
         plt.axvline(mode, color='blue', linestyle='--', label='Most Distant Mode')
 
-    plt.title(f'{jobname} max_seq: {max_seq} extra_seq: {extra_seq}', fontsize=16)
-    plt.suptitle(f'{rmsd_range} after alignment to {align_range}', fontsize=10)
+    plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+    #plt.suptitle(f'{rmsd_range} after alignment to {align_range}', fontsize=10)
     plt.xlabel('RMSD ($\AA$)', fontsize=14)
     plt.ylabel('Density', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks

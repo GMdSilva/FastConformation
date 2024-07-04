@@ -47,7 +47,8 @@ def calculate_rmsf_and_call_peaks(jobname,
             peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
             plt.figure(figsize=(8, 3))
-            plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
+            plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+            #plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
             plt.xlabel('Residue Number', fontsize=14)
             plt.ylabel('RMSF ($\AA$)', fontsize=14)
             plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
@@ -105,7 +106,8 @@ def calculate_rmsf_multiple(jobname,
 
     labels = []
     plt.figure(figsize=(8, 3))
-    plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
+    plt.title(f'{jobname}', fontsize=16)
+    #plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
     plt.xlabel('Residue number', fontsize=14)
     plt.ylabel('RMSF ($\AA$)', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
