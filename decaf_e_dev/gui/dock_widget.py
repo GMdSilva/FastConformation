@@ -1,10 +1,8 @@
-
-import warnings
 from dataclasses import dataclass
 from typing import Callable
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
-    QLabel, QVBoxLayout, QWidget, QApplication, QFileDialog, QListWidget, QPushButton, QHBoxLayout
+    QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout
 )
 from qtpy.QtGui import QPixmap
 from decaf_e_dev.gui.directory_selector import DirectorySelector
@@ -45,6 +43,8 @@ class MainWidget(QWidget):
         # Create the welcome page
         self.create_welcome_page()
 
+        self.dock_widgets={}
+        
         # Set the main layout
         self.setLayout(self.layout)
         self.setWindowTitle("decaf_dev")
@@ -75,66 +75,78 @@ class MainWidget(QWidget):
 
         self.new_job_button.clicked.connect(self.show_new_job_page)
         self.job_status_button.clicked.connect(self.show_job_status_page)
-
+        self.new_job_dock=None
         self.button_layout.addWidget(self.new_job_button)
         self.button_layout.addWidget(self.job_status_button)
         self.layout.addLayout(self.button_layout)
 
-    def show_new_job_page(self):
-        # Clear the layout
+    def create_dock_widget(self):
+        if self.new_job_dock:
+            self.clear_dock_widget()
         self.clear_layout(self.layout)
-
-        # Remove home page buttons
-        self.new_job_button.setVisible(False)
-        self.job_status_button.setVisible(False)
-
-        # Show top buttons
+        self.clear_layout(self.button_layout)
+        self.new_job_dock = QDockWidget("Select options", self)
+        self.new_job_dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.new_job_dock.setWidget(self.create_new_job_widget())
+        self.new_job_dock.setVisible(True)
         if self.parent:
-            self.parent.toolbar.setVisible(True)
-
-        widget = QLabel("Select")
+            self.parent.addDockWidget(Qt.RightDockWidgetArea, self.new_job_dock)
+    
+    def create_new_job_widget(self):
+        new_job_widget = QWidget()
+        layout = QVBoxLayout(new_job_widget)
+        
+        widget = QLabel("Select Analysis Category")
         font = widget.font()
-        font.setPointSize(10)
+        font.setPointSize(14)
         widget.setFont(font)
         widget.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.layout.addWidget(widget)
+        layout.addWidget(widget)
 
-        icon_grid = Icons(self)
-        icon_grid.addItems(CATEGORIES)
-        icon_grid.itemClicked.connect(self._on_item_clicked)
-        self.layout.addWidget(icon_grid)
-
-    def show_job_status_page(self):
-        # Clear the layout
-        self.clear_layout(self.layout)
-
-        # Remove home page buttons
-        self.new_job_button.setVisible(False)
-        self.job_status_button.setVisible(False)
-
-        # Show top buttons
-        if self.parent:
-            self.parent.toolbar.setVisible(True)
-
-        label = QLabel("Job Status Page")
-        label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(label)
-
+        self.icon_grid = Icons(self)
+        self.icon_grid.addItems(CATEGORIES)
+        self.icon_grid.itemClicked.connect(self._on_item_clicked)
+        layout.addWidget(self.icon_grid)
+        return new_job_widget
+    
     def _on_item_clicked(self, item):
         name = item.text()
         widget = CATEGORIES[name].widget()
-        font = widget.font()
-        font.setPointSize(10)
 
-        # Clear any existing widgets before adding a new one
-        self.clear_layout(self.layout, start_index=2)
+        self.new_job_dock.widget().layout().addWidget(widget)
 
-        # Add the widget to the layout
-        self.layout.addWidget(widget)
+    def clear_dock_widget(self):
+        dock_widget = self.new_job_dock.widget()
+        layout = dock_widget.layout()
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+    
+    def show_new_job_page(self):
+        if self.parent:
+            self.parent.toolbar.setVisible(True)
+        self.create_dock_widget()
 
+    def show_job_status_page(self):
+        self.central_widget.show_job_status_page()
+        self.toolbar.setVisible(True)
+        self.hide_all_dock_widgets()
+    
+    def _on_item_clicked(self, item):
+        name = item.text()
+        widget_class = CATEGORIES[name].widget
+        self.parent.show_dock_widget(name, widget_class)
+        self.icon_grid.clearSelection()
+        
     def clear_layout(self, layout, start_index=0):
         while layout.count() > start_index:
             item = layout.takeAt(start_index)
             widget = item.widget()
             if widget:
                 widget.deleteLater()
+    
+    def adjust_dock_size(self):
+        for dock_widget in self.dock_widgets.values():
+            dock_widget.adjustSize()

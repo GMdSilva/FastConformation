@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 from pathlib import Path
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QCheckBox, QHBoxLayout, QSizePolicy
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
@@ -16,33 +16,47 @@ from decaf_e_dev.save_traj import run_trajectory_saving
 from decaf_e_dev.tmscore_mode1d import run_tmscore_analysis
 from decaf_e_dev.tmscore_mode2d import run_2d_tmscore_analysis
 
+
 class AnalysisConfigWidget(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignTop)
-
-        general_analysis_widget = GeneralAnalysisWidget()
-        layout.addWidget(general_analysis_widget)
-
+        main_layout = QVBoxLayout()
+        
+        # Top part for general analysis options and icon grid
+        top_layout = QHBoxLayout()
+        
+        # General analysis options
+        self.general_analysis_widget = GeneralAnalysisWidget()
+        top_layout.addWidget(self.general_analysis_widget)
+        
+        # Icon grid
         self.icon_grid = Icons(self)
         self.icon_grid.addItems(ANALYSIS_CATEGORIES)
         self.icon_grid.itemClicked.connect(self._on_item_clicked)
-        layout.addWidget(self.icon_grid)
-
-        self.setLayout(layout)
+        top_layout.addWidget(self.icon_grid)
+        
+        main_layout.addLayout(top_layout)
+        
+        # Stacked widget for analysis configuration panels
+        self.analysis_stack = QStackedWidget()
+        main_layout.addWidget(self.analysis_stack)
+        
+        # Plot display area
+        self.plot_area = QLabel("Plot Area")
+        self.plot_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.plot_area.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(self.plot_area)
+        
+        self.setLayout(main_layout)
         self.setWindowTitle("Analysis Configurations")
 
     def _on_item_clicked(self, item):
         name = item.text()
-        widget = ANALYSIS_CATEGORIES[name].widget()
-
-        # Clear any existing widgets before adding new one
-        while self.layout().count() > 3:
-            item = self.layout().takeAt(3)
-            item.widget().deleteLater()
-
-        self.layout().addWidget(widget)
+        getter = self.general_analysis_widget.get_general_options
+        widget = ANALYSIS_CATEGORIES[name].widget(getter)
+        
+        self.analysis_stack.addWidget(widget)
+        self.analysis_stack.setCurrentWidget(widget)
 @dataclass
 class AnalysisCategory:
     widget: Callable
@@ -75,7 +89,10 @@ ANALYSIS_CATEGORIES = {
     ),
 }
 
-from qtpy.QtWidgets import QPushButton, QTextEdit, QLineEdit, QCheckBox, QFormLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit, QPushButton, QFileDialog, QListWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
+from dataclasses import dataclass
+from typing import Callable
 
 class GeneralAnalysisWidget(QWidget):
     def __init__(self):
@@ -84,8 +101,10 @@ class GeneralAnalysisWidget(QWidget):
         
         self.jobname_input = QLineEdit()
         self.output_path_input = QLineEdit()
+        self.output_path_button = QPushButton("Browse")
         self.seq_pairs_input = QLineEdit()
         self.predictions_path_input = QLineEdit()
+        self.predictions_path_button = QPushButton("Browse")
         self.engine_input = QLineEdit()
         self.align_range_input = QLineEdit("backbone")
         self.analysis_range_input = QLineEdit()
@@ -94,9 +113,19 @@ class GeneralAnalysisWidget(QWidget):
         self.starting_residue_input = QLineEdit("200")
         
         layout.addRow("Job Name:", self.jobname_input)
-        layout.addRow("Output Path:", self.output_path_input)
+        
+        output_path_layout = QHBoxLayout()
+        output_path_layout.addWidget(self.output_path_input)
+        output_path_layout.addWidget(self.output_path_button)
+        layout.addRow("Output Path:", output_path_layout)
+        
         layout.addRow("Sequence Pairs:", self.seq_pairs_input)
-        layout.addRow("Predictions Path:", self.predictions_path_input)
+        
+        predictions_path_layout = QHBoxLayout()
+        predictions_path_layout.addWidget(self.predictions_path_input)
+        predictions_path_layout.addWidget(self.predictions_path_button)
+        layout.addRow("Predictions Path:", predictions_path_layout)
+        
         layout.addRow("Engine:", self.engine_input)
         layout.addRow("Align Range:", self.align_range_input)
         layout.addRow("Analysis Range:", self.analysis_range_input)
@@ -104,8 +133,21 @@ class GeneralAnalysisWidget(QWidget):
         layout.addRow("Ref1D:", self.ref1d_input)
         layout.addRow("Starting Residue:", self.starting_residue_input)
 
+        self.output_path_button.clicked.connect(self.select_output_path)
+        self.predictions_path_button.clicked.connect(self.select_predictions_path)
+
         self.setLayout(layout)
     
+    def select_output_path(self):
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if directory:
+            self.output_path_input.setText(directory)
+
+    def select_predictions_path(self):
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if directory:
+            self.predictions_path_input.setText(directory)
+
     def get_general_options(self):
         return {
             "jobname": self.jobname_input.text(),
@@ -119,6 +161,7 @@ class GeneralAnalysisWidget(QWidget):
             "ref1d": self.ref1d_input.text(),
             "starting_residue": self.starting_residue_input.text(),
         }
+
 class RMSFAnalysisWidget(QWidget):
     def __init__(self, general_options_getter):
         super().__init__()
@@ -148,12 +191,12 @@ class RMSFAnalysisWidget(QWidget):
     def run_analysis(self):
         general_options = self.general_options_getter()
 
-        # Get specific options for RMSF analysis
         detect_mobile = self.detect_mobile_checkbox.isChecked()
         peak_width = int(self.peak_width_input.text())
         peak_prominence = int(self.peak_prominence_input.text())
         peak_height = int(self.peak_height_input.text())
-
+        
+        self.plot_window = PlotWindow()
         # Run the analysis using the general and specific options
         run_rmsf_analysis(
             config_file=None,

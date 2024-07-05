@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QListWidget, QListWidgetItem
@@ -14,10 +13,10 @@ STYLES = r"""
     }
     QListWidget::item {
         width: 80px;
-        height: 110px;
+        height: 90px;
         border-radius: 4px;
-        margin: 10px;
-        padding: 10px;
+        margin: 5px;
+        padding: 5px;
         background: #f5f5f5;
         color: #333333;
     }
@@ -36,7 +35,6 @@ def _get_icon(name):
         return ""
     return str(path)
 
-
 class Icons(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -44,7 +42,7 @@ class Icons(QListWidget):
         self.setViewMode(self.IconMode)  # make items icons
         self.setResizeMode(self.Adjust)  # re-layout when view is resized.
         self.setUniformItemSizes(True)  # better performance
-        self.setIconSize(QSize(100, 100))
+        self.setIconSize(QSize(80, 80))
         self.setWordWrap(True)
         self.setStyleSheet(STYLES)
 

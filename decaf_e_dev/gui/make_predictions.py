@@ -103,10 +103,13 @@ class MakePredictionsWidget(QWidget):
         self.seq_pairs_layout.addLayout(seq_pair_layout)
 
     def remove_seq_pair(self, layout):
+        # Properly remove and delete the layout and its widgets
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+        self.seq_pairs_layout.removeItem(layout)
+        layout.deleteLater()
 
     def run_prediction(self):
         config = {

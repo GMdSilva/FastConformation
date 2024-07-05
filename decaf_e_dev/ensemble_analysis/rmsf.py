@@ -66,7 +66,6 @@ def calculate_rmsf_and_call_peaks(jobname,
                                 f"rmsf_peaks.png")
 
             plt.savefig(full_output_path, dpi=300)
-            plt.show()
 
             detected_peaks = {}
             peak_counter = 0
@@ -134,7 +133,7 @@ def calculate_rmsf_multiple(jobname,
                         f"{jobname}_rmsf_all.png")
 
     plt.savefig(full_output_path, dpi=300)
-    plt.show()
+
 
 
 def plot_plddt_rmsf_corr(jobname,
@@ -186,7 +185,6 @@ def plot_plddt_rmsf_corr(jobname,
                                 f"plddt_rmsf_corr.png")
 
             plt.savefig(full_output_path, dpi=300)
-            plt.show()
             plt.close()
             pbar.update(n=1)
 
@@ -227,7 +225,6 @@ def plot_plddt_line(jobname,
                         f"all_plddt.png")
 
     plt.savefig(full_output_path, dpi=300)
-    plt.show()
 
 
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):

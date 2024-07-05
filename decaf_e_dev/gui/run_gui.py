@@ -1,13 +1,18 @@
 import sys
 from dataclasses import dataclass
 from typing import Callable
+import sys
+sys.path.append('/Users/fmgaleazzi/decaf_e_dev')
 from pathlib import Path
 from decaf_e_dev.gui.dock_widget import MainWidget
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QAction
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
 )
+from decaf_e_dev.gui.icons import Icons
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
+
+from decaf_e_dev.gui.dock_widget import CATEGORIES
 
 class MainFrame(QMainWindow):
     def __init__(self):
@@ -21,10 +26,10 @@ class MainFrame(QMainWindow):
         # Add the main widget
         self.main_widget = MainWidget(self)
         self.layout.addWidget(self.main_widget)
-
         # Add the toolbar
         self.toolbar = QToolBar()
         self.toolbar.setMovable(False)
+        self.dock_widgets={}
         self.toolbar.setStyleSheet("""
             QToolBar {
                 background-color: #333333;
@@ -60,7 +65,7 @@ class MainFrame(QMainWindow):
         self.toolbar.addWidget(self.home_button)
         self.toolbar.addWidget(self.submit_new_job_button)
         self.toolbar.addWidget(self.job_status_button)
-        self.toolbar.setVisible(False)  # Initially hidden
+        self.toolbar.setVisible(False)
 
         self.setWindowTitle('DECAF_E')
         self.showFullScreen()
@@ -117,12 +122,31 @@ class MainFrame(QMainWindow):
         self.toolbar.setVisible(False)
 
     def show_new_job_page(self):
-        self.main_widget.show_new_job_page()
         self.toolbar.setVisible(True)
+        self.main_widget.create_dock_widget()
 
     def show_job_status_page(self):
         self.main_widget.show_job_status_page()
         self.toolbar.setVisible(True)
+    
+    def show_dock_widget(self, title, widget_callable):
+        if title in self.dock_widgets:
+            dock_widget = self.dock_widgets[title]
+            dock_widget.setVisible(True)
+            dock_widget.raise_()
+        else:
+            dock_widget = QDockWidget(title, self)
+            dock_widget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+            dock_widget.setWidget(widget_callable())
+            self.addDockWidget(Qt.RightDockWidgetArea, dock_widget)
+            self.dock_widgets[title] = dock_widget
+
+        for dock_key, dock_value in self.dock_widgets.items():
+            if dock_key != title:
+                dock_value.setVisible(False)
+    def hide_all_dock_widgets(self):
+        for dock_widget in self.dock_widgets.values():
+            dock_widget.setVisible(False)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
