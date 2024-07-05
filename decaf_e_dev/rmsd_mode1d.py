@@ -5,26 +5,18 @@ from decaf_e_dev.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset
 
 warnings.filterwarnings("ignore")
 
-def run_rmsd_analysis(config_file=None, jobname=None, output_path=None, seq_pairs=None,
-                      predictions_path=None, engine=None, align_range=None,
-                      analysis_range=None, analysis_range_name=None,
-                      ref1d=None, starting_residue=None):
+def run_rmsd_analysis(config):
 
-    # Load configuration from file if provided
-    config_file = config_file if config_file else 'config.json'
-    config = load_config(config_file)
-
-    # Override config with function arguments if provided
-    jobname = jobname if jobname else config.get('jobname')
-    output_path = output_path if output_path else config.get('output_path')
-    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
-    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
-    engine = engine if engine else config.get('engine')
-    align_range = align_range if align_range else config.get('align_range')
-    analysis_range = analysis_range if analysis_range else config.get('analysis_range')
-    analysis_range_name = analysis_range_name if analysis_range_name else config.get('analysis_range_name')
-    ref1d = ref1d if ref1d else config.get('ref1d')
-    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
+    jobname = config.get('jobname')
+    output_path = config.get('output_path')
+    seq_pairs = config.get('seq_pairs')
+    predictions_path = config.get('predictions_path')
+    engine = config.get('engine')
+    align_range = config.get('align_range')
+    analysis_range = config.get('analysis_range')
+    analysis_range_name = config.get('analysis_range_name')
+    ref1d = config.get('ref1d')
+    starting_residue = config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -37,7 +29,6 @@ def run_rmsd_analysis(config_file=None, jobname=None, output_path=None, seq_pair
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {config_file is not None}")
     print(f"Output Path: {output_path}")
     print(f"max_seq:extra_seq Pairs: {seq_pairs}")
     print(f"Predictions Path: {predictions_path}")

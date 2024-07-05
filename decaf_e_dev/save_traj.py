@@ -5,25 +5,18 @@ from decaf_e_dev.ensemble_analysis.traj import save_trajs
 
 warnings.filterwarnings("ignore")
 
-def run_trajectory_saving(config_file=None, output_path=None, predictions_path=None, jobname=None, seq_pairs=None,
-                          starting_residue=None, analysis_range=None, analysis_range_name=None, reorder=None, 
-                          traj_format=None, engine=None):
+def run_trajectory_saving(config):
 
-    # Load configuration from file if provided
-    config_file = config_file if config_file else 'config.json'
-    config = load_config(config_file)
-
-    # Override config with function arguments if provided
-    output_path = output_path if output_path else config.get('output_path')
-    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
-    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
-    jobname = jobname if jobname else config.get('jobname')
-    analysis_range = analysis_range if analysis_range else config.get('analysis_range')
-    analysis_range_name = analysis_range_name if analysis_range_name else config.get('analysis_range_name')
-    reorder = reorder if reorder else config.get('reorder')
-    traj_format = traj_format if traj_format else config.get('traj_format')
-    engine = engine if engine else config.get('engine')
-    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
+    output_path = config.get('output_path')
+    predictions_path = config.get('predictions_path')
+    seq_pairs = config.get('seq_pairs')
+    jobname = config.get('jobname')
+    analysis_range = config.get('analysis_range')
+    analysis_range_name = config.get('analysis_range_name')
+    reorder = config.get('reorder')
+    traj_format = config.get('traj_format')
+    engine = config.get('engine')
+    starting_residue = config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -35,7 +28,6 @@ def run_trajectory_saving(config_file=None, output_path=None, predictions_path=N
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {config_file is not None}")
     print(f"Predictions Path: {predictions_path}")
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")

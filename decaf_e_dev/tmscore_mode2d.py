@@ -5,26 +5,20 @@ from decaf_e_dev.ensemble_analysis.twotmscore import TwoTMScore
 
 warnings.filterwarnings("ignore")
 
-def run_2d_tmscore_analysis(config_file=None, output_path=None, predictions_path=None, mode_results=None, jobname=None, seq_pairs=None,
-                            starting_residue=None, slice_predictions=None, ref2d1=None, ref2d2=None, engine=None, n_stdevs=None, n_clusters=None):
+def run_2d_tmscore_analysis(config):
 
-    # Load configuration from file if provided
-    config_file = config_file if config_file else 'config.json'
-    config = load_config(config_file)
-
-    # Override config with function arguments if provided
-    output_path = output_path if output_path else config.get('output_path')
-    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
-    mode_results = mode_results if mode_results else config.get('mode_results')
-    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
-    jobname = jobname if jobname else config.get('jobname')
-    ref2d1 = ref2d1 if ref2d1 else config.get('ref2d1')
-    ref2d2 = ref2d2 if ref2d2 else config.get('ref2d2')
-    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
-    slice_predictions = slice_predictions if slice_predictions else config.get('slice_predictions')
-    engine = engine if engine else config.get('engine')
-    n_stdevs = n_stdevs if n_stdevs else config.get('n_stdevs')
-    n_clusters = n_clusters if n_clusters else config.get('n_clusters')
+    output_path = config.get('output_path')
+    predictions_path = config.get('predictions_path')
+    mode_results = config.get('mode_results')
+    seq_pairs = config.get('seq_pairs')
+    jobname = config.get('jobname')
+    ref2d1 = config.get('ref2d1')
+    ref2d2 = config.get('ref2d2')
+    starting_residue = config.get('starting_residue')
+    slice_predictions = config.get('slice_predictions')
+    engine = config.get('engine')
+    n_stdevs = config.get('n_stdevs')
+    n_clusters = config.get('n_clusters')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -42,7 +36,6 @@ def run_2d_tmscore_analysis(config_file=None, output_path=None, predictions_path
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {config_file is not None}")
     print(f"Predictions Path: {predictions_path}")
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")

@@ -9,27 +9,19 @@ from decaf_e_dev.ensemble_analysis.rmsf import (
 
 warnings.filterwarnings("ignore")
 
-def run_rmsf_analysis(config_file=None, jobname=None, output_path=None, seq_pairs=None,
-                      predictions_path=None, engine=None, align_range=None,
-                      detect_mobile=None, peak_width=None, peak_prominence=None,
-                      peak_height=None, starting_residue=None):
+def run_rmsf_analysis(config):
 
-    # Load configuration from file if provided
-    config_file = config_file if config_file else 'config.json'
-    config = load_config(config_file)
-
-    # Override config with function arguments if provided
-    jobname = jobname if jobname else config.get('jobname')
-    output_path = output_path if output_path else config.get('output_path')
-    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
-    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
-    engine = engine if engine else config.get('engine')
-    align_range = align_range if align_range else config.get('align_range')
-    detect_mobile = detect_mobile if detect_mobile else config.get('detect_mobile')
-    peak_width = peak_width if peak_width else config.get('peak_width')
-    peak_prominence = peak_prominence if peak_prominence else config.get('peak_prominence')
-    peak_height = peak_height if peak_height else config.get('peak_height')
-    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
+    jobname = config.get('jobname')
+    output_path = config.get('output_path')
+    seq_pairs = config.get('seq_pairs')
+    predictions_path = config.get('predictions_path')
+    engine = config.get('engine')
+    align_range = config.get('align_range')
+    detect_mobile = config.get('detect_mobile')
+    peak_width = config.get('peak_width')
+    peak_prominence = config.get('peak_prominence')
+    peak_height = config.get('peak_height')
+    starting_residue = config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -44,7 +36,6 @@ def run_rmsf_analysis(config_file=None, jobname=None, output_path=None, seq_pair
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {config_file is not None}")
     print(f"Job Name: {jobname}")
     print(f"Output Path: {output_path}")
     print(f"max_seq:extra_seq Pairs: {seq_pairs}")

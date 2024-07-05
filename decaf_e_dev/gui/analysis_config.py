@@ -15,7 +15,7 @@ from decaf_e_dev.pca_clustering import run_pca_analysis
 from decaf_e_dev.save_traj import run_trajectory_saving
 from decaf_e_dev.tmscore_mode1d import run_tmscore_analysis
 from decaf_e_dev.tmscore_mode2d import run_2d_tmscore_analysis
-
+from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
 
 class AnalysisConfigWidget(QWidget):
     def __init__(self):
@@ -40,6 +40,12 @@ class AnalysisConfigWidget(QWidget):
         # Stacked widget for analysis configuration panels
         self.analysis_stack = QStackedWidget()
         main_layout.addWidget(self.analysis_stack)
+        
+        # Plot display area
+        self.plot_area = QLabel("Plot Area")
+        self.plot_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.plot_area.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(self.plot_area)
         
         self.setLayout(main_layout)
         self.setWindowTitle("Analysis Configurations")
@@ -99,13 +105,17 @@ class GeneralAnalysisWidget(QWidget):
         self.seq_pairs_input = QLineEdit()
         self.predictions_path_input = QLineEdit()
         self.predictions_path_button = QPushButton("Browse")
-        self.engine_input = QLineEdit()
+        self.engine_input = QLineEdit("alphafold2")
         self.align_range_input = QLineEdit("backbone")
-        self.analysis_range_input = QLineEdit()
-        self.analysis_range_name_input = QLineEdit()
-        self.ref1d_input = QLineEdit()
+        self.analysis_range_input = QLineEdit("backbone and resid 358-365")
+        self.analysis_range_name_input = QLineEdit("aloop")
+        self.ref1d_input = QLineEdit("null")
         self.starting_residue_input = QLineEdit("200")
-        
+        # Seq Pairs
+        self.seq_pairs_layout = QVBoxLayout()
+        self.add_seq_pair_button = QPushButton("Add Sequence Pair")
+        self.add_seq_pair_button.clicked.connect(self.add_seq_pair)
+
         layout.addRow("Job Name:", self.jobname_input)
         
         output_path_layout = QHBoxLayout()
@@ -113,7 +123,8 @@ class GeneralAnalysisWidget(QWidget):
         output_path_layout.addWidget(self.output_path_button)
         layout.addRow("Output Path:", output_path_layout)
         
-        layout.addRow("Sequence Pairs:", self.seq_pairs_input)
+        self.seq_pairs_layout.addWidget(self.add_seq_pair_button)
+        layout.addRow("Sequence Pairs:", self.seq_pairs_layout)
         
         predictions_path_layout = QHBoxLayout()
         predictions_path_layout.addWidget(self.predictions_path_input)
@@ -131,6 +142,7 @@ class GeneralAnalysisWidget(QWidget):
         self.predictions_path_button.clicked.connect(self.select_predictions_path)
 
         self.setLayout(layout)
+        
     
     def select_output_path(self):
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
@@ -156,11 +168,36 @@ class GeneralAnalysisWidget(QWidget):
             "starting_residue": self.starting_residue_input.text(),
         }
 
-class RMSFAnalysisWidget(QWidget):
+    def add_seq_pair(self):
+        seq_pair_layout = QHBoxLayout()
+
+        seq1_input = QLineEdit()
+        seq1_input.setPlaceholderText("Sequence 1")
+        seq2_input = QLineEdit()
+        seq2_input.setPlaceholderText("Sequence 2")
+
+        remove_button = QPushButton("Remove")
+        remove_button.clicked.connect(lambda: self.remove_seq_pair(seq_pair_layout))
+
+        seq_pair_layout.addWidget(seq1_input)
+        seq_pair_layout.addWidget(seq2_input)
+        seq_pair_layout.addWidget(remove_button)
+
+        self.seq_pairs_layout.addLayout(seq_pair_layout)
+
+    def remove_seq_pair(self, layout):
+        # Properly remove and delete the layout and its widgets
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        self.seq_pairs_layout.removeItem(layout)
+        layout.deleteLater()
+
+class RMSFAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
-        
         layout = QFormLayout()
         
         self.detect_mobile_checkbox = QCheckBox()
@@ -182,31 +219,30 @@ class RMSFAnalysisWidget(QWidget):
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options = self.general_options_getter()
+    def validate_inputs(self):
+        errors = []
+        if not self.peak_width_input.text().isdigit():
+            errors.append("Peak Width must be a number.")
+        if not self.peak_prominence_input.text().isdigit():
+            errors.append("Peak Prominence must be a number.")
+        if not self.peak_height_input.text().isdigit():
+            errors.append("Peak Height must be a number.")
+        if not self.starting_residue_input.text().isdigit():
+            errors.append("Starting Residue must be a number.")
+        return errors
 
-        detect_mobile = self.detect_mobile_checkbox.isChecked()
-        peak_width = int(self.peak_width_input.text())
-        peak_prominence = int(self.peak_prominence_input.text())
-        peak_height = int(self.peak_height_input.text())
-        
-        # Run the analysis using the general and specific options
-        run_rmsf_analysis(
-            config_file=None,
-            jobname=general_options["jobname"],
-            output_path=general_options["output_path"],
-            seq_pairs=general_options["seq_pairs"],
-            predictions_path=general_options["predictions_path"],
-            engine=general_options["engine"],
-            align_range=general_options["align_range"],
-            detect_mobile=detect_mobile,
-            peak_width=peak_width,
-            peak_prominence=peak_prominence,
-            peak_height=peak_height,
-            starting_residue=general_options["starting_residue"]
-        )
+    def get_specific_options(self):
+        return {
+            "detect_mobile": self.detect_mobile_checkbox.isChecked(),
+            "peak_width": int(self.peak_width_input.text()),
+            "peak_prominence": int(self.peak_prominence_input.text()),
+            "peak_height": int(self.peak_height_input.text()),
+            "starting_residue": int(self.starting_residue_input.text())
+        }
 
-class RMSDAnalysisWidget(QWidget):
+    def run_specific_analysis(self, config):
+        run_rmsf_analysis(config)
+class RMSDAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
@@ -222,31 +258,73 @@ class RMSDAnalysisWidget(QWidget):
         self.run_button.clicked.connect(self.run_analysis)
         layout.addWidget(self.run_button)
         
+        self.setLayout(layout)
+
+    def validate_inputs(self):
+        errors = []
+        if not self.analysis_range_input.text():
+            errors.append("Analysis Range cannot be empty.")
+        if not self.analysis_range_name_input.text():
+            errors.append("Analysis Range Name cannot be empty.")
+        return errors
+
+    def get_specific_options(self):
+        return {
+            "analysis_range": self.analysis_range_input.text(),
+            "analysis_range_name": self.analysis_range_name_input.text()
+        }
+
+    def run_specific_analysis(self, config):
+        run_rmsd_analysis(config)
+class RMSD2DWidget(AnalysisWidgetBase):
+    def __init__(self, general_options_getter):
+        super().__init__()
+        self.general_options_getter = general_options_getter
+        layout = QFormLayout()
+        
+        self.mode_results_input = QLineEdit("null")
+        self.ref2d1_input = QLineEdit("null")
+        self.ref2d2_input = QLineEdit("null")
+        self.n_stdevs_input = QLineEdit("5")
+        self.n_clusters_input = QLineEdit("null")
+
+        layout.addRow("Mode Results:", self.mode_results_input)
+        layout.addRow("Reference Structure 1 (Ref2D1):", self.ref2d1_input)
+        layout.addRow("Reference Structure 2 (Ref2D2):", self.ref2d2_input)
+        layout.addRow("Number of Standard Deviations (n_stdevs):", self.n_stdevs_input)
+        layout.addRow("Number of Clusters (n_clusters):", self.n_clusters_input)
+        
+        self.run_button = QPushButton("Run")
+        self.run_button.clicked.connect(self.run_analysis)
+        layout.addWidget(self.run_button)
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options=self.general_options_getter()
-        
-        # Get specific options for RMSD analysis
-        ref1d = self.ref1d_input.text()
-        analysis_range = self.analysis_range_input.text()
-        analysis_range_name = self.analysis_range_name_input.text()
+    def validate_inputs(self):
+        errors = []
+        if not self.mode_results_input.text():
+            errors.append("Mode Results cannot be empty.")
+        if not self.ref2d1_input.text():
+            errors.append("Reference Structure 1 (Ref2D1) cannot be empty.")
+        if not self.ref2d2_input.text():
+            errors.append("Reference Structure 2 (Ref2D2) cannot be empty.")
+        if not self.n_stdevs_input.text().isdigit():
+            errors.append("Number of Standard Deviations (n_stdevs) must be a number.")
+        if not self.n_clusters_input.text().isdigit():
+            errors.append("Number of Clusters (n_clusters) must be a number.")
+        return errors
 
-        # Run the analysis using the general and specific options
-        run_rmsd_analysis(
-            config_file=None,
-            jobname=general_options["jobname"],
-            output_path=general_options["output_path"],
-            seq_pairs=general_options["seq_pairs"],
-            predictions_path=general_options["predictions_path"],
-            engine=general_options["engine"],
-            align_range=general_options["align_range"],
-            analysis_range=analysis_range,
-            analysis_range_name=analysis_range_name,
-            ref1d=ref1d,
-            starting_residue=general_options["starting_residue"]
-        )
+    def get_specific_options(self):
+        return {
+            "mode_results": self.mode_results_input.text(),
+            "ref2d1": self.ref2d1_input.text(),
+            "ref2d2": self.ref2d2_input.text(),
+            "n_stdevs": self.n_stdevs_input.text(),
+            "n_clusters": self.n_clusters_input.text()
+        }
+
+    def run_specific_analysis(self, config):
+        run_2d_tmscore_analysis(config)
 
 class RMSD2DWidget(QWidget):
     def __init__(self, general_options_getter):
@@ -275,32 +353,18 @@ class RMSD2DWidget(QWidget):
     def run_analysis(self):
         general_options = self.general_options_getter()
 
-        # Get specific options for 2D RMSD analysis
-        mode_results = self.mode_results_input.text()
-        ref2d1 = self.ref2d1_input.text()
-        ref2d2 = self.ref2d2_input.text()
-        n_stdevs = self.n_stdevs_input.text()
-        n_clusters = self.n_clusters_input.text()
+        specific_options = {
+            "mode_results": self.mode_results_input.text(),
+            "ref2d1": self.ref2d1_input.text(),
+            "ref2d2": self.ref2d2_input.text(),
+            "n_stdevs": self.n_stdevs_input.text(),
+            "n_clusters": self.n_clusters_input.text()
+        }
 
-        # Run the analysis using the general and specific options
-        run_2d_rmsd_analysis(
-            config_file=None,
-            jobname=general_options["jobname"],
-            output_path=general_options["output_path"],
-            mode_results=mode_results,
-            seq_pairs=general_options["seq_pairs"],
-            predictions_path=general_options["predictions_path"],
-            engine=general_options["engine"],
-            align_range=general_options["align_range"],
-            analysis_range=general_options["analysis_range"],
-            analysis_range_name=general_options["analysis_range_name"],
-            ref2d1=ref2d1,
-            ref2d2=ref2d2,
-            n_stdevs=n_stdevs,
-            n_clusters=n_clusters,
-            starting_residue=general_options["starting_residue"]
-        )
-class TMSCOREWidget(QWidget):
+        config = merge_configs(general_options, specific_options)
+        
+        run_2d_rmsd_analysis(config)
+class TMSCOREWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
@@ -318,27 +382,23 @@ class TMSCOREWidget(QWidget):
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options = self.general_options_getter()
+    def validate_inputs(self):
+        errors = []
+        if not self.slice_predictions_input.text():
+            errors.append("Slice Predictions cannot be empty.")
+        if not self.ref1_input.text():
+            errors.append("Reference Structure (Ref1) cannot be empty.")
+        return errors
 
-        # Get specific options for TM-Score analysis
-        slice_predictions = self.slice_predictions_input.text()
-        ref1 = self.ref1_input.text()
+    def get_specific_options(self):
+        return {
+            "slice_predictions": self.slice_predictions_input.text(),
+            "ref1": self.ref1_input.text()
+        }
 
-        # Run the analysis using the general and specific options
-        run_tmscore_analysis(
-            config_file=None,
-            output_path=general_options["output_path"],
-            predictions_path=general_options["predictions_path"],
-            jobname=general_options["jobname"],
-            seq_pairs=general_options["seq_pairs"],
-            starting_residue=general_options["starting_residue"],
-            slice_predictions=slice_predictions,
-            ref1=ref1,
-            engine=general_options["engine"]
-        )
-
-class TwoTMScoreWidget(QWidget):
+    def run_specific_analysis(self, config):
+        run_tmscore_analysis(config)
+class TwoTMScoreWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
@@ -362,34 +422,32 @@ class TwoTMScoreWidget(QWidget):
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options = self.general_options_getter()
+    def validate_inputs(self):
+        errors = []
+        if not self.mode_results_input.text():
+            errors.append("Mode Results cannot be empty.")
+        if not self.ref2d1_input.text():
+            errors.append("Reference Structure 1 (Ref2D1) cannot be empty.")
+        if not self.ref2d2_input.text():
+            errors.append("Reference Structure 2 (Ref2D2) cannot be empty.")
+        if not self.n_stdevs_input.text().isdigit():
+            errors.append("Number of Standard Deviations (n_stdevs) must be a number.")
+        if not self.n_clusters_input.text().isdigit():
+            errors.append("Number of Clusters (n_clusters) must be a number.")
+        return errors
 
-        # Get specific options for 2D TM-Score analysis
-        mode_results = self.mode_results_input.text()
-        ref2d1 = self.ref2d1_input.text()
-        ref2d2 = self.ref2d2_input.text()
-        n_stdevs = self.n_stdevs_input.text()
-        n_clusters = self.n_clusters_input.text()
+    def get_specific_options(self):
+        return {
+            "mode_results": self.mode_results_input.text(),
+            "ref2d1": self.ref2d1_input.text(),
+            "ref2d2": self.ref2d2_input.text(),
+            "n_stdevs": self.n_stdevs_input.text(),
+            "n_clusters": self.n_clusters_input.text()
+        }
 
-        # Run the analysis using the general and specific options
-        run_2d_tmscore_analysis(
-            config_file=None,
-            output_path=general_options["output_path"],
-            predictions_path=general_options["predictions_path"],
-            mode_results=mode_results,
-            jobname=general_options["jobname"],
-            seq_pairs=general_options["seq_pairs"],
-            starting_residue=general_options["starting_residue"],
-            slice_predictions=general_options["slice_predictions"],
-            ref2d1=ref2d1,
-            ref2d2=ref2d2,
-            engine=general_options["engine"],
-            n_stdevs=n_stdevs,
-            n_clusters=n_clusters
-        )
-
-class PCAWidget(QWidget):
+    def run_specific_analysis(self, config):
+        run_2d_tmscore_analysis(config)
+class PCAWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
@@ -411,31 +469,30 @@ class PCAWidget(QWidget):
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options = self.general_options_getter()
+    def validate_inputs(self):
+        errors = []
+        if not self.align_range_input.text():
+            errors.append("Align Range cannot be empty.")
+        if not self.analysis_range_input.text():
+            errors.append("Analysis Range cannot be empty.")
+        if not self.analysis_range_name_input.text():
+            errors.append("Analysis Range Name cannot be empty.")
+        if not self.n_pca_clusters_input.text().isdigit():
+            errors.append("Number of PCA Clusters must be a number.")
+        return errors
 
-        # Get specific options for PCA analysis
-        align_range = self.align_range_input.text()
-        analysis_range = self.analysis_range_input.text()
-        analysis_range_name = self.analysis_range_name_input.text()
-        n_pca_clusters = self.n_pca_clusters_input.text()
+    def get_specific_options(self):
+        return {
+            "align_range": self.align_range_input.text(),
+            "analysis_range": self.analysis_range_input.text(),
+            "analysis_range_name": self.analysis_range_name_input.text(),
+            "n_pca_clusters": self.n_pca_clusters_input.text()
+        }
 
-        # Run the analysis using the general and specific options
-        run_pca_analysis(
-            config_file=None,
-            predictions_path=general_options["predictions_path"],
-            output_path=general_options["output_path"],
-            seq_pairs=general_options["seq_pairs"],
-            jobname=general_options["jobname"],
-            align_range=align_range,
-            analysis_range=analysis_range,
-            analysis_range_name=analysis_range_name,
-            engine=general_options["engine"],
-            n_pca_clusters=n_pca_clusters,
-            starting_residue=general_options["starting_residue"]
-        )
+    def run_specific_analysis(self, config):
+        run_pca_analysis(config)
 
-class TrajectorySavingWidget(QWidget):
+class TrajectorySavingWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
         self.general_options_getter = general_options_getter
@@ -457,26 +514,25 @@ class TrajectorySavingWidget(QWidget):
         
         self.setLayout(layout)
 
-    def run_analysis(self):
-        general_options = self.general_options_getter()
+    def validate_inputs(self):
+        errors = []
+        if not self.analysis_range_input.text():
+            errors.append("Analysis Range cannot be empty.")
+        if not self.analysis_range_name_input.text():
+            errors.append("Analysis Range Name cannot be empty.")
+        if not self.reorder_input.text():
+            errors.append("Reorder By cannot be empty.")
+        if not self.traj_format_input.text():
+            errors.append("Trajectory Format cannot be empty.")
+        return errors
 
-        # Get specific options for trajectory saving
-        analysis_range = self.analysis_range_input.text()
-        analysis_range_name = self.analysis_range_name_input.text()
-        reorder = self.reorder_input.text()
-        traj_format = self.traj_format_input.text()
+    def get_specific_options(self):
+        return {
+            "analysis_range": self.analysis_range_input.text(),
+            "analysis_range_name": self.analysis_range_name_input.text(),
+            "reorder": self.reorder_input.text(),
+            "traj_format": self.traj_format_input.text()
+        }
 
-        # Run the analysis using the general and specific options
-        run_trajectory_saving(
-            config_file=None,
-            output_path=general_options["output_path"],
-            predictions_path=general_options["predictions_path"],
-            jobname=general_options["jobname"],
-            seq_pairs=general_options["seq_pairs"],
-            starting_residue=general_options["starting_residue"],
-            analysis_range=analysis_range,
-            analysis_range_name=analysis_range_name,
-            reorder=reorder,
-            traj_format=traj_format,
-            engine=general_options["engine"]
-        )
+    def run_specific_analysis(self, config):
+        run_trajectory_saving(config)

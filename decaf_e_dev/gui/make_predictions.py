@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QCheckBox
 import sys
 from decaf_e_dev.predict_ensemble import run_ensemble_prediction
+from decaf_e_dev.predict_ensemble import run_ensemble_prediction
+from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
 
-class MakePredictionsWidget(QWidget):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.parent=parent
+class MakePredictionsWidget(AnalysisWidgetBase):
+    def __init__(self, general_options_getter=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.general_options_getter = general_options_getter
         self.init_ui()
 
     def init_ui(self):
@@ -76,7 +78,7 @@ class MakePredictionsWidget(QWidget):
 
         # Run Button
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(self.run_prediction)
+        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=False))
         layout.addWidget(self.run_button, 11, 1)
         
     def select_msa_path(self):
@@ -104,7 +106,6 @@ class MakePredictionsWidget(QWidget):
         self.seq_pairs_layout.addLayout(seq_pair_layout)
 
     def remove_seq_pair(self, layout):
-        # Properly remove and delete the layout and its widgets
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
@@ -112,8 +113,18 @@ class MakePredictionsWidget(QWidget):
         self.seq_pairs_layout.removeItem(layout)
         layout.deleteLater()
 
-    def run_prediction(self):
-        config = {
+    def validate_inputs(self):
+        errors = []
+        if not self.msa_path_input.text():
+            errors.append("MSA Path cannot be empty.")
+        if not self.seeds_input.text().isdigit():
+            errors.append("Seeds must be a number.")
+        if self.subset_msa_to_input.text() and not self.subset_msa_to_input.text().isdigit():
+            errors.append("Subset MSA To must be a number.")
+        return errors
+
+    def get_specific_options(self):
+        return {
             'msa_path': self.msa_path_input.text(),
             'output_path': 'output_path',  # Set this as needed
             'jobname': 'jobname',  # Set this as needed
@@ -125,6 +136,7 @@ class MakePredictionsWidget(QWidget):
             'msa_from': self.msa_from_dropdown.currentText()
         }
 
+    def run_specific_analysis(self, config):
         run_ensemble_prediction(config)
 
     def get_seq_pairs(self):
@@ -135,10 +147,3 @@ class MakePredictionsWidget(QWidget):
             seq2 = layout.itemAt(1).widget().text()
             seq_pairs.append([int(seq1), int(seq2)])
         return seq_pairs
-
-
-
-
-
-
-

@@ -5,22 +5,19 @@ from decaf_e_dev.ensemble_analysis.tmscore import build_dataset_tmscore_modes, t
 
 warnings.filterwarnings("ignore")
 
-def run_tmscore_analysis(config_file=None, output_path=None, predictions_path=None, jobname=None, seq_pairs=None,
-                         starting_residue=None, slice_predictions=None, ref1=None, engine=None):
+def run_tmscore_analysis(config):
 
     # Load configuration from file if provided
     config_file = config_file if config_file else 'config.json'
     config = load_config(config_file)
-
-    # Override config with function arguments if provided
-    output_path = output_path if output_path else config.get('output_path')
-    predictions_path = predictions_path if predictions_path else config.get('predictions_path')
-    seq_pairs = seq_pairs if seq_pairs else config.get('seq_pairs')
-    jobname = jobname if jobname else config.get('jobname')
-    slice_predictions = slice_predictions if slice_predictions else config.get('slice_predictions')
-    ref1 = ref1 if ref1 else config.get('ref1')
-    engine = engine if engine else config.get('engine')
-    starting_residue = starting_residue if starting_residue else config.get('starting_residue')
+    output_path = config.get('output_path')
+    predictions_path = config.get('predictions_path')
+    seq_pairs = config.get('seq_pairs')
+    jobname = config.get('jobname')
+    slice_predictions = config.get('slice_predictions')
+    ref1 = config.get('ref1')
+    engine = config.get('engine')
+    starting_residue = config.get('starting_residue')
 
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
@@ -33,7 +30,6 @@ def run_tmscore_analysis(config_file=None, output_path=None, predictions_path=No
 
     print("\nConfigurations:")
     print("***************************************************************")
-    print(f"Used Config File? {config_file is not None}")
     print(f"Predictions Path: {predictions_path}")
     print(f"Output Path: {output_path}")
     print(f"Job Name: {jobname}")
