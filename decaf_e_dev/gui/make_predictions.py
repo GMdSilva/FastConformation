@@ -3,8 +3,9 @@ import sys
 from decaf_e_dev.predict_ensemble import run_ensemble_prediction
 
 class MakePredictionsWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent=parent
         self.init_ui()
 
     def init_ui(self):

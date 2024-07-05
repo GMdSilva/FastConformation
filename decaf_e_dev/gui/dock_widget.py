@@ -96,7 +96,7 @@ class MainWidget(QWidget):
         new_job_widget = QWidget()
         layout = QVBoxLayout(new_job_widget)
         
-        widget = QLabel("Select Analysis Category")
+        widget = QLabel("Select:")
         font = widget.font()
         font.setPointSize(14)
         widget.setFont(font)
@@ -138,7 +138,6 @@ class MainWidget(QWidget):
         name = item.text()
         widget_class = CATEGORIES[name].widget
         self.parent.show_dock_widget(name, widget_class)
-        self.icon_grid.clearSelection()
         
     def clear_layout(self, layout, start_index=0):
         while layout.count() > start_index:
@@ -146,7 +145,3 @@ class MainWidget(QWidget):
             widget = item.widget()
             if widget:
                 widget.deleteLater()
-    
-    def adjust_dock_size(self):
-        for dock_widget in self.dock_widgets.values():
-            dock_widget.adjustSize()
