@@ -41,12 +41,6 @@ class AnalysisConfigWidget(QWidget):
         self.analysis_stack = QStackedWidget()
         main_layout.addWidget(self.analysis_stack)
         
-        # Plot display area
-        self.plot_area = QLabel("Plot Area")
-        self.plot_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.plot_area.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(self.plot_area)
-        
         self.setLayout(main_layout)
         self.setWindowTitle("Analysis Configurations")
 
@@ -196,7 +190,6 @@ class RMSFAnalysisWidget(QWidget):
         peak_prominence = int(self.peak_prominence_input.text())
         peak_height = int(self.peak_height_input.text())
         
-        self.plot_window = PlotWindow()
         # Run the analysis using the general and specific options
         run_rmsf_analysis(
             config_file=None,
