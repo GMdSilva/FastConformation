@@ -214,7 +214,7 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         layout.addRow("Starting Residue:", self.starting_residue_input)
         
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(self.run_analysis)
+        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
@@ -242,6 +242,7 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
 
     def run_specific_analysis(self, config):
         run_rmsf_analysis(config)
+
 class RMSDAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
@@ -255,7 +256,7 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         layout.addRow("Analysis Range Name:", self.analysis_range_name_input)
         
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(self.run_analysis)
+        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
@@ -295,7 +296,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
         layout.addRow("Number of Clusters (n_clusters):", self.n_clusters_input)
         
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(self.run_analysis)
+        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
@@ -326,44 +327,6 @@ class RMSD2DWidget(AnalysisWidgetBase):
     def run_specific_analysis(self, config):
         run_2d_tmscore_analysis(config)
 
-class RMSD2DWidget(QWidget):
-    def __init__(self, general_options_getter):
-        super().__init__()
-        self.general_options_getter = general_options_getter
-        layout = QFormLayout()
-        
-        self.mode_results_input = QLineEdit()
-        self.ref2d1_input = QLineEdit()
-        self.ref2d2_input = QLineEdit()
-        self.n_stdevs_input = QLineEdit()
-        self.n_clusters_input = QLineEdit()
-
-        layout.addRow("Mode Results:", self.mode_results_input)
-        layout.addRow("Reference Structure 1 (Ref2D1):", self.ref2d1_input)
-        layout.addRow("Reference Structure 2 (Ref2D2):", self.ref2d2_input)
-        layout.addRow("Number of Standard Deviations (n_stdevs):", self.n_stdevs_input)
-        layout.addRow("Number of Clusters (n_clusters):", self.n_clusters_input)
-        
-        self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(self.run_analysis)
-        layout.addWidget(self.run_button)
-        
-        self.setLayout(layout)
-
-    def run_analysis(self):
-        general_options = self.general_options_getter()
-
-        specific_options = {
-            "mode_results": self.mode_results_input.text(),
-            "ref2d1": self.ref2d1_input.text(),
-            "ref2d2": self.ref2d2_input.text(),
-            "n_stdevs": self.n_stdevs_input.text(),
-            "n_clusters": self.n_clusters_input.text()
-        }
-
-        config = merge_configs(general_options, specific_options)
-        
-        run_2d_rmsd_analysis(config)
 class TMSCOREWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()

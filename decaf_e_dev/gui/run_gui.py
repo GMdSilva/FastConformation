@@ -6,7 +6,7 @@ sys.path.append('/Users/fmgaleazzi/decaf_e_dev')
 from pathlib import Path
 from decaf_e_dev.gui.dock_widget import MainWidget
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
 )
 from decaf_e_dev.gui.icons import Icons
 from PyQt5.QtCore import QSize, Qt
@@ -57,20 +57,45 @@ class MainFrame(QMainWindow):
         self.home_button = QPushButton("Home Page")
         self.submit_new_job_button = QPushButton("Submit New Job")
         self.job_status_button = QPushButton("Job Status")
+        self.terminal_button = QPushButton("Log")
 
         self.home_button.clicked.connect(self.show_home_page)
         self.submit_new_job_button.clicked.connect(self.show_new_job_page)
         self.job_status_button.clicked.connect(self.show_job_status_page)
+        self.terminal_button.clicked.connect(self.show_terminal)
 
         self.toolbar.addWidget(self.home_button)
         self.toolbar.addWidget(self.submit_new_job_button)
         self.toolbar.addWidget(self.job_status_button)
+        self.toolbar.addWidget(self.terminal_button)
         self.toolbar.setVisible(False)
 
         self.setWindowTitle('DECAF_E')
         self.showFullScreen()
 
         self.apply_styles()
+
+        # Redirect stdout and stderr
+        self.terminal_dock = None
+        self.create_terminal_dock()
+        sys.stdout = QPlainTextEditLogger(self.terminal_output)
+        sys.stderr = QPlainTextEditLogger(self.terminal_output)
+
+    def create_terminal_dock(self):
+        self.terminal_output = QPlainTextEdit(self)
+        self.terminal_output.setReadOnly(True)
+
+        self.terminal_dock = QDockWidget("Show Log", self)
+        self.terminal_dock.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.terminal_dock.setWidget(self.terminal_output)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.terminal_dock)
+        self.terminal_dock.setVisible(False)
+
+    def show_terminal(self):
+        if self.terminal_dock.isVisible():
+            self.terminal_dock.setVisible(False)
+        else:
+            self.terminal_dock.setVisible(True)
 
     def apply_styles(self):
         self.setStyleSheet("""
@@ -147,6 +172,17 @@ class MainFrame(QMainWindow):
     def hide_all_dock_widgets(self):
         for dock_widget in self.dock_widgets.values():
             dock_widget.setVisible(False)
+#show "terminal" on screen
+class QPlainTextEditLogger:
+    def __init__(self, text_edit):
+        self.widget = text_edit
+
+    def write(self, message):
+        self.widget.appendPlainText(message)
+
+    def flush(self):
+        pass
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

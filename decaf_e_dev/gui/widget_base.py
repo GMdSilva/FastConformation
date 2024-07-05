@@ -19,14 +19,15 @@ class AnalysisWidgetBase(QWidget):
         if errors:
             self.show_error_message(errors)
             return
-        if general_options:
-            general_options = self.general_options_getter()
-        else:
-            general_options = {}
-            
+        
+        try:
+            g_options = self.general_options_getter()
+        except Exception:
+            g_options = {}
+        
         specific_options = self.get_specific_options()
 
-        config = merge_configs(general_options, specific_options)
+        config = merge_configs(g_options, specific_options)
         
         try:
             self.run_specific_analysis(config)
