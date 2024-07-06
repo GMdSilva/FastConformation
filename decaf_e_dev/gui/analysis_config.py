@@ -99,11 +99,10 @@ class GeneralAnalysisWidget(QWidget):
         super().__init__()
         layout = QFormLayout()
         
-        self.jobname_input = QLineEdit()
-        self.output_path_input = QLineEdit()
+        self.jobname_input = QLineEdit("abl1_wt")
+        self.output_path_input = QLineEdit("/Users/fmgaleazzi/Downloads")
         self.output_path_button = QPushButton("Browse")
-        self.seq_pairs_input = QLineEdit()
-        self.predictions_path_input = QLineEdit()
+        self.predictions_path_input = QLineEdit("/Users/fmgaleazzi/decaf_e_dev/sample_predictions/abl_wt/predictions/alphafold2")
         self.predictions_path_button = QPushButton("Browse")
         self.engine_input = QLineEdit("alphafold2")
         self.align_range_input = QLineEdit("backbone")
@@ -111,11 +110,12 @@ class GeneralAnalysisWidget(QWidget):
         self.analysis_range_name_input = QLineEdit("aloop")
         self.ref1d_input = QLineEdit("null")
         self.starting_residue_input = QLineEdit("200")
+        
         # Seq Pairs
         self.seq_pairs_layout = QVBoxLayout()
         self.add_seq_pair_button = QPushButton("Add Sequence Pair")
         self.add_seq_pair_button.clicked.connect(self.add_seq_pair)
-
+        self.seq_pairs=[]
         layout.addRow("Job Name:", self.jobname_input)
         
         output_path_layout = QHBoxLayout()
@@ -158,7 +158,7 @@ class GeneralAnalysisWidget(QWidget):
         return {
             "jobname": self.jobname_input.text(),
             "output_path": self.output_path_input.text(),
-            "seq_pairs": self.seq_pairs_input.text(),
+            "seq_pairs": [[int(seq_pair[0].text()), int(seq_pair[1].text())] for seq_pair in self.seq_pairs],
             "predictions_path": self.predictions_path_input.text(),
             "engine": self.engine_input.text(),
             "align_range": self.align_range_input.text(),
@@ -170,14 +170,17 @@ class GeneralAnalysisWidget(QWidget):
 
     def add_seq_pair(self):
         seq_pair_layout = QHBoxLayout()
-
+        seq_pair=[]
         seq1_input = QLineEdit()
         seq1_input.setPlaceholderText("Sequence 1")
         seq2_input = QLineEdit()
         seq2_input.setPlaceholderText("Sequence 2")
-
+        seq_pair.append(seq1_input)
+        seq_pair.append(seq2_input)
+        self.seq_pairs.append(seq_pair)
+        
         remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(lambda: self.remove_seq_pair(seq_pair_layout))
+        remove_button.clicked.connect(lambda: self.remove_seq_pair(seq_pair_layout, seq_pair))
 
         seq_pair_layout.addWidget(seq1_input)
         seq_pair_layout.addWidget(seq2_input)
@@ -185,13 +188,14 @@ class GeneralAnalysisWidget(QWidget):
 
         self.seq_pairs_layout.addLayout(seq_pair_layout)
 
-    def remove_seq_pair(self, layout):
+    def remove_seq_pair(self, layout, seq_pair):
         # Properly remove and delete the layout and its widgets
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
         self.seq_pairs_layout.removeItem(layout)
+        self.seq_pairs.remove(seq_pair)
         layout.deleteLater()
 
 class RMSFAnalysisWidget(AnalysisWidgetBase):

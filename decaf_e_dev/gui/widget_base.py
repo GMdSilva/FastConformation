@@ -10,6 +10,7 @@ class AnalysisWidgetBase(QWidget):
     def __init__(self):
         super().__init__()
 
+
     def validate_inputs(self):
         """Override this method to implement specific validation."""
         return []

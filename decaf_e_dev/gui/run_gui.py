@@ -1,12 +1,11 @@
 import sys
 from dataclasses import dataclass
-from typing import Callable
 import sys
 sys.path.append('/Users/fmgaleazzi/decaf_e_dev')
 from pathlib import Path
 from decaf_e_dev.gui.dock_widget import MainWidget
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QListWidget, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
 )
 from decaf_e_dev.gui.icons import Icons
 from PyQt5.QtCore import QSize, Qt
@@ -86,9 +85,9 @@ class MainFrame(QMainWindow):
         self.terminal_output.setReadOnly(True)
 
         self.terminal_dock = QDockWidget("Show Log", self)
-        self.terminal_dock.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.terminal_dock.setAllowedAreas(Qt.LeftDockWidgetArea)
         self.terminal_dock.setWidget(self.terminal_output)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.terminal_dock)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.terminal_dock)
         self.terminal_dock.setVisible(False)
 
     def show_terminal(self):
@@ -161,17 +160,25 @@ class MainFrame(QMainWindow):
             dock_widget.raise_()
         else:
             dock_widget = QDockWidget(title, self)
-            dock_widget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-            dock_widget.setWidget(widget_callable())
+            dock_widget.setAllowedAreas(Qt.RightDockWidgetArea)
+
+            scroll_area = QScrollArea()
+            scroll_area.setWidgetResizable(True)
+            content_widget = widget_callable()
+            scroll_area.setWidget(content_widget)
+
+            dock_widget.setWidget(scroll_area)
             self.addDockWidget(Qt.RightDockWidgetArea, dock_widget)
             self.dock_widgets[title] = dock_widget
 
         for dock_key, dock_value in self.dock_widgets.items():
             if dock_key != title:
                 dock_value.setVisible(False)
+    
     def hide_all_dock_widgets(self):
         for dock_widget in self.dock_widgets.values():
             dock_widget.setVisible(False)
+
 #show "terminal" on screen
 class QPlainTextEditLogger:
     def __init__(self, text_edit):

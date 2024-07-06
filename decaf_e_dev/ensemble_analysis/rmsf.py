@@ -1,11 +1,16 @@
 import pandas as pd
 import numpy as np
+
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
-import matplotlib.cm
+from matplotlib import cm
+
 from scipy.signal import find_peaks
+
 from MDAnalysis.analysis import rms, align
+
 from tqdm import tqdm
+
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
@@ -17,6 +22,7 @@ def calculate_rmsf_and_call_peaks(jobname,
                                   peak_width,
                                   prominence,
                                   threshold):
+
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running RMSF peak analysis for {result}')
@@ -41,7 +47,8 @@ def calculate_rmsf_and_call_peaks(jobname,
             peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
             plt.figure(figsize=(8, 3))
-            plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
+            plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+            #plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
             plt.xlabel('Residue Number', fontsize=14)
             plt.ylabel('RMSF ($\AA$)', fontsize=14)
             plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
@@ -96,9 +103,11 @@ def calculate_rmsf_multiple(jobname,
                             prediction_dicts,
                             align_range,
                             output_path):
+
     labels = []
     plt.figure(figsize=(8, 3))
-    plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
+    plt.title(f'{jobname}', fontsize=16)
+    #plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
     plt.xlabel('Residue number', fontsize=14)
     plt.ylabel('RMSF ($\AA$)', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
@@ -133,7 +142,7 @@ def calculate_rmsf_multiple(jobname,
                         f"{jobname}_rmsf_all.png")
 
     plt.savefig(full_output_path, dpi=300)
-
+    plt.close()
 
 
 def plot_plddt_rmsf_corr(jobname,
@@ -160,9 +169,10 @@ def plot_plddt_rmsf_corr(jobname,
 
             rmsf_values = r.results.rmsf
             resids = atom_sel.resids
-
+            print(rmsf_values)
+            print(plddt_avg)
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
-            cmap = matplotlib.cm.get_cmap('viridis')
+            cmap = plt.get_cmap('viridis')
             colors = cmap(norm(resids))
 
             plt.scatter(rmsf_values, plddt_avg, c=colors)
@@ -173,7 +183,7 @@ def plot_plddt_rmsf_corr(jobname,
             plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
             plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
             plt.tight_layout()
-            plt.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
+            plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
 
             full_output_path = (f"{output_path}/"
                                 f"{jobname}/"
@@ -187,6 +197,7 @@ def plot_plddt_rmsf_corr(jobname,
             plt.savefig(full_output_path, dpi=300)
             plt.close()
             pbar.update(n=1)
+
 
 
 def plot_plddt_line(jobname,
@@ -206,9 +217,12 @@ def plot_plddt_line(jobname,
         plddt_data = plddt_dict[result]['all_plddts']
         arrays = np.array(plddt_data)
         plddt_avg = np.mean(arrays, axis=0)
-
+        if np.ndim(arrays)==1:
+            length_avg=1
+        else:
+            length_avg=len(plddt_avg)
         # Create residue numbers array
-        residue_numbers = np.arange(len(plddt_avg))
+        residue_numbers = np.arange(length_avg)
         if custom_start_residue is not None:
             residue_numbers += custom_start_residue
 
@@ -225,6 +239,7 @@ def plot_plddt_line(jobname,
                         f"all_plddt.png")
 
     plt.savefig(full_output_path, dpi=300)
+    plt.close()
 
 
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):

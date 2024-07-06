@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
-    QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout
+    QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout, QSizePolicy
 )
 from qtpy.QtGui import QPixmap
 from decaf_e_dev.gui.directory_selector import DirectorySelector
@@ -48,6 +48,7 @@ class MainWidget(QWidget):
         # Set the main layout
         self.setLayout(self.layout)
         self.setWindowTitle("decaf_dev")
+
 
     def create_welcome_page(self):
         # Clear the layout
@@ -95,24 +96,27 @@ class MainWidget(QWidget):
     def create_new_job_widget(self):
         new_job_widget = QWidget()
         layout = QVBoxLayout(new_job_widget)
-        
         widget = QLabel("Select:")
         font = widget.font()
         font.setPointSize(14)
         widget.setFont(font)
+        widget.setMinimumWidth(800)
         widget.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         layout.addWidget(widget)
 
         self.icon_grid = Icons(self)
         self.icon_grid.addItems(CATEGORIES)
         self.icon_grid.itemClicked.connect(self._on_item_clicked)
+        new_job_widget.setMinimumSize(600, 400)
+
+    
         layout.addWidget(self.icon_grid)
         return new_job_widget
     
     def _on_item_clicked(self, item):
         name = item.text()
         widget = CATEGORIES[name].widget()
-
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.new_job_dock.widget().layout().addWidget(widget)
 
     def clear_dock_widget(self):
