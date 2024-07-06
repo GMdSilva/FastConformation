@@ -169,8 +169,7 @@ def plot_plddt_rmsf_corr(jobname,
 
             rmsf_values = r.results.rmsf
             resids = atom_sel.resids
-            print(rmsf_values)
-            print(plddt_avg)
+            
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
             cmap = plt.get_cmap('viridis')
             colors = cmap(norm(resids))
@@ -200,12 +199,8 @@ def plot_plddt_rmsf_corr(jobname,
 
 
 
-def plot_plddt_line(jobname,
-                    plddt_dict,
-                    output_path,
-                    custom_start_residue):
+def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue):
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
-    labels = []
     plt.figure(figsize=(8, 3))
     plt.title(f'{jobname}', fontsize=16)
     plt.xlabel('Residue number', fontsize=14)
@@ -217,17 +212,16 @@ def plot_plddt_line(jobname,
         plddt_data = plddt_dict[result]['all_plddts']
         arrays = np.array(plddt_data)
         plddt_avg = np.mean(arrays, axis=0)
-        if np.ndim(arrays)==1:
-            length_avg=1
-        else:
-            length_avg=len(plddt_avg)
+        
+        # Determine the length of pLDDT data
+        length_avg = plddt_avg.shape[0] if np.ndim(arrays) != 1 else arrays.shape[0]
+
         # Create residue numbers array
         residue_numbers = np.arange(length_avg)
         if custom_start_residue is not None:
             residue_numbers += custom_start_residue
 
         plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
-        labels.append(result)  # Add the result to labels list
 
     plt.legend()  # Add the legend at the end
     plt.tight_layout()
@@ -240,7 +234,6 @@ def plot_plddt_line(jobname,
 
     plt.savefig(full_output_path, dpi=300)
     plt.close()
-
 
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):
     trials = []

@@ -55,11 +55,9 @@ def run_rmsf_analysis(config):
 
     # runs RMSF analysis for all predictions
     calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path)
-
     # gets pLDDTs for all predictions
     plddt_dict = load_predictions_json(predictions_path, seq_pairs, jobname)
     plot_plddt_line(jobname, plddt_dict, output_path, starting_residue)
-
     # runs pLDDT/RMSF correlation for all predictions
     plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path)
 

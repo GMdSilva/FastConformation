@@ -46,8 +46,7 @@ def calculate_rmsd(u: mda.Universe,
     return rmsd_dict
 
 
-# Function to create RMSD KDE and plot
-def rmsd_kde(rmsd_data, input_dict, plot_widget):
+def rmsd_kde(rmsd_data: list, input_dict: dict) -> dict:
     jobname = input_dict['jobname']
     max_seq = input_dict['max_seq']
     extra_seq = input_dict['extra_seq']
@@ -64,10 +63,50 @@ def rmsd_kde(rmsd_data, input_dict, plot_widget):
     peaks, _ = find_peaks(kde_vals)
     modes = x_vals[peaks]
 
-    # Plot KDE and mark modes
-    plot_widget.plot(x_vals, kde_vals, f'{jobname} max_seq: {max_seq} extra_seq: {extra_seq}', 'RMSD ($\AA$)', 'Density')
+    # Find the two most distant modes
+    if len(modes) > 1:
+        distances = np.abs(np.subtract.outer(modes, modes))
+        np.fill_diagonal(distances, 0)
+        max_dist_indices = np.unravel_index(np.argmax(distances), distances.shape)
+        most_distant_modes = modes[list(max_dist_indices)]
+    else:
+        most_distant_modes = modes
 
-    # Save plot
+    # Mark the most distant modes
+    modes_dict = {}
+    mode_n = 0
+    for mode_density, mode in zip(kde_vals[peaks], modes):
+        array = np.asarray(rmsd_data).flatten()  # Flatten the array to ensure it's 1-dimensional
+        target_value = np.asarray(mode).item()  # Ensure target_value is a scalar
+
+        mode_index = (np.abs(array - target_value)).argmin()
+        mode_results = {'mode_index': mode_index,
+                        'mode_value': mode,
+                        'mode_density': mode_density}
+
+        mode_n += 1
+
+        modes_dict[f'mode_{mode_n}'] = mode_results
+
+    # Plot KDE and mark modes
+    plt.figure(figsize=(6, 3))
+    plt.plot(x_vals, kde_vals, label='KDE')
+    plt.scatter(modes, kde_vals[peaks], color='red', zorder=5, label='Modes')
+
+    for mode in most_distant_modes:
+        plt.axvline(mode, color='blue', linestyle='--', label='Most Distant Mode')
+
+    plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+    #plt.suptitle(f'{rmsd_range} after alignment to {align_range}', fontsize=10)
+    plt.xlabel('RMSD ($\AA$)', fontsize=14)
+    plt.ylabel('Density', fontsize=14)
+    plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+    plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+    plt.grid(False)
+
+    # Show the plot
+    plt.tight_layout()
+
     full_output_path = (f"{output_path}/"
                         f"{jobname}/"
                         f"analysis/"
@@ -80,8 +119,8 @@ def rmsd_kde(rmsd_data, input_dict, plot_widget):
     plt.savefig(full_output_path, dpi=300)
     plt.close()
 
-    # Return modes (for further analysis if needed)
-    return modes
+    return modes_dict
+
 
 def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d):
     jobname = input_dict['jobname']

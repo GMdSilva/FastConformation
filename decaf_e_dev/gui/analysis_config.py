@@ -99,7 +99,7 @@ class GeneralAnalysisWidget(QWidget):
         super().__init__()
         layout = QFormLayout()
         
-        self.jobname_input = QLineEdit("abl1_wt")
+        self.jobname_input = QLineEdit("abl_wt")
         self.output_path_input = QLineEdit("/Users/fmgaleazzi/Downloads")
         self.output_path_button = QPushButton("Browse")
         self.predictions_path_input = QLineEdit("/Users/fmgaleazzi/decaf_e_dev/sample_predictions/abl_wt/predictions/alphafold2")
@@ -108,7 +108,7 @@ class GeneralAnalysisWidget(QWidget):
         self.align_range_input = QLineEdit("backbone")
         self.analysis_range_input = QLineEdit("backbone and resid 358-365")
         self.analysis_range_name_input = QLineEdit("aloop")
-        self.ref1d_input = QLineEdit("null")
+        self.ref1d_input = QLineEdit()
         self.starting_residue_input = QLineEdit("200")
         
         # Seq Pairs
@@ -287,11 +287,11 @@ class RMSD2DWidget(AnalysisWidgetBase):
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
-        self.mode_results_input = QLineEdit("null")
-        self.ref2d1_input = QLineEdit("null")
-        self.ref2d2_input = QLineEdit("null")
+        self.mode_results_input = QLineEdit()
+        self.ref2d1_input = QLineEdit()
+        self.ref2d2_input = QLineEdit()
         self.n_stdevs_input = QLineEdit("5")
-        self.n_clusters_input = QLineEdit("null")
+        self.n_clusters_input = QLineEdit()
 
         layout.addRow("Mode Results:", self.mode_results_input)
         layout.addRow("Reference Structure 1 (Ref2D1):", self.ref2d1_input)
@@ -307,16 +307,8 @@ class RMSD2DWidget(AnalysisWidgetBase):
 
     def validate_inputs(self):
         errors = []
-        if not self.mode_results_input.text():
-            errors.append("Mode Results cannot be empty.")
-        if not self.ref2d1_input.text():
-            errors.append("Reference Structure 1 (Ref2D1) cannot be empty.")
-        if not self.ref2d2_input.text():
-            errors.append("Reference Structure 2 (Ref2D2) cannot be empty.")
         if not self.n_stdevs_input.text().isdigit():
             errors.append("Number of Standard Deviations (n_stdevs) must be a number.")
-        if not self.n_clusters_input.text().isdigit():
-            errors.append("Number of Clusters (n_clusters) must be a number.")
         return errors
 
     def get_specific_options(self):
@@ -337,7 +329,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
-        self.slice_predictions_input = QLineEdit()
+        self.slice_predictions_input = QLineEdit("backbone and resid 210-459")
         self.ref1_input = QLineEdit()
 
         layout.addRow("Slice Predictions:", self.slice_predictions_input)
@@ -353,10 +345,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
         errors = []
         if not self.slice_predictions_input.text():
             errors.append("Slice Predictions cannot be empty.")
-        if not self.ref1_input.text():
-            errors.append("Reference Structure (Ref1) cannot be empty.")
         return errors
-
     def get_specific_options(self):
         return {
             "slice_predictions": self.slice_predictions_input.text(),
@@ -374,7 +363,7 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         self.mode_results_input = QLineEdit()
         self.ref2d1_input = QLineEdit()
         self.ref2d2_input = QLineEdit()
-        self.n_stdevs_input = QLineEdit()
+        self.n_stdevs_input = QLineEdit("5")
         self.n_clusters_input = QLineEdit()
 
         layout.addRow("Mode Results:", self.mode_results_input)
@@ -393,14 +382,8 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         errors = []
         if not self.mode_results_input.text():
             errors.append("Mode Results cannot be empty.")
-        if not self.ref2d1_input.text():
-            errors.append("Reference Structure 1 (Ref2D1) cannot be empty.")
-        if not self.ref2d2_input.text():
-            errors.append("Reference Structure 2 (Ref2D2) cannot be empty.")
         if not self.n_stdevs_input.text().isdigit():
             errors.append("Number of Standard Deviations (n_stdevs) must be a number.")
-        if not self.n_clusters_input.text().isdigit():
-            errors.append("Number of Clusters (n_clusters) must be a number.")
         return errors
 
     def get_specific_options(self):
@@ -414,6 +397,7 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
 
     def run_specific_analysis(self, config):
         run_2d_tmscore_analysis(config)
+
 class PCAWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
@@ -423,7 +407,7 @@ class PCAWidget(AnalysisWidgetBase):
         self.align_range_input = QLineEdit()
         self.analysis_range_input = QLineEdit()
         self.analysis_range_name_input = QLineEdit()
-        self.n_pca_clusters_input = QLineEdit()
+        self.n_pca_clusters_input = QLineEdit("3")
 
         layout.addRow("Align Range:", self.align_range_input)
         layout.addRow("Analysis Range:", self.analysis_range_input)
@@ -438,12 +422,6 @@ class PCAWidget(AnalysisWidgetBase):
 
     def validate_inputs(self):
         errors = []
-        if not self.align_range_input.text():
-            errors.append("Align Range cannot be empty.")
-        if not self.analysis_range_input.text():
-            errors.append("Analysis Range cannot be empty.")
-        if not self.analysis_range_name_input.text():
-            errors.append("Analysis Range Name cannot be empty.")
         if not self.n_pca_clusters_input.text().isdigit():
             errors.append("Number of PCA Clusters must be a number.")
         return errors
@@ -467,8 +445,8 @@ class TrajectorySavingWidget(AnalysisWidgetBase):
         
         self.analysis_range_input = QLineEdit()
         self.analysis_range_name_input = QLineEdit()
-        self.reorder_input = QLineEdit()
-        self.traj_format_input = QLineEdit()
+        self.reorder_input = QLineEdit("rmsd_1d")
+        self.traj_format_input = QLineEdit("pdb")
 
         layout.addRow("Analysis Range:", self.analysis_range_input)
         layout.addRow("Analysis Range Name:", self.analysis_range_name_input)
