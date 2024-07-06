@@ -71,13 +71,17 @@ ANALYSIS_CATEGORIES = {
         widget=lambda getter: RMSDAnalysisWidget(getter),
         tool_tip="RMSD analysis configurations",
     ),
-    "RMSD_2D or TMSCORE_2D": AnalysisCategory(
+    "RMSD_2D": AnalysisCategory(
         widget=lambda getter: RMSD2DWidget(getter),
-        tool_tip="RMSD_2D or TMSCORE_2D configurations",
+        tool_tip="RMSD_2D configurations",
     ),
     "TMSCORE": AnalysisCategory(
         widget=lambda getter: TMSCOREWidget(getter),
         tool_tip="TMSCORE configurations",
+    ),
+    "TMSCORE_2D": AnalysisCategory(
+        widget=lambda getter: TwoTMScoreWidget(getter),
+        tool_tip="TMSCORE_2D configurations",
     ),
     "PCA": AnalysisCategory(
         widget=lambda getter: PCAWidget(getter),
@@ -281,6 +285,7 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
 
     def run_specific_analysis(self, config):
         run_rmsd_analysis(config)
+
 class RMSD2DWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()
@@ -293,7 +298,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
         self.n_stdevs_input = QLineEdit("5")
         self.n_clusters_input = QLineEdit()
 
-        layout.addRow("Mode Results:", self.mode_results_input)
+        layout.addRow("RMSD1D analysis results csv filepath:", self.mode_results_input)
         layout.addRow("Reference Structure 1 (Ref2D1):", self.ref2d1_input)
         layout.addRow("Reference Structure 2 (Ref2D2):", self.ref2d2_input)
         layout.addRow("Number of Standard Deviations (n_stdevs):", self.n_stdevs_input)
@@ -321,7 +326,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_2d_tmscore_analysis(config)
+        run_2d_rmsd_analysis(config)
 
 class TMSCOREWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -366,7 +371,7 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         self.n_stdevs_input = QLineEdit("5")
         self.n_clusters_input = QLineEdit()
 
-        layout.addRow("Mode Results:", self.mode_results_input)
+        layout.addRow("TMScore1D analysis results csv filepath:", self.mode_results_input)
         layout.addRow("Reference Structure 1 (Ref2D1):", self.ref2d1_input)
         layout.addRow("Reference Structure 2 (Ref2D2):", self.ref2d2_input)
         layout.addRow("Number of Standard Deviations (n_stdevs):", self.n_stdevs_input)

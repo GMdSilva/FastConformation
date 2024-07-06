@@ -7,9 +7,6 @@ warnings.filterwarnings("ignore")
 
 def run_tmscore_analysis(config):
 
-    # Load configuration from file if provided
-    config_file = config_file if config_file else 'config.json'
-    config = load_config(config_file)
     output_path = config.get('output_path')
     predictions_path = config.get('predictions_path')
     seq_pairs = config.get('seq_pairs')
@@ -51,9 +48,9 @@ def run_tmscore_analysis(config):
 
     # Load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
-
+    print("gggg")
     # Run 1D TM-Score analysis
     tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions)
-
+    print("gggghhh")
     # Build results dataset and save to disk
     build_dataset_tmscore_modes(tmscore_mode_analysis_dict, input_dict)

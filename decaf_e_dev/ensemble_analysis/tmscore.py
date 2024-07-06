@@ -64,8 +64,12 @@ def run_tmscore(folder_path, custom_ref):
     tmscores = []
     frames = []
     for idx, pdb_file in enumerate(pdb_files):
-        frames.append(idx)
-        tmscores.append(tmscore_wrapper(pdb_file, custom_ref))
+        tmscore = tmscore_wrapper(pdb_file, custom_ref)
+        if tmscore is not None:
+            frames.append(idx)
+            tmscores.append(tmscore)
+        else:
+            print(f"Warning: TM-score for {pdb_file} is None and will be skipped.")
     tmscore_dict['frame'] = frames
     tmscore_dict['tmscore'] = tmscores
     return tmscore_dict
@@ -84,7 +88,7 @@ def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions) -> dict
     # Find modes (peaks)
     peaks, _ = find_peaks(kde_vals, prominence=1)
     modes = x_vals[peaks]
-
+    print(f"{modes}")
     # Find the two most distant modes
     if len(modes) > 1:
         distances = np.abs(np.subtract.outer(modes, modes))
@@ -174,6 +178,8 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
                                         slice_predictions)
 
             for mode in tmscore_modes:
+                if tmscore_modes[mode]['mode_value']==None:
+                    continue
                 mode_index = tmscore_modes[mode]['mode_index']
                 mode_value = int(tmscore_modes[mode]['mode_value']*100)
                 frame_to_save = prediction_dicts[prediction]['tmscore_dict']['frame'][mode_index]

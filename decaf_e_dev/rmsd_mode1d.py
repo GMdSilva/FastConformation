@@ -16,6 +16,8 @@ def run_rmsd_analysis(config):
     analysis_range = config.get('analysis_range')
     analysis_range_name = config.get('analysis_range_name')
     ref1d = config.get('ref1d')
+    if ref1d=="":
+        ref1d=None
     starting_residue = config.get('starting_residue')
 
     if not os.path.isdir(output_path):
