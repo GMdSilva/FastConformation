@@ -193,7 +193,7 @@ def plot_plddt_rmsf_corr(jobname,
             y_label='Average pLDDT'
             
             if plot_item is None:
-                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, cmap=cmap, resids=resids)
+                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, cmap=cmap, resids=resids, scatter=True)
             widget.add_scatter(plot_item, rmsf_values, plddt_avg, [pg.mkColor(cmap(norm(resid))[:3]) for resid in resids], label=f'{result}')
 
             if output_path:
