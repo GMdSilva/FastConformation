@@ -6,7 +6,7 @@ import shutil
 import pandas as pd
 import numpy as np
 from glob import glob
-
+import tmscore
 import matplotlib.pyplot as plt
 
 from scipy.stats import gaussian_kde
@@ -146,7 +146,7 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
     jobname = input_dict['jobname']
     output_path = input_dict['output_path']
     predictions_path = input_dict['predictions_path']
-
+    
     print('')
     with tqdm(total=len(prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
         for prediction in prediction_dicts:
@@ -156,7 +156,7 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
             extra_seq = prediction_dicts[prediction]['extra_seq']
             input_dict['max_seq'] = max_seq
             input_dict['extra_seq'] = extra_seq
-
+            predictions_path = f"{predictions_path}/{jobname}_{max_seq}_{extra_seq}"
             if slice_predictions:
                 create_directory(f'{predictions_path}/tmp_pdb')
                 slice_models(universe, slice_predictions,  f'{predictions_path}/tmp_pdb')
@@ -165,8 +165,8 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
             else:
                 prediction_dicts[prediction]['tmscore_dict'] = run_tmscore(predictions_path, custom_ref)
 
-            if slice_predictions:
-                shutil.rmtree(f'{predictions_path}/tmp_pdb')
+            #if slice_predictions:
+                #shutil.rmtree(f'{predictions_path}/tmp_pdb')
 
 
             tmscore_df = pd.DataFrame.from_dict(prediction_dicts[prediction]['tmscore_dict'], orient='columns')

@@ -348,8 +348,6 @@ class TMSCOREWidget(AnalysisWidgetBase):
 
     def validate_inputs(self):
         errors = []
-        if not self.slice_predictions_input.text():
-            errors.append("Slice Predictions cannot be empty.")
         return errors
     def get_specific_options(self):
         return {
@@ -409,9 +407,9 @@ class PCAWidget(AnalysisWidgetBase):
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
-        self.align_range_input = QLineEdit()
-        self.analysis_range_input = QLineEdit()
-        self.analysis_range_name_input = QLineEdit()
+        self.align_range_input = QLineEdit("backbone")
+        self.analysis_range_input = QLineEdit("backbone and resid 358-365")
+        self.analysis_range_name_input = QLineEdit("aloop")
         self.n_pca_clusters_input = QLineEdit("3")
 
         layout.addRow("Align Range:", self.align_range_input)
@@ -427,10 +425,16 @@ class PCAWidget(AnalysisWidgetBase):
 
     def validate_inputs(self):
         errors = []
+        if not self.align_range_input.text():
+            errors.append("Align Range cannot be empty.")
+        if not self.analysis_range_input.text():
+            errors.append("Analysis Range cannot be empty.")
+        if not self.analysis_range_name_input.text():
+            errors.append("Analysis Range Name cannot be empty.")
         if not self.n_pca_clusters_input.text().isdigit():
             errors.append("Number of PCA Clusters must be a number.")
         return errors
-
+    
     def get_specific_options(self):
         return {
             "align_range": self.align_range_input.text(),

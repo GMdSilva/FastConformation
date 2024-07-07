@@ -43,6 +43,7 @@ def pca_from_ensemble(jobname,
 
             # Transform and select only the first two components
             transformed = pc.transform(backbone, n_components=3)
+            print(f"Transformed shape: {transformed.shape}")
             df = pd.DataFrame(transformed, columns=['PC1', 'PC2', 'PC3'])
 
             kmeans = KMeans(n_clusters=n_clusters)
@@ -62,6 +63,7 @@ def pca_from_ensemble(jobname,
             pcas[f'{result}_{analysis_range}'] = df
 
             # Curve fitting for PC1 and PC2 to a parabola
+            print("curve fit")
             popt, pcov = curve_fit(parabola, df['PC1'], df['PC2'])
             df['PC2_fit'] = parabola(df['PC1'], *popt)
             r2 = r2_score(df['PC2'], df['PC2_fit'])
@@ -69,7 +71,7 @@ def pca_from_ensemble(jobname,
 
             # Create a scatter plot for PC1 and PC2 with clusters
             colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
-
+            print("plotting")
             plt.figure(figsize=(5, 4))
             for i in unique_labels:
                 cluster_points = df[df['Cluster'] == i]

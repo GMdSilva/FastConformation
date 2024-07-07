@@ -80,7 +80,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
     for seq_pair in seq_pairs:
         max_seq = seq_pair[0]
         extra_seq = seq_pair[1]
-        folder_path = f"/Users/fmgaleazzi/decaf_e_dev/sample_predictions/abl_wt/predictions/alphafold2/abl_wt_64_128"
+        folder_path = f"{predictions_path}/{jobname}_{max_seq}_{extra_seq}"
 
         universe = load_pdb_files_as_universe(folder_path, starting_residue)
 

@@ -48,9 +48,9 @@ def run_tmscore_analysis(config):
 
     # Load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
-    print("gggg")
+    print("Load predictions to RAM")
     # Run 1D TM-Score analysis
     tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions)
-    print("gggghhh")
+    print("Run 1D TM-Score analysis")
     # Build results dataset and save to disk
     build_dataset_tmscore_modes(tmscore_mode_analysis_dict, input_dict)
