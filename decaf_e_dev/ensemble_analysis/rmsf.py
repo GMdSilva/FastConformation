@@ -8,7 +8,7 @@ from matplotlib import cm
 from scipy.signal import find_peaks
 
 from MDAnalysis.analysis import rms, align
-
+import pyqtgraph as pg
 from tqdm import tqdm
 
 
@@ -156,11 +156,15 @@ def calculate_rmsf_multiple(jobname,
         plt.close()
 
 
+
 def plot_plddt_rmsf_corr(jobname,
                          prediction_dicts,
                          plddt_dict,
                          output_path, widget):
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
+        
+        plot_item = None
+        
         for result in prediction_dicts:
             pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
             max_seq = prediction_dicts[result]['max_seq']
@@ -183,13 +187,17 @@ def plot_plddt_rmsf_corr(jobname,
             
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
             cmap = plt.get_cmap('viridis')
-            colors = cmap(norm(resids))
 
             title=f'{jobname} {max_seq} {extra_seq}'
             x_label='C-Alpha RMSF (A)'
             y_label='Average pLDDT'
+            
+            if plot_item is None:
+                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, cmap=cmap, resids=resids)
+            widget.add_scatter(plot_item, rmsf_values, plddt_avg, [pg.mkColor(cmap(norm(resid))[:3]) for resid in resids], label=f'{result}')
+
             if output_path:
-                plt.scatter(rmsf_values, plddt_avg, c=colors)
+                plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
 
                 plt.title(title, fontsize=16)
                 plt.xlabel(x_label, fontsize=14)
@@ -212,8 +220,6 @@ def plot_plddt_rmsf_corr(jobname,
                 plt.close()
             
             pbar.update(n=1)
-            widget.add_plot(resids, r.results.rmsf, title=title, x_label=x_label, y_label=y_label)
-
 
 def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widget):
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
