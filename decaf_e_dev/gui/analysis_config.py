@@ -16,6 +16,7 @@ from decaf_e_dev.save_traj import run_trajectory_saving
 from decaf_e_dev.tmscore_mode1d import run_tmscore_analysis
 from decaf_e_dev.tmscore_mode2d import run_2d_tmscore_analysis
 from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
+from decaf_e_dev.gui.plot_widget import PlotWidget
 
 class AnalysisConfigWidget(QWidget):
     def __init__(self):
@@ -41,12 +42,6 @@ class AnalysisConfigWidget(QWidget):
         self.analysis_stack = QStackedWidget()
         main_layout.addWidget(self.analysis_stack)
         
-        # Plot display area
-        self.plot_area = QLabel("Plot Area")
-        self.plot_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.plot_area.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(self.plot_area)
-        
         self.setLayout(main_layout)
         self.setWindowTitle("Analysis Configurations")
 
@@ -57,6 +52,12 @@ class AnalysisConfigWidget(QWidget):
         
         self.analysis_stack.addWidget(widget)
         self.analysis_stack.setCurrentWidget(widget)
+
+    def show_plot(self, plot_widget):
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget()
+        parent.main_widget.layout.addWidget(plot_widget)
+        parent.main_widget.setCurrentWidget(plot_widget)
+
 @dataclass
 class AnalysisCategory:
     widget: Callable
@@ -220,7 +221,9 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         layout.addRow("Peak Prominence:", self.peak_prominence_input)
         layout.addRow("Peak Height:", self.peak_height_input)
         layout.addRow("Starting Residue:", self.starting_residue_input)
-        
+
+        self.layout_rmsf=layout
+
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
         layout.addWidget(self.run_button)
@@ -249,7 +252,11 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_rmsf_analysis(config)
+        # Plot widget
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_rmsf_analysis(config, self.plot_widget)
+        parent.show_plot(self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):

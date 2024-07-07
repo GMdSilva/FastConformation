@@ -84,10 +84,9 @@ class MainWidget(QWidget):
     def create_dock_widget(self):
         if self.new_job_dock:
             self.clear_dock_widget()
-        self.clear_layout(self.layout)
         self.clear_layout(self.button_layout)
         self.new_job_dock = QDockWidget("Select options", self)
-        self.new_job_dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.new_job_dock.setAllowedAreas(Qt.TopDockWidgetArea | Qt.RightDockWidgetArea)
         self.new_job_dock.setWidget(self.create_new_job_widget())
         self.new_job_dock.setVisible(True)
         if self.parent:

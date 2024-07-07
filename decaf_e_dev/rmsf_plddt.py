@@ -9,7 +9,7 @@ from decaf_e_dev.ensemble_analysis.rmsf import (
 
 warnings.filterwarnings("ignore")
 
-def run_rmsf_analysis(config):
+def run_rmsf_analysis(config, widget):
 
     jobname = config.get('jobname')
     output_path = config.get('output_path')
@@ -54,16 +54,18 @@ def run_rmsf_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # runs RMSF analysis for all predictions
-    calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path)
+    calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path, widget)
+
     # gets pLDDTs for all predictions
     plddt_dict = load_predictions_json(predictions_path, seq_pairs, jobname)
-    plot_plddt_line(jobname, plddt_dict, output_path, starting_residue)
+
+    plot_plddt_line(jobname, plddt_dict, output_path, starting_residue, widget)
     # runs pLDDT/RMSF correlation for all predictions
-    plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path)
+    plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path, widget)
 
     # runs mobile residue range detection with RMSF data and save dataset to disk
     if detect_mobile:
         print(f'\nAutomatically detecting mobile segments')
-        rmsf_peak_calling_dict = calculate_rmsf_and_call_peaks(jobname, pre_analysis_dict, align_range, output_path, peak_width, peak_prominence, peak_height)
+        rmsf_peak_calling_dict = calculate_rmsf_and_call_peaks(jobname, pre_analysis_dict, align_range, output_path, peak_width, peak_prominence, peak_height, widget)
 
         build_dataset_rmsf_peaks(jobname, rmsf_peak_calling_dict, output_path, engine)

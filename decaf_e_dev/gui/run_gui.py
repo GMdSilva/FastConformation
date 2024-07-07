@@ -153,6 +153,7 @@ class MainFrame(QMainWindow):
         self.main_widget.show_job_status_page()
         self.toolbar.setVisible(True)
     
+
     def show_dock_widget(self, title, widget_callable):
         if title in self.dock_widgets:
             dock_widget = self.dock_widgets[title]

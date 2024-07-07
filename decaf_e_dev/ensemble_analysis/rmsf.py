@@ -21,7 +21,7 @@ def calculate_rmsf_and_call_peaks(jobname,
                                   output_path,
                                   peak_width,
                                   prominence,
-                                  threshold):
+                                  threshold, widget):
 
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
@@ -46,11 +46,15 @@ def calculate_rmsf_and_call_peaks(jobname,
             # Detect peaks
             peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
+            x_label='Residue Number'
+            y_label='RMSF ($\AA$)'
+            title=f'{jobname} {max_seq} {extra_seq}'
+
             plt.figure(figsize=(8, 3))
-            plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
+            plt.title(title, fontsize=16)
             #plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
-            plt.xlabel('Residue Number', fontsize=14)
-            plt.ylabel('RMSF ($\AA$)', fontsize=14)
+            plt.xlabel(x_label, fontsize=14)
+            plt.ylabel(y_label, fontsize=14)
             plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
             plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
 
@@ -102,16 +106,20 @@ def calculate_rmsf_and_call_peaks(jobname,
 def calculate_rmsf_multiple(jobname,
                             prediction_dicts,
                             align_range,
-                            output_path):
+                            output_path, widget):
 
     labels = []
-    plt.figure(figsize=(8, 3))
-    plt.title(f'{jobname}', fontsize=16)
-    #plt.title(f'{jobname} aligned to {align_range}', fontsize=16)
-    plt.xlabel('Residue number', fontsize=14)
-    plt.ylabel('RMSF ($\AA$)', fontsize=14)
-    plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-    plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+    x_label='Residue number'
+    y_label='RMSF ($\AA$)'
+    title=f'{jobname}'
+    if output_path:
+        plt.figure(figsize=(8, 3))
+        plt.title(title, fontsize=16)
+        plt.xlabel(x_label, fontsize=14)
+        plt.ylabel(y_label, fontsize=14)
+        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+    
     colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
 
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
@@ -128,27 +136,30 @@ def calculate_rmsf_multiple(jobname,
 
             resids = atom_sel.resids
 
-            plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
+            if output_path:
+                plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
+            widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
             labels.append(result)  # Add the result to labels list
             pbar.update(n=1)
+    
+    if output_path:
+        plt.legend()  # Add the legend at the end
+        plt.tight_layout()
 
-    plt.legend()  # Add the legend at the end
-    plt.tight_layout()
+        full_output_path = (f"{output_path}/"
+                            f"{jobname}/"
+                            f"analysis/"
+                            f"rmsf_plddt/"
+                            f"{jobname}_rmsf_all.png")
 
-    full_output_path = (f"{output_path}/"
-                        f"{jobname}/"
-                        f"analysis/"
-                        f"rmsf_plddt/"
-                        f"{jobname}_rmsf_all.png")
-
-    plt.savefig(full_output_path, dpi=300)
-    plt.close()
+        plt.savefig(full_output_path, dpi=300)
+        plt.close()
 
 
 def plot_plddt_rmsf_corr(jobname,
                          prediction_dicts,
                          plddt_dict,
-                         output_path):
+                         output_path, widget):
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
@@ -174,39 +185,48 @@ def plot_plddt_rmsf_corr(jobname,
             cmap = plt.get_cmap('viridis')
             colors = cmap(norm(resids))
 
-            plt.scatter(rmsf_values, plddt_avg, c=colors)
+            title=f'{jobname} {max_seq} {extra_seq}'
+            x_label='C-Alpha RMSF (A)'
+            y_label='Average pLDDT'
+            if output_path:
+                plt.scatter(rmsf_values, plddt_avg, c=colors)
 
-            plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
-            plt.xlabel('C-Alpha RMSF (A)', fontsize=14)
-            plt.ylabel('Average pLDDT', fontsize=14)
-            plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-            plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
-            plt.tight_layout()
-            plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
+                plt.title(title, fontsize=16)
+                plt.xlabel(x_label, fontsize=14)
+                plt.ylabel(y_label, fontsize=14)
+                plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+                plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+                plt.tight_layout()
+                plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
 
-            full_output_path = (f"{output_path}/"
-                                f"{jobname}/"
-                                f"analysis/"
-                                f"rmsf_plddt/"
-                                f"{jobname}_"
-                                f"{max_seq}_"
-                                f"{extra_seq}_"
-                                f"plddt_rmsf_corr.png")
+                full_output_path = (f"{output_path}/"
+                                    f"{jobname}/"
+                                    f"analysis/"
+                                    f"rmsf_plddt/"
+                                    f"{jobname}_"
+                                    f"{max_seq}_"
+                                    f"{extra_seq}_"
+                                    f"plddt_rmsf_corr.png")
 
-            plt.savefig(full_output_path, dpi=300)
-            plt.close()
+                plt.savefig(full_output_path, dpi=300)
+                plt.close()
+            
             pbar.update(n=1)
+            widget.add_plot(resids, r.results.rmsf, title=title, x_label=x_label, y_label=y_label)
 
 
-
-def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue):
+def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widget):
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
-    plt.figure(figsize=(8, 3))
-    plt.title(f'{jobname}', fontsize=16)
-    plt.xlabel('Residue number', fontsize=14)
-    plt.ylabel('pLDDT', fontsize=14)
-    plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-    plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+    x_label='Residue number'
+    y_label='pLDDT'
+    title=f'{jobname}'
+    if output_path:
+        plt.figure(figsize=(8, 3))
+        plt.title(title, fontsize=16)
+        plt.xlabel(x_label, fontsize=14)
+        plt.ylabel(y_label, fontsize=14)
+        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
 
     for idx, result in enumerate(plddt_dict):
         plddt_data = plddt_dict[result]['all_plddts']
@@ -220,20 +240,21 @@ def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue):
         residue_numbers = np.arange(length_avg)
         if custom_start_residue is not None:
             residue_numbers += custom_start_residue
+        if output_path:
+            plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
+        widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+    if output_path:
+        plt.legend()  # Add the legend at the end
+        plt.tight_layout()
+        full_output_path = (f"{output_path}/"
+                            f"{jobname}/"
+                            f"analysis/"
+                            f"rmsf_plddt/"
+                            f"{jobname}_"
+                            f"all_plddt.png")
 
-        plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
-
-    plt.legend()  # Add the legend at the end
-    plt.tight_layout()
-    full_output_path = (f"{output_path}/"
-                        f"{jobname}/"
-                        f"analysis/"
-                        f"rmsf_plddt/"
-                        f"{jobname}_"
-                        f"all_plddt.png")
-
-    plt.savefig(full_output_path, dpi=300)
-    plt.close()
+        plt.savefig(full_output_path, dpi=300)
+        plt.close()
 
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):
     trials = []

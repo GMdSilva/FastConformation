@@ -15,9 +15,10 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         super().__init__(parent)
         self.plots = []
 
-    def add_plot(self, x_data, y_data, title, x_label, y_label):
+    def add_plot(self, x_data, y_data, title, x_label, y_label, color=None, label=None):
         plot_item = self.addPlot(title=title)
-        plot_item.plot(x_data, y_data, pen=pg.mkPen(color='b', width=2))
+        plot_item.addLegend()
+        plot_item.plot(x_data, y_data, pen=pg.mkPen(color=color, width=2))
         plot_item.setLabel('left', y_label)
         plot_item.setLabel('bottom', x_label)
         plot_item.showGrid(x=True, y=True)
