@@ -56,7 +56,6 @@ class AnalysisConfigWidget(QWidget):
     def show_plot(self, plot_widget):
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget()
         parent.main_widget.layout.addWidget(plot_widget)
-        parent.main_widget.setCurrentWidget(plot_widget)
 
 @dataclass
 class AnalysisCategory:
