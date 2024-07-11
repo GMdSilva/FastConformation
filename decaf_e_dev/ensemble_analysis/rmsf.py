@@ -157,14 +157,10 @@ def calculate_rmsf_multiple(jobname,
 
 
 
-def plot_plddt_rmsf_corr(jobname,
-                         prediction_dicts,
-                         plddt_dict,
-                         output_path, widget):
+def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, widget):
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
-        
         plot_item = None
-        
+
         for result in prediction_dicts:
             pbar.set_description(f'Running pLDDT/RMSF Correlation Analysis for {result}')
             max_seq = prediction_dicts[result]['max_seq']
@@ -184,17 +180,17 @@ def plot_plddt_rmsf_corr(jobname,
 
             rmsf_values = r.results.rmsf
             resids = atom_sel.resids
-            
+
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
             cmap = plt.get_cmap('viridis')
 
-            title=f'{jobname} {max_seq} {extra_seq}'
-            x_label='C-Alpha RMSF (A)'
-            y_label='Average pLDDT'
-            
+            title = f'{jobname} {max_seq} {extra_seq}'
+            x_label = 'C-Alpha RMSF (A)'
+            y_label = 'Average pLDDT'
+
             if plot_item is None:
-                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, cmap=cmap, resids=resids, scatter=True)
-            widget.add_scatter(plot_item, rmsf_values, plddt_avg, [pg.mkColor(cmap(norm(resid))[:3]) for resid in resids], label=f'{result}')
+                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True)
+            widget.add_scatter(plot_item, rmsf_values, plddt_avg, resids)
 
             if output_path:
                 plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
@@ -202,8 +198,8 @@ def plot_plddt_rmsf_corr(jobname,
                 plt.title(title, fontsize=16)
                 plt.xlabel(x_label, fontsize=14)
                 plt.ylabel(y_label, fontsize=14)
-                plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-                plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+                plt.tick_params(axis='both', which='major', labelsize=12)
+                plt.tick_params(axis='both', which='minor', labelsize=12)
                 plt.tight_layout()
                 plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=plt.gca(), label='Residue #')
 
@@ -218,7 +214,7 @@ def plot_plddt_rmsf_corr(jobname,
 
                 plt.savefig(full_output_path, dpi=300)
                 plt.close()
-            
+
             pbar.update(n=1)
 
 def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widget):

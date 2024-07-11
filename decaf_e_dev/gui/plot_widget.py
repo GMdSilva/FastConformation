@@ -1,34 +1,26 @@
 import sys
-import os
-import glob
-import pandas as pd
 import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtWidgets import (
-    QWidget, QFormLayout, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QApplication
+    QApplication, QMainWindow, QVBoxLayout, QWidget
 )
-from PyQt5.QtCore import Qt
-from tqdm import tqdm
 from pyqtgraph.colormap import ColorMap
+from matplotlib.colors import Normalize
+
 class PlotWidget(pg.GraphicsLayoutWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.plots = []
         self.setBackground('w')
 
-    def add_plot(self, x_data, y_data, title, x_label, y_label, color=None, label=None, cmap=None, resids=None, scatter=False):
+    def add_plot(self, x_data, y_data, title, x_label, y_label, color=None, label=None, resids=None, scatter=False):
         
         plot_item = self.addPlot(title=title)
         plot_item.addLegend()
         self.setBackground('w')
-        plot_item.setFixedHeight(600)
-        plot_item.setFixedWidth(800)
-        if not (cmap and resids) is None:
-            colorbar=self.add_colorbar(resids, cmap) 
         if scatter:
-            scatter=self.add_scatter(plot_item, x_data, y_data, color, label)
-            if not (cmap and resids) is None:
-                colorbar.setImageItem(scatter)
+            scatter = self.add_scatter(plot_item, x_data, y_data, resids)
+            colorbar = self.add_colorbar(scatter, resids)
         else:
             self.add_line(plot_item, x_data, y_data, color, label)
         
@@ -40,17 +32,27 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         
         return plot_item
     
+
+    def add_scatter(self, plot_item, x_data, y_data, resids):
+        colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
+        norm = Normalize(vmin=resids.min(), vmax=resids.max())
+        colormap = ColorMap(pos=np.linspace(0, 1, len(colors)), color=colors)
+        brushes = [pg.mkBrush(*colormap.map(norm(resid))) for resid in resids]
+        
+        scatter = pg.ScatterPlotItem(x=x_data, y=y_data, symbol='o', symbolSize=5, brush=brushes, pen=None)
+        plot_item.addItem(scatter)
+        
+        return scatter
+    
     def add_line(self, plot_item, x_data, y_data, color, label):
         plot_item.plot(x_data, y_data, pen=pg.mkPen(color=color, width=2), name=label)
 
-    def add_scatter(self, plot_item, x_data, y_data, color_data, label=None):
-        scatter = pg.ScatterPlotItem(x=x_data, y=y_data, pen=None, brush=color_data, name=label)
-        plot_item.addItem(scatter)
-        return scatter
-
-    def add_colorbar(self, resids, cmap):
-        # Create colorbar
-        colormap = ColorMap(pos=np.linspace(0, 1, cmap.N), color=cmap.colors)
-        colorbar = pg.ColorBarItem(values=(resids.min(), resids.max()), colorMap=colormap, interactive=True)
-        self.addItem(colorbar, row=1, col=1)
+    def add_colorbar(self, scatter, resids):
+        colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
+        positions = np.linspace(0, 1, len(colors))
+        colormap = ColorMap(pos=positions, color=colors)
+        
+        colorbar = pg.ColorBarItem(values=(resids.min(), resids.max()), colorMap=colormap, label='Residue #')
+        self.addItem(colorbar, row=len(self.plots), col=1)
+        
         return colorbar

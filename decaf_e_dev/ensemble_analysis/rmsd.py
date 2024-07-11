@@ -165,7 +165,6 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d):
                 mode_value = int(rmsd_modes[mode]['mode_value'])
                 frame_to_save = prediction_dicts[prediction]['rmsd_data']['frame'][mode_index]
                 universe.trajectory[int(frame_to_save)]
-                # Save the frame to a file
 
                 full_pdb_path = (f"{output_path}/"
                                  f"{jobname}/"

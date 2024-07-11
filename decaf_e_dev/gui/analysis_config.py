@@ -363,6 +363,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
 
     def run_specific_analysis(self, config):
         run_tmscore_analysis(config)
+
 class TwoTMScoreWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
         super().__init__()

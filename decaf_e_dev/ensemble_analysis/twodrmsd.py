@@ -206,7 +206,6 @@ class TwodRMSD:
 
         df_all_trials = pd.DataFrame()
         with tqdm(total=len(self.prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
-            print("jjjjj")
             for trial in unique_trials:
                 if not n_clusters:
                     unique_df = df[df['trial'] == trial]
@@ -218,16 +217,11 @@ class TwodRMSD:
 
                 rmsd_2d_data = self.calculate_2d_rmsd(trial)
                 if len(rmsd_2d_data) > 0:
-                    print("jjj")
                     self.fit_and_filter_data(rmsd_2d_data, n_stdevs)
-                    print("jhhhjj")
                     self.plot_filtering_data(rmsd_2d_data)
-                    print("jhhhjjkkk")
                     self.cluster_2d_data(rmsd_2d_data, n_clusters_trial)
                     df_to_save = self.plot_and_save_2d_data()
-                    print("rrr")
                     df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
-                    print("rrrrrrerrrrr")
                 pbar.update(n=1)
 
         csv_path = (f"{self.input_dict['output_path']}/"
