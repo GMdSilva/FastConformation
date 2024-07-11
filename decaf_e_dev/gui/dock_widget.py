@@ -48,26 +48,26 @@ class MainWidget(QWidget):
         # Set the main layout
         self.setLayout(self.layout)
         self.setWindowTitle("decaf_dev")
-
+        # Set the background image
+        self.setStyleSheet("""
+            MainWidget {
+                background-image: url(/Users/fmgaleazzi/decaf_e_dev/methods-2.png);
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+        """)
 
     def create_welcome_page(self):
         # Clear the layout
         self.clear_layout(self.layout)
 
         # Add the title
-        title = QLabel("decaf_dev")
-        font = title.font()
+        self.title = QLabel("decaf_dev")
+        font = self.title.font()
         font.setPointSize(20)
-        title.setFont(font)
-        title.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(title)
-
-        # Add the image
-        image = QLabel(self)
-        pixmap = QPixmap('/Users/fmgaleazzi/decaf_e_dev/methods-2.png')  # Change this to the path of your image
-        image.setPixmap(pixmap)
-        image.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(image)
+        self.title.setFont(font)
+        self.title.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.title)
 
         # Add the buttons
         self.button_layout = QHBoxLayout()

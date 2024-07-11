@@ -98,8 +98,14 @@ class MainFrame(QMainWindow):
 
     def apply_styles(self):
         self.setStyleSheet("""
+            QMainWindow {
+                background-image: url(/Users/fmgaleazzi/decaf_e_dev/methods-2.png);
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
             QWidget {
-                background-color: #f5f5f5;
+                background-color: transparent;
                 color: #333333;
             }
             QLabel {
@@ -140,7 +146,6 @@ class MainFrame(QMainWindow):
                 color: #333333;
             }
         """)
-
     def show_home_page(self):
         self.main_widget.create_welcome_page()
         self.toolbar.setVisible(False)
@@ -154,15 +159,15 @@ class MainFrame(QMainWindow):
         self.toolbar.setVisible(True)
     
     def show_plot(self, title, content_widget):
+        # Create a dock widget
         dock_widget = QDockWidget(title, self)
-        dock_widget.setAllowedAreas(Qt.RightDockWidgetArea)
-
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(content_widget)
-
-        dock_widget.setWidget(scroll_area)
-        self.addDockWidget(Qt.RightDockWidgetArea, dock_widget)
+        dock_widget.setAllowedAreas(Qt.AllDockWidgetAreas)
+        
+        dock_widget.setWidget(content_widget)
+        dock_widget.raise_()
+        # Add the dock widget to the main window, ensuring it takes up as much space as possible
+        self.addDockWidget(Qt.LeftDockWidgetArea, dock_widget)
+        dock_widget.setMinimumWidth(800)
         self.dock_widgets[title] = dock_widget
 
     def show_dock_widget(self, title, widget_callable):
