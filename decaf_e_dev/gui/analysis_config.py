@@ -53,9 +53,9 @@ class AnalysisConfigWidget(QWidget):
         self.analysis_stack.addWidget(widget)
         self.analysis_stack.setCurrentWidget(widget)
 
-    def show_plot(self, plot_widget):
+    def show_plot(self, name, plot_widget):
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget()
-        parent.main_widget.layout.addWidget(plot_widget)
+        parent.show_plot(name, plot_widget)
 
 @dataclass
 class AnalysisCategory:
@@ -255,7 +255,7 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_rmsf_analysis(config, self.plot_widget)
-        parent.show_plot(self.plot_widget)
+        parent.show_plot("rmsf", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):

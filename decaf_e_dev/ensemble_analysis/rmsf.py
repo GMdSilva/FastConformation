@@ -123,6 +123,7 @@ def calculate_rmsf_multiple(jobname,
     colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
 
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
+        plotter=None
         for idx, (result, data) in enumerate(prediction_dicts.items()):
             pbar.set_description(f'Measuring RMSF for {result}')
             u = data['mda_universe']
@@ -138,7 +139,12 @@ def calculate_rmsf_multiple(jobname,
 
             if output_path:
                 plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
-            widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+            
+            if plotter is None:
+                plotter=widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+            else:
+                widget.add_line(plotter, resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
+    
             labels.append(result)  # Add the result to labels list
             pbar.update(n=1)
     
@@ -188,9 +194,7 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             x_label = 'C-Alpha RMSF (A)'
             y_label = 'Average pLDDT'
 
-            if plot_item is None:
-                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True)
-            widget.add_scatter(plot_item, rmsf_values, plddt_avg, resids)
+            plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True)
 
             if output_path:
                 plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
@@ -218,6 +222,7 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             pbar.update(n=1)
 
 def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widget):
+    plotter=None
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
     x_label='Residue number'
     y_label='pLDDT'
@@ -244,7 +249,10 @@ def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widg
             residue_numbers += custom_start_residue
         if output_path:
             plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
-        widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+        if plotter is None:
+            plotter=widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+        else:
+            widget.add_line(plotter, residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
     if output_path:
         plt.legend()  # Add the legend at the end
         plt.tight_layout()

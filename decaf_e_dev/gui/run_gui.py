@@ -153,6 +153,17 @@ class MainFrame(QMainWindow):
         self.main_widget.show_job_status_page()
         self.toolbar.setVisible(True)
     
+    def show_plot(self, title, content_widget):
+        dock_widget = QDockWidget(title, self)
+        dock_widget.setAllowedAreas(Qt.RightDockWidgetArea)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(content_widget)
+
+        dock_widget.setWidget(scroll_area)
+        self.addDockWidget(Qt.RightDockWidgetArea, dock_widget)
+        self.dock_widgets[title] = dock_widget
 
     def show_dock_widget(self, title, widget_callable):
         if title in self.dock_widgets:
