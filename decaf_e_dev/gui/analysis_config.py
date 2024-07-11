@@ -290,7 +290,11 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_rmsd_analysis(config)
+         # Plot widget
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_rmsd_analysis(config, self.plot_widget)
+        parent.show_plot("rmsd", self.plot_widget)
 
 class RMSD2DWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):

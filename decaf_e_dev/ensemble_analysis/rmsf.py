@@ -194,7 +194,7 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             x_label = 'C-Alpha RMSF (A)'
             y_label = 'Average pLDDT'
 
-            plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True)
+            plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True, colorbar=True)
 
             if output_path:
                 plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
