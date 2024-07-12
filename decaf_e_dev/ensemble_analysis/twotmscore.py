@@ -23,7 +23,7 @@ from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
 class TwoTMScore:
-    def __init__(self, prediction_dicts, input_dict, ref_gr=None, ref_alt=None, slice_predictions=None):
+    def __init__(self, prediction_dicts, input_dict, widget, ref_gr=None, ref_alt=None, slice_predictions=None):
         self.prediction_dicts = prediction_dicts
         self.input_dict = input_dict
         self.slice_predictions = slice_predictions
@@ -31,6 +31,7 @@ class TwoTMScore:
         self.ref_alt = ref_alt
         self.filtering_dict = {}
         self.clustering_dict = {}
+        self.widget=widget
 
     @staticmethod
     def slice_models(universe, selection, temp_traj_path):
@@ -203,8 +204,15 @@ class TwoTMScore:
             'unique_labels': unique_labels,
             'close_points_2d': close_points_2d
         }
-
-    def plot_and_save_2d_data(self):
+    def show_filt_data(self, rmsd_2d_data):
+        title = (f"{self.input_dict['jobname']} "f"{self.input_dict['max_seq']} " f"{self.input_dict['extra_seq']}")
+        plotter=self.widget.add_plot(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], title=title, x_label='TM-Score vs. Ref1 (A)', y_label='TM-Score vs. Ref2 (A)', scatter=True)
+        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        self.widget.add_scatter(plotter, self.filtering_dict['x_close'],
+                    self.filtering_dict['y_close'],
+                    label='Close Points',
+                    color=[68, 1, 84, 255])
+    def plot_and_save_2d_data(self, output_path):
         colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
         unique_labels = self.clustering_dict['unique_labels']
         correct_labels = self.clustering_dict['correct_labels']
@@ -212,35 +220,45 @@ class TwoTMScore:
         centroids = self.clustering_dict['centroids']
         outliers = self.clustering_dict['outliers']
 
-        plt.figure(figsize=(5, 4))
+        colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
+            
+        plotter=self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='TM-Score vs. Ref1 (A)', y_label='TM-Score vs. Ref2 (A)', label='Centroids', scatter=True)
+        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+    
         for i in unique_labels:
             cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
-            plt.scatter(cluster_points[:, 0], cluster_points[:, 1], c=colors[i],
-                        label=f'Cluster {i} pop: {cluster_counts[i]}', alpha=0.6)
-        plt.scatter(centroids[:, 0], centroids[:, 1], s=100, c='black', marker='X', label='Centroids')
-        plt.plot(self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='red')
+            self.widget.add_scatter(plotter, cluster_points[:, 0], cluster_points[:, 1], color=colors[i], label=f'Cluster {i} pop: {cluster_counts[i]}')
+  
+        if output_path:
+            plt.figure(figsize=(5, 4))
+            for i in unique_labels:
+                cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
+                plt.scatter(cluster_points[:, 0], cluster_points[:, 1], c=colors[i],
+                            label=f'Cluster {i} pop: {cluster_counts[i]}', alpha=0.6)
+            plt.scatter(centroids[:, 0], centroids[:, 1], s=100, c='black', marker='X', label='Centroids')
+            plt.plot(self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='red')
 
-        title = (f"{self.input_dict['jobname']} {self.input_dict['max_seq']} {self.input_dict['extra_seq']} "
-                 f"Score: {self.filtering_dict['ratio']:.2f}")
+            title = (f"{self.input_dict['jobname']} {self.input_dict['max_seq']} {self.input_dict['extra_seq']} "
+                    f"Score: {self.filtering_dict['ratio']:.2f}")
 
-        plt.title(title, fontsize=16)
-        plt.legend()
-        plt.xlabel('TM-Score vs. Ref1', fontsize=14)
-        plt.ylabel('TM-Score vs. Ref2', fontsize=14)
-        plt.tick_params(axis='both', which='major', labelsize=12)
-        plt.tight_layout()
+            plt.title(title, fontsize=16)
+            plt.legend()
+            plt.xlabel('TM-Score vs. Ref1', fontsize=14)
+            plt.ylabel('TM-Score vs. Ref2', fontsize=14)
+            plt.tick_params(axis='both', which='major', labelsize=12)
+            plt.tight_layout()
 
-        plot_path = (f"{self.input_dict['output_path']}/"
-                     f"{self.input_dict['jobname']}/"
-                     f"analysis/"
-                     f"tmscore_2d/"
-                     f"{self.input_dict['jobname']}_"
-                     f"{self.input_dict['max_seq']}_"
-                     f"{self.input_dict['extra_seq']}_"
-                     f"tmscore_2d_clustered.png")
+            plot_path = (f"{self.input_dict['output_path']}/"
+                        f"{self.input_dict['jobname']}/"
+                        f"analysis/"
+                        f"tmscore_2d/"
+                        f"{self.input_dict['jobname']}_"
+                        f"{self.input_dict['max_seq']}_"
+                        f"{self.input_dict['extra_seq']}_"
+                        f"tmscore_2d_clustered.png")
 
-        plt.savefig(plot_path, dpi=300)
-        plt.close()
+            plt.savefig(plot_path, dpi=300)
+            plt.close()
 
         records = []
         for i in unique_labels:
@@ -256,7 +274,7 @@ class TwoTMScore:
         df = pd.DataFrame(records)
         return df
 
-    def get_2d_tmscore(self, tmscore_mode_df_path, n_stdevs, n_clusters):
+    def get_2d_tmscore(self, tmscore_mode_df_path, n_stdevs, n_clusters, output_path):
         df = pd.read_csv(tmscore_mode_df_path)
         unique_trials = df['trial'].unique()
 
@@ -275,9 +293,10 @@ class TwoTMScore:
                 tmscore_2d_data = self.calculate_2d_tmscore(trial)
                 if len(tmscore_2d_data) > 0:
                     self.fit_and_filter_data(tmscore_2d_data, n_stdevs)
-                    self.plot_filtering_data(tmscore_2d_data)
+                    self.plot_filtering_data(tmscore_2d_data, output_path)
+                    self.show_filt_data(self, tmscore_2d_data)
                     self.cluster_2d_data(tmscore_2d_data, n_clusters_trial)
-                    df_to_save = self.plot_and_save_2d_data()
+                    df_to_save = self.plot_and_save_2d_data(output_path)
                     df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
 
                 pbar.update(n=1)

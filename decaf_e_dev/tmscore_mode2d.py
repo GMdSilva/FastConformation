@@ -5,7 +5,7 @@ from decaf_e_dev.ensemble_analysis.twotmscore import TwoTMScore
 
 warnings.filterwarnings("ignore")
 
-def run_2d_tmscore_analysis(config):
+def run_2d_tmscore_analysis(config, widget):
 
     output_path = config.get('output_path')
     predictions_path = config.get('predictions_path')
@@ -62,7 +62,7 @@ def run_2d_tmscore_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # runs 2D TM-Score analysis
-    twod = TwoTMScore(pre_analysis_dict, input_dict, ref2d1, ref2d2, slice_predictions)
+    twod = TwoTMScore(pre_analysis_dict, input_dict, widget, ref2d1, ref2d2, slice_predictions)
 
     # builds results dataset and saves to disk
-    twod.get_2d_tmscore(mode_results, n_stdevs, n_clusters)
+    twod.get_2d_tmscore(mode_results, n_stdevs, n_clusters, output_path)

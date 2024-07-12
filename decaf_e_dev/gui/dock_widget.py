@@ -47,7 +47,6 @@ class MainWidget(QWidget):
         
         # Set the main layout
         self.setLayout(self.layout)
-        self.setWindowTitle("decaf_dev")
         # Set the background image
         self.setStyleSheet("""
             MainWidget {
@@ -89,6 +88,7 @@ class MainWidget(QWidget):
         self.new_job_dock.setAllowedAreas(Qt.TopDockWidgetArea | Qt.RightDockWidgetArea)
         self.new_job_dock.setWidget(self.create_new_job_widget())
         self.new_job_dock.setVisible(True)
+        self.title.setVisible(False)
         if self.parent:
             self.parent.addDockWidget(Qt.RightDockWidgetArea, self.new_job_dock)
     

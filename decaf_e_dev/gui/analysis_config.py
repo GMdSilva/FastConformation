@@ -336,7 +336,10 @@ class RMSD2DWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_2d_rmsd_analysis(config)
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_2d_rmsd_analysis(config, self.plot_widget)
+        parent.show_plot("TMScore-2D", self.plot_widget)
 
 class TMSCOREWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -359,6 +362,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
     def validate_inputs(self):
         errors = []
         return errors
+    
     def get_specific_options(self):
         return {
             "slice_predictions": self.slice_predictions_input.text(),
@@ -366,7 +370,10 @@ class TMSCOREWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_tmscore_analysis(config)
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_tmscore_analysis(config, self.plot_widget)
+        parent.show_plot("tmscore", self.plot_widget)
 
 class TwoTMScoreWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -410,7 +417,11 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_2d_tmscore_analysis(config)
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_2d_tmscore_analysis(config, self.plot_widget)
+        parent.show_plot("TMScore-2D", self.plot_widget)
+
 
 class PCAWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -455,7 +466,10 @@ class PCAWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        run_pca_analysis(config)
+        self.plot_widget = PlotWidget(self)
+        parent=self.parentWidget().parentWidget()
+        run_pca_analysis(config, self.plot_widget)
+        parent.show_plot("TMScore-2D", self.plot_widget)
 
 class TrajectorySavingWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):

@@ -5,7 +5,7 @@ from decaf_e_dev.ensemble_analysis.twodrmsd import TwodRMSD
 
 warnings.filterwarnings("ignore")
 
-def run_2d_rmsd_analysis(config):
+def run_2d_rmsd_analysis(config, widget):
 
     jobname = config.get('jobname')
     output_path = config.get('output_path')
@@ -69,7 +69,7 @@ def run_2d_rmsd_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # Run 2D RMSD analysis
-    twod = TwodRMSD(pre_analysis_dict, input_dict, ref2d1, ref2d2)
+    twod = TwodRMSD(pre_analysis_dict, input_dict, widget, ref2d1, ref2d2)
 
     # Build and save results dataset
-    twod.get_2d_rmsd(mode_results, n_stdevs, n_clusters)
+    twod.get_2d_rmsd(mode_results, n_stdevs, n_clusters, output_path)

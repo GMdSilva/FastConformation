@@ -11,6 +11,11 @@ from MDAnalysis.analysis import rms
 
 from tqdm import tqdm
 
+import numpy as np
+from scipy.stats import gaussian_kde
+from scipy.signal import find_peaks
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
@@ -88,11 +93,13 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
 
         modes_dict[f'mode_{mode_n}'] = mode_results
         
-        plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', scatter=True, label='KDE')
-        widget.add_scatter(plot_item, modes, kde_vals[peaks], color='red', label='Modes')
-        for mode in most_distant_modes:
-            widget.add_line(mode, color='blue', lstyle='--', label='Most Distant Mode')
-
+    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', label='KDE')
+    widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
+    
+    for mode in most_distant_modes:
+        lines=pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
+        plot_item.addItem(lines)
+        
     if output_path:
         # Plot KDE and mark modes
         plt.figure(figsize=(6, 3))

@@ -34,14 +34,16 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         return plot_item
     
 
-    def add_scatter(self, plot_item, x_data, y_data, resids, colorbar=False):
-        if colorbar:
+    def add_scatter(self, plot_item, x_data, y_data, resids=None, color='b', colorbar=False, label=None):
+        if colorbar and resids:
             colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
             colormap = ColorMap(pos=np.linspace(0, 1, len(colors)), color=colors)
             brushes = [pg.mkBrush(*colormap.map(norm(resid))) for resid in resids]
-            
-        scatter = pg.ScatterPlotItem(x=x_data, y=y_data, symbol='o', symbolSize=5, brush=brushes, pen=None)
+        else:
+            pg_color=pg.mkColor(color)
+            brushes = pg.mkBrush(pg_color)
+        scatter = pg.ScatterPlotItem(x=x_data, y=y_data, symbol='o', symbolSize=5, brush=brushes, name=label, pen=None)
         plot_item.addItem(scatter)
         
         return scatter

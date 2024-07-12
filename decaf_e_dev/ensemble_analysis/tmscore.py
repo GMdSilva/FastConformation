@@ -16,6 +16,11 @@ import MDAnalysis as mda
 
 from tqdm import tqdm
 
+import numpy as np
+from scipy.stats import gaussian_kde
+from scipy.signal import find_peaks
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore
 from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
@@ -75,7 +80,7 @@ def run_tmscore(folder_path, custom_ref):
     return tmscore_dict
 
 
-def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions) -> dict:
+def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions, widget) -> dict:
     jobname = input_dict['jobname']
     max_seq = input_dict['max_seq']
     extra_seq = input_dict['extra_seq']
@@ -113,36 +118,42 @@ def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions) -> dict
         mode_n += 1
 
         modes_dict[f'mode_{mode_n}'] = mode_results
-
-    # Plot KDE and mark modes
-    plt.figure(figsize=(6, 3))
-    plt.plot(x_vals, kde_vals, label='KDE')
-    plt.scatter(modes, kde_vals[peaks], color='red', zorder=5, label='Modes')
-
+    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', label='KDE')
+    widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
+    
     for mode in most_distant_modes:
-        plt.axvline(mode, color='blue', linestyle='--', label='Most Distant Mode')
+        lines=pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
+        plot_item.addItem(lines)
+    if output_path:    
+        # Plot KDE and mark modes
+        plt.figure(figsize=(6, 3))
+        plt.plot(x_vals, kde_vals, label='KDE')
+        plt.scatter(modes, kde_vals[peaks], color='red', zorder=5, label='Modes')
 
-    plt.title(f'{jobname} max_seq: {max_seq} extra_seq: {extra_seq}', fontsize=16)
-    if slice_predictions:
-        plt.suptitle(f'{slice_predictions}', fontsize=10)
-    plt.xlabel('TM-Score', fontsize=14)
-    plt.ylabel('Density', fontsize=14)
-    plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-    plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
-    plt.grid(False)
+        for mode in most_distant_modes:
+            plt.axvline(mode, color='blue', linestyle='--', label='Most Distant Mode')
 
-    # Show the plot
-    plt.tight_layout()
+        plt.title(f'{jobname} max_seq: {max_seq} extra_seq: {extra_seq}', fontsize=16)
+        if slice_predictions:
+            plt.suptitle(f'{slice_predictions}', fontsize=10)
+        plt.xlabel('TM-Score', fontsize=14)
+        plt.ylabel('Density', fontsize=14)
+        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
+        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+        plt.grid(False)
 
-    figure_full_path = f"{output_path}/{jobname}/analysis/tmscore_1d/{jobname}_{max_seq}_{extra_seq}_tmscore_kde.png"
+        # Show the plot
+        plt.tight_layout()
 
-    plt.savefig(figure_full_path, dpi=300)
-    plt.close()
+        figure_full_path = f"{output_path}/{jobname}/analysis/tmscore_1d/{jobname}_{max_seq}_{extra_seq}_tmscore_kde.png"
+
+        plt.savefig(figure_full_path, dpi=300)
+        plt.close()
 
     return modes_dict
 
 
-def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predictions):
+def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predictions, widget):
     jobname = input_dict['jobname']
     output_path = input_dict['output_path']
     predictions_path = input_dict['predictions_path']
@@ -175,7 +186,7 @@ def tmscore_mode_analysis(prediction_dicts, input_dict, custom_ref, slice_predic
 
             tmscore_modes = tmscore_kde(prediction_dicts[prediction]['tmscore_dict']['tmscore'],
                                         input_dict,
-                                        slice_predictions)
+                                        slice_predictions, widget)
 
             for mode in tmscore_modes:
                 if tmscore_modes[mode]['mode_value']==None:

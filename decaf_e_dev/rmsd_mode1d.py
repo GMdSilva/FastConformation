@@ -5,7 +5,7 @@ from decaf_e_dev.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset
 
 warnings.filterwarnings("ignore")
 
-def run_rmsd_analysis(config):
+def run_rmsd_analysis(config, plot_widget):
 
     jobname = config.get('jobname')
     output_path = config.get('output_path')
@@ -59,7 +59,7 @@ def run_rmsd_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # Run 1D RMSD analysis
-    rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d)
+    rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d, plot_widget)
 
     # Build and save results dataset
     build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)

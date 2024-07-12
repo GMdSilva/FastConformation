@@ -5,7 +5,7 @@ from decaf_e_dev.ensemble_analysis.pca import pca_from_ensemble
 
 warnings.filterwarnings("ignore")
 
-def run_pca_analysis(config):
+def run_pca_analysis(config, widget):
 
     predictions_path = config.get('predictions_path')
     output_path = config.get('output_path')
@@ -42,5 +42,5 @@ def run_pca_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # run PCA analysis
-    pca_from_ensemble(jobname, pre_analysis_dict, output_path, align_range, analysis_range, int(n_pca_clusters))
+    pca_from_ensemble(jobname, pre_analysis_dict, output_path, align_range, analysis_range, int(n_pca_clusters), widget)
 

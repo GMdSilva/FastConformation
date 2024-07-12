@@ -5,7 +5,7 @@ from decaf_e_dev.ensemble_analysis.tmscore import build_dataset_tmscore_modes, t
 
 warnings.filterwarnings("ignore")
 
-def run_tmscore_analysis(config):
+def run_tmscore_analysis(config, plot_widget):
 
     output_path = config.get('output_path')
     predictions_path = config.get('predictions_path')
@@ -50,7 +50,7 @@ def run_tmscore_analysis(config):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
     print("Load predictions to RAM")
     # Run 1D TM-Score analysis
-    tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions)
+    tmscore_mode_analysis_dict = tmscore_mode_analysis(pre_analysis_dict, input_dict, ref1, slice_predictions, plot_widget)
     print("Run 1D TM-Score analysis")
     # Build results dataset and save to disk
     build_dataset_tmscore_modes(tmscore_mode_analysis_dict, input_dict)
