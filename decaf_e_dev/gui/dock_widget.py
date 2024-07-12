@@ -50,7 +50,7 @@ class MainWidget(QWidget):
         # Set the background image
         self.setStyleSheet("""
             MainWidget {
-                background-image: url(/Users/fmgaleazzi/decaf_e_dev/methods-2.png);
+                background-image: url(/methods-2.png);
                 background-position: center;
                 background-repeat: no-repeat;
             }
