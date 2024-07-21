@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
-from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
 from decaf_e_dev.gui.dock_widget import MainWidget
 from decaf_e_dev.gui.icons import Icons
@@ -251,7 +251,12 @@ class QPlainTextEditLogger:
         pass
 
 if __name__ == '__main__':
+    
     app = QApplication(sys.argv)
+        # Set the application icon
+    app_icon = QIcon('methods-2.png')  # Update the path as needed
+    app.setWindowIcon(app_icon)
+
     main_frame = MainFrame()
     main_frame.show()
     sys.exit(app.exec_())

@@ -22,7 +22,7 @@ STYLES = r"""
         border: 1px solid palette(dark);
     }
     QListWidget::item:hover {
-        background: palette(light);
+        background: palette(dark);
     }
     QListWidget::item:selected {
         background: #ABD149;
