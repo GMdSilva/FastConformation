@@ -179,6 +179,9 @@ class MainFrame(QMainWindow):
                 padding: 4px;
                 color: palette(text);
             }
+            QDockWidget {
+                background-color: palette(mid);
+            }
         """)
 
     def show_home_page(self):

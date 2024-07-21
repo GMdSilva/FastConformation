@@ -19,6 +19,7 @@ STYLES = r"""
         padding: 5px;
         background: palette(base);
         color: palette(text);
+        border: 1px solid palette(dark);
     }
     QListWidget::item:hover {
         background: palette(light);
