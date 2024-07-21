@@ -30,7 +30,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         
         self.use_ramdisk_label = QLabel("Use RAM Disk:")
         self.use_ramdisk_checkbox = QCheckBox()
-        self.use_ramdisk_checkbox.setChecked(True)
+        self.use_ramdisk_checkbox.setChecked(False)
         
         layout.addWidget(self.type_label)
         layout.addWidget(self.type_dropdown)

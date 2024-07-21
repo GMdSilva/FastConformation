@@ -16,7 +16,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         # Engine
         self.engine_label = QLabel("Engine:")
         self.engine_dropdown = QComboBox()
-        self.engine_dropdown.addItems(["alphafold2", "other_engine1", "other_engine2"])
+        self.engine_dropdown.addItems(["alphafold2"])
 
         # MSA Path
         self.msa_path_label = QLabel("MSA Path:")

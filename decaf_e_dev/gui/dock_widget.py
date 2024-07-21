@@ -38,24 +38,16 @@ class MainWidget(QWidget):
 
         # Main layout
         self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignCenter)
+        self.layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
 
         # Create the welcome page
         self.create_welcome_page()
 
         self.dock_widgets={}
-        
+
         # Set the main layout
         self.setLayout(self.layout)
-        # Set the background image
-        self.setStyleSheet("""
-            MainWidget {
-                background-image: url(/methods-2.png);
-                background-position: center;
-                background-repeat: no-repeat;
-            }
-        """)
-
+    
     def create_welcome_page(self):
         # Clear the layout
         self.clear_layout(self.layout)
@@ -87,8 +79,8 @@ class MainWidget(QWidget):
         self.new_job_dock = QDockWidget("Select options", self)
         self.new_job_dock.setAllowedAreas(Qt.TopDockWidgetArea | Qt.RightDockWidgetArea)
         self.new_job_dock.setWidget(self.create_new_job_widget())
-        self.new_job_dock.setVisible(True)
         self.title.setVisible(False)
+
         if self.parent:
             self.parent.addDockWidget(Qt.RightDockWidgetArea, self.new_job_dock)
     
@@ -130,12 +122,12 @@ class MainWidget(QWidget):
     def show_new_job_page(self):
         if self.parent:
             self.parent.toolbar.setVisible(True)
+        if self.new_job_dock:
+            self.new_job_dock.setVisible(False)
         self.create_dock_widget()
 
     def show_job_status_page(self):
-        self.central_widget.show_job_status_page()
-        self.toolbar.setVisible(True)
-        self.hide_all_dock_widgets()
+        pass
     
     def _on_item_clicked(self, item):
         name = item.text()

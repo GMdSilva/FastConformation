@@ -104,9 +104,9 @@ class GeneralAnalysisWidget(QWidget):
         layout = QFormLayout()
         
         self.jobname_input = QLineEdit("abl_wt")
-        self.output_path_input = QLineEdit("/Users/fmgaleazzi/Downloads")
+        self.output_path_input = QLineEdit("")
         self.output_path_button = QPushButton("Browse")
-        self.predictions_path_input = QLineEdit("/Users/fmgaleazzi/decaf_e_dev/sample_predictions/abl_wt/predictions/alphafold2")
+        self.predictions_path_input = QLineEdit("")
         self.predictions_path_button = QPushButton("Browse")
         self.engine_input = QLineEdit("alphafold2")
         self.align_range_input = QLineEdit("backbone")

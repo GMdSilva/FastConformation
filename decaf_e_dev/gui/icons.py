@@ -9,7 +9,7 @@ STYLES = r"""
         min-width: 294px;
         background: none;
         font-size: 13pt;
-        color: #333333;
+        color: palette(text);
     }
     QListWidget::item {
         width: 80px;
@@ -17,15 +17,15 @@ STYLES = r"""
         border-radius: 4px;
         margin: 5px;
         padding: 5px;
-        background: #f5f5f5;
-        color: #333333;
+        background: palette(base);
+        color: palette(text);
     }
     QListWidget::item:hover {
-        background: #e7f3ff;
+        background: palette(light);
     }
     QListWidget::item:selected {
-        background: #007BFF;
-        color: white;
+        background: palette(highlight);
+        color: palette(highlightedText);
     }
 """
 

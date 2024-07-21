@@ -2,16 +2,53 @@ import sys
 from dataclasses import dataclass
 import sys
 sys.path.append('/Users/fmgaleazzi/decaf_e_dev')
+import sys
+from dataclasses import dataclass
+from typing import Callable
 from pathlib import Path
-from decaf_e_dev.gui.dock_widget import MainWidget
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QListWidgetItem, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtCore import Qt
+from decaf_e_dev.gui.dock_widget import MainWidget
 from decaf_e_dev.gui.icons import Icons
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon
+from decaf_e_dev.gui.directory_selector import DirectorySelector
+from decaf_e_dev.gui.build_msa import MSAOptionsWidget
+from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
+from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
 
-from decaf_e_dev.gui.dock_widget import CATEGORIES
+@dataclass
+class Category:
+    widget: Callable
+    tool_tip: str = ""
+
+CATEGORIES = {
+    "Build MSA": Category(
+        widget=lambda: MSAOptionsWidget(),
+        tool_tip="Select parameters to build MSA",
+    ),
+    "Make Predictions": Category(
+        widget=lambda: MakePredictionsWidget(),
+        tool_tip="Select parameters to make predictions",
+    ),
+    "Analysis": Category(
+        widget=lambda: AnalysisConfigWidget(),
+        tool_tip="Select parameters to analyze results",
+    ),
+}
+class BackgroundWidget(QWidget):
+    def __init__(self, parent=None):
+        super(BackgroundWidget, self).__init__(parent)
+        self.pixmap = QPixmap("methods-2.png")
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        pixmap_rect = self.pixmap.rect()
+        center_x = (self.width() - pixmap_rect.width()) // 2
+        center_y = (self.height() - pixmap_rect.height()) + 50
+        painter.drawPixmap(center_x, center_y, self.pixmap)
 
 class MainFrame(QMainWindow):
     def __init__(self):
@@ -20,15 +57,18 @@ class MainFrame(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        self.layout = QVBoxLayout(self.central_widget)
 
+        self.layout = QVBoxLayout(self.central_widget)
+        self.background_widget = BackgroundWidget(self)
+        self.layout.addWidget(self.background_widget)
         # Add the main widget
         self.main_widget = MainWidget(self)
         self.layout.addWidget(self.main_widget)
+
         # Add the toolbar
         self.toolbar = QToolBar()
         self.toolbar.setMovable(False)
-        self.dock_widgets={}
+        self.dock_widgets = {}
         self.toolbar.setStyleSheet("""
             QToolBar {
                 background-color: #333333;
@@ -98,71 +138,71 @@ class MainFrame(QMainWindow):
 
     def apply_styles(self):
         self.setStyleSheet("""
-            QMainWindow {
-                background-image: url(/Users/fmgaleazzi/decaf_e_dev/methods-2.png);
-                background-position: center;
-                background-repeat: no-repeat;
-                background-size: cover;
-            }
             QWidget {
-                background-color: transparent;
-                color: #333333;
+                background-color: palette(base);
+                color: palette(text);
             }
             QLabel {
-                color: #333333;
+                color: palette(text);
             }
             QPushButton {
-                background-color: #007BFF;
-                color: white;
+                background-color: palette(highlight);
+                color: palette(highlightedText);
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 margin: 5px;
             }
             QPushButton:hover {
-                background-color: #0056b3;
+                background-color: palette(dark);
             }
             QPushButton:pressed {
-                background-color: #004494;
+                background-color: palette(shadow);
             }
             QLineEdit {
-                background-color: white;
-                border: 1px solid #CCCCCC;
+                background-color: palette(base);
+                border: 1px solid palette(mid);
                 padding: 4px;
                 border-radius: 4px;
-                color: #333333;
+                color: palette(text);
             }
             QComboBox {
-                background-color: white;
-                border: 1px solid #CCCCCC;
+                background-color: palette(base);
+                border: 1px solid palette(mid);
                 padding: 4px;
                 border-radius: 4px;
-                color: #333333;
+                color: palette(text);
             }
             QListWidget {
-                background-color: white;
-                border: 1px solid #CCCCCC;
+                background-color: palette(base);
+                border: 1px solid palette(mid);
                 padding: 4px;
-                color: #333333;
+                color: palette(text);
             }
         """)
+
     def show_home_page(self):
-        self.main_widget.create_welcome_page()
         self.toolbar.setVisible(False)
+        self.hide_all_dock_widgets()
+        self.main_widget.new_job_dock.setVisible(False)
+        self.main_widget.create_welcome_page()
 
     def show_new_job_page(self):
+        self.hide_all_dock_widgets()
+        self.main_widget.new_job_dock.setVisible(False)
         self.toolbar.setVisible(True)
         self.main_widget.create_dock_widget()
 
     def show_job_status_page(self):
+        self.main_widget.new_job_dock.setVisible(False)
         self.main_widget.show_job_status_page()
         self.toolbar.setVisible(True)
-    
+
     def show_plot(self, title, content_widget):
         # Create a dock widget
         dock_widget = QDockWidget(title, self)
         dock_widget.setAllowedAreas(Qt.AllDockWidgetAreas)
-        
+
         dock_widget.setWidget(content_widget)
         dock_widget.raise_()
         # Add the dock widget to the main window, ensuring it takes up as much space as possible
@@ -191,12 +231,12 @@ class MainFrame(QMainWindow):
         for dock_key, dock_value in self.dock_widgets.items():
             if dock_key != title:
                 dock_value.setVisible(False)
-    
+
     def hide_all_dock_widgets(self):
         for dock_widget in self.dock_widgets.values():
             dock_widget.setVisible(False)
 
-#show "terminal" on screen
+# show "terminal" on screen
 class QPlainTextEditLogger:
     def __init__(self, text_edit):
         self.widget = text_edit
@@ -206,7 +246,6 @@ class QPlainTextEditLogger:
 
     def flush(self):
         pass
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
