@@ -31,7 +31,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         self.use_ramdisk_label = QLabel("Use RAM Disk:")
         self.use_ramdisk_checkbox = QCheckBox()
         self.use_ramdisk_checkbox.setChecked(False)
-        
+
         layout.addWidget(self.type_label)
         layout.addWidget(self.type_dropdown)
         layout.addWidget(self.sequence_path_label)
@@ -43,7 +43,6 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         layout.addWidget(self.homooligomers_input)
         layout.addWidget(self.use_ramdisk_label)
         layout.addWidget(self.use_ramdisk_checkbox)
-        
         self.setLayout(layout)
         self.setWindowTitle("MSA Options")
 

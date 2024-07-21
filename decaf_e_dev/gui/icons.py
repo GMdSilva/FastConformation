@@ -17,7 +17,7 @@ STYLES = r"""
         border-radius: 4px;
         margin: 5px;
         padding: 5px;
-        background: palette(base);
+        background: #D2E3A4;
         color: palette(text);
         border: 1px solid palette(dark);
     }
@@ -25,7 +25,7 @@ STYLES = r"""
         background: palette(light);
     }
     QListWidget::item:selected {
-        background: palette(highlight);
+        background: #ABD149;
         color: palette(highlightedText);
     }
 """

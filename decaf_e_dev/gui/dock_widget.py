@@ -86,6 +86,12 @@ class MainWidget(QWidget):
     
     def create_new_job_widget(self):
         new_job_widget = QWidget()
+        # Setting specific style for this widget
+        new_job_widget.setStyleSheet("""
+            QWidget {
+                background-color: #CCCCCC;
+            }
+        """)
         layout = QVBoxLayout(new_job_widget)
         widget = QLabel("Select:")
         font = widget.font()
@@ -94,7 +100,6 @@ class MainWidget(QWidget):
         widget.setMinimumWidth(800)
         widget.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         layout.addWidget(widget)
-
         self.icon_grid = Icons(self)
         self.icon_grid.addItems(CATEGORIES)
         self.icon_grid.itemClicked.connect(self._on_item_clicked)
@@ -109,6 +114,7 @@ class MainWidget(QWidget):
         widget = CATEGORIES[name].widget()
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.new_job_dock.widget().layout().addWidget(widget)
+
 
     def clear_dock_widget(self):
         dock_widget = self.new_job_dock.widget()

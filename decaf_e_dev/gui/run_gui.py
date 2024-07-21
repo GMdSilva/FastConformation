@@ -146,7 +146,7 @@ class MainFrame(QMainWindow):
                 color: palette(text);
             }
             QPushButton {
-                background-color: palette(highlight);
+                background-color: #D2E3A4;
                 color: palette(highlightedText);
                 border: none;
                 padding: 8px 16px;
@@ -157,7 +157,7 @@ class MainFrame(QMainWindow):
                 background-color: palette(dark);
             }
             QPushButton:pressed {
-                background-color: palette(shadow);
+                background-color: #ABD149;
             }
             QLineEdit {
                 background-color: palette(base);
@@ -180,7 +180,7 @@ class MainFrame(QMainWindow):
                 color: palette(text);
             }
             QDockWidget {
-                background-color: palette(mid);
+                background-color: lightgrey;
             }
         """)
 
