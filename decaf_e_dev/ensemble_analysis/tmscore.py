@@ -6,7 +6,7 @@ import shutil
 import pandas as pd
 import numpy as np
 from glob import glob
-import tmscore
+
 import matplotlib.pyplot as plt
 
 from scipy.stats import gaussian_kde
