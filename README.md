@@ -10,8 +10,8 @@ https://drive.google.com/drive/folders/1ev5HfWVyMTBw3FRtKWxYaswuaIXvC1FS?usp=dri
 
 placeholder
 ## Installation
-conda create -n decaf_dev
-conda activate decaf_dev
+run the ./install_decaf.sh file
+
 
 
 #### Acknowledgements
