@@ -249,14 +249,16 @@ class QPlainTextEditLogger:
 
     def flush(self):
         pass
-
-if __name__ == '__main__':
     
+def main():
     app = QApplication(sys.argv)
-        # Set the application icon
+    # Set the application icon
     app_icon = QIcon('methods-2.png')  # Update the path as needed
     app.setWindowIcon(app_icon)
 
     main_frame = MainFrame()
     main_frame.show()
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()

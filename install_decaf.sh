@@ -19,13 +19,15 @@ conda create -p "$DECAFDIR/decaf_e_dev-conda" -c conda-forge -c bioconda -c bioc
     kalign2=2.04 hhsuite=3.3.0 mmseqs2=15.6f452 hmmer scikit-learn mdanalysis seaborn scipy -y
 conda activate "$DECAFDIR/decaf_e_dev-conda"
 
-# install ColabFold and Jaxlib
+# Install additional Python packages for the GUI
+"$DECAFDIR/decaf_e_dev-conda/bin/pip" install PyQt5 napari pandas matplotlib xgboost silence_tensorflow
+
+# Install ColabFold and Jaxlib
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \
     "colabfold[alphafold-minus-jax] @ git+https://github.com/GMdSilva/ColabFold"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install "colabfold[alphafold]"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade "jax[cuda12]"==0.4.28
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade tensorflow
-"$DECAFDIR/decaf_e_dev-conda/bin/pip" install silence_tensorflow
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install pdb-tools
 
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \
@@ -51,3 +53,6 @@ echo "Installation of decaf_e_dev finished."
 echo "Add ${DECAFDIR}/decaf_e_dev-conda/bin to your PATH environment variable to run 'decaf_e_dev'."
 echo -e "i.e. for Bash:\n\texport PATH=\"${DECAFDIR}/decaf_e_dev-conda/bin:\$PATH\""
 echo "For more details, please run 'decaf_e_dev --help'."
+
+# Run the GUI
+"$DECAFDIR/decaf_e_dev-conda/bin/python" -m decaf_e_dev.gui.run_gui
