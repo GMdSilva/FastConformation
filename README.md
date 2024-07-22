@@ -5,7 +5,7 @@ decaf_e_dev
 [![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/branch/main/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/branch/main)
 
 ## Download Sample files
-Download this folder to obtain the sample files.
+Download this folder to obtain the sample files. Add them to the root directory for easier use.
 https://drive.google.com/drive/folders/1ev5HfWVyMTBw3FRtKWxYaswuaIXvC1FS?usp=drive_link
 
 placeholder
