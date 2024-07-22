@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Callable
 from pathlib import Path
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
+    QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
@@ -110,7 +110,7 @@ class MainFrame(QMainWindow):
         self.toolbar.setVisible(False)
 
         self.setWindowTitle('DECAF_E')
-        self.showFullScreen()
+        self.set_initial_window_size()
 
         self.apply_styles()
 
@@ -238,6 +238,10 @@ class MainFrame(QMainWindow):
     def hide_all_dock_widgets(self):
         for dock_widget in self.dock_widgets.values():
             dock_widget.setVisible(False)
+
+    def set_initial_window_size(self):
+        screen = QDesktopWidget().screenGeometry()
+        self.setGeometry(100, 100, screen.width() - 100, screen.height() - 100)
 
 # show "terminal" on screen
 class QPlainTextEditLogger:
