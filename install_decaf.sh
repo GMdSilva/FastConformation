@@ -20,7 +20,7 @@ conda create -p "$DECAFDIR/decaf_e_dev-conda" -c conda-forge -c bioconda -c bioc
 conda activate "$DECAFDIR/decaf_e_dev-conda"
 
 # Install additional Python packages for the GUI
-"$DECAFDIR/decaf_e_dev-conda/bin/pip" install PyQt5 pandas matplotlib silence_tensorflow pyqtgraph
+"$DECAFDIR/decaf_e_dev-conda/bin/pip" install PyQt5 pandas pyqt matplotlib silence_tensorflow pyqtgraph
 
 # Install ColabFold and Jaxlib
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \

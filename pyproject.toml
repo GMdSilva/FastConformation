@@ -31,6 +31,7 @@ appdirs = "^1.4.4"
 py3Dmol = "^2.0.1"
 dm-haiku = "^0.0.12"
 pyqtgraph = "*"
+qtpy="*"
 PyQt5 = "*"
 importlib-metadata = "^4.8.2"
 
