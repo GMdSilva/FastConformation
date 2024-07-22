@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "decaf_e_dev"
 version = "0.1.1"
-description = "placeholder"
+description = "A toolset for protein dynamics prediction and analysis"
 authors = [
     "Gabriel Monteiro da Silva <gabriel.monteiro233@gmail.com>",
 ]
@@ -30,7 +30,6 @@ tqdm = "^4.62.2"
 appdirs = "^1.4.4"
 py3Dmol = "^2.0.1"
 dm-haiku = "^0.0.12"
-matplotlib = "*"
 pyqtgraph = "*"
 PyQt5 = "*"
 importlib-metadata = "^4.8.2"
@@ -59,6 +58,7 @@ tmscore_mode1d = 'decaf_e_dev.tmscore_mode1d:main'
 pca_clustering = 'decaf_e_dev.pca_clustering:main'
 rmsf_plddt = 'decaf_e_dev.rmsf_plddt:main'
 save_traj = 'decaf_e_dev.save_traj:main'
+run_gui = "decaf_e_dev.gui.run_gui:main"
 
 [tool.black]
 # Format only the new package, don't touch the existing stuff
