@@ -139,7 +139,6 @@ def calculate_rmsf_multiple(jobname,
 
             if output_path:
                 plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
-            
             if plotter is None:
                 plotter=widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
             else:
@@ -193,12 +192,11 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             title = f'{jobname} {max_seq} {extra_seq}'
             x_label = 'C-Alpha RMSF (A)'
             y_label = 'Average pLDDT'
-
+            print("boh")
             plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True, colorbar=True)
 
             if output_path:
                 plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
-
                 plt.title(title, fontsize=16)
                 plt.xlabel(x_label, fontsize=14)
                 plt.ylabel(y_label, fontsize=14)

@@ -14,12 +14,15 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         self.setBackground('w')
 
     def add_plot(self, x_data, y_data, title, x_label, y_label, color=None, label=None, resids=None, scatter=False, colorbar=False):
+        print("t")
         plot_item = self.addPlot(title=title)
         plot_item.addLegend()
         self.setBackground('w')
         if scatter and colorbar:
+            print("tefrerf")
             scatter = self.add_scatter(plot_item, x_data, y_data, resids, colorbar=True)
-            colorbar = self.add_colorbar(scatter, resids)
+            print("tre")
+            colorbar = self.add_colorbar(resids)
         elif scatter:
             scatter = self.add_scatter(plot_item, x_data, y_data, resids)
         else:
@@ -35,7 +38,7 @@ class PlotWidget(pg.GraphicsLayoutWidget):
     
 
     def add_scatter(self, plot_item, x_data, y_data, resids=None, color='b', colorbar=False, label=None):
-        if colorbar and resids:
+        if colorbar and (not resids is None):
             colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
             norm = Normalize(vmin=resids.min(), vmax=resids.max())
             colormap = ColorMap(pos=np.linspace(0, 1, len(colors)), color=colors)
@@ -51,7 +54,7 @@ class PlotWidget(pg.GraphicsLayoutWidget):
     def add_line(self, plot_item, x_data, y_data, color, label, lstyle=None):
         plot_item.plot(x_data, y_data, pen=pg.mkPen(color=color, width=2), name=label, linestyle=lstyle)
 
-    def add_colorbar(self, scatter, resids):
+    def add_colorbar(self, resids):
         colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
         positions = np.linspace(0, 1, len(colors))
         colormap = ColorMap(pos=positions, color=colors)
