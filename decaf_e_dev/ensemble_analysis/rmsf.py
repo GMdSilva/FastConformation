@@ -47,7 +47,7 @@ def calculate_rmsf_and_call_peaks(jobname,
             peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
             x_label='Residue Number'
-            y_label='RMSF ($\AA$)'
+            y_label='RMSF (Å)'
             title=f'{jobname} {max_seq} {extra_seq}'
 
             plt.figure(figsize=(8, 3))
@@ -110,7 +110,7 @@ def calculate_rmsf_multiple(jobname,
 
     labels = []
     x_label='Residue number'
-    y_label='RMSF ($\AA$)'
+    y_label='RMSF (Å)'
     title=f'{jobname}'
     if output_path:
         plt.figure(figsize=(8, 3))

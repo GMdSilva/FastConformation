@@ -93,7 +93,7 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
 
         modes_dict[f'mode_{mode_n}'] = mode_results
         
-    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', label='KDE')
+    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD (Å)', y_label='Density', label='KDE')
     widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
     
     for mode in most_distant_modes:
@@ -111,7 +111,7 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
 
         plt.title(f'{jobname} {max_seq} {extra_seq}', fontsize=16)
         #plt.suptitle(f'{rmsd_range} after alignment to {align_range}', fontsize=10)
-        plt.xlabel('RMSD ($\AA$)', fontsize=14)
+        plt.xlabel('RMSD (Å)', fontsize=14)
         plt.ylabel('Density', fontsize=14)
         plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
         plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)

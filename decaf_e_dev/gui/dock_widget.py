@@ -53,7 +53,7 @@ class MainWidget(QWidget):
         self.clear_layout(self.layout)
 
         # Add the title
-        self.title = QLabel("decaf_dev")
+        self.title = QLabel("FastEnsemble")
         font = self.title.font()
         font.setPointSize(20)
         self.title.setFont(font)
@@ -63,13 +63,13 @@ class MainWidget(QWidget):
         # Add the buttons
         self.button_layout = QHBoxLayout()
         self.new_job_button = QPushButton("Submit New Job")
-        self.job_status_button = QPushButton("Job Status")
+        #self.job_status_button = QPushButton("Job Status")
 
         self.new_job_button.clicked.connect(self.show_new_job_page)
-        self.job_status_button.clicked.connect(self.show_job_status_page)
+        #self.job_status_button.clicked.connect(self.show_job_status_page)
         self.new_job_dock=None
         self.button_layout.addWidget(self.new_job_button)
-        self.button_layout.addWidget(self.job_status_button)
+        #self.button_layout.addWidget(self.job_status_button)
         self.layout.addLayout(self.button_layout)
 
     def create_dock_widget(self):
@@ -109,11 +109,18 @@ class MainWidget(QWidget):
         layout.addWidget(self.icon_grid)
         return new_job_widget
     
+    def wrap_with_border(self, widget):
+        container_widget = QWidget()
+        layout = QVBoxLayout(container_widget)
+        layout.addWidget(widget)
+        container_widget.setStyleSheet("QWidget { border: 2px solid darkgrey; background-color: lightgrey; }")
+        return container_widget
+    
     def _on_item_clicked(self, item):
         name = item.text()
         widget = CATEGORIES[name].widget()
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.new_job_dock.widget().layout().addWidget(widget)
+        self.new_job_dock.widget().layout().addWidget(self.wrap_with_border(widget))
 
 
     def clear_dock_widget(self):
