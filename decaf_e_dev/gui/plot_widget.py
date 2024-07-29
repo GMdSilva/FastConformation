@@ -14,14 +14,11 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         self.setBackground('w')
 
     def add_plot(self, x_data, y_data, title, x_label, y_label, color=None, label=None, resids=None, scatter=False, colorbar=False):
-        print("t")
         plot_item = self.addPlot(title=title)
         plot_item.addLegend()
         self.setBackground('w')
         if scatter and colorbar:
-            print("tefrerf")
             scatter = self.add_scatter(plot_item, x_data, y_data, resids, colorbar=True)
-            print("tre")
             colorbar = self.add_colorbar(resids)
         elif scatter:
             scatter = self.add_scatter(plot_item, x_data, y_data, resids)
@@ -33,9 +30,11 @@ class PlotWidget(pg.GraphicsLayoutWidget):
         plot_item.showGrid(x=True, y=True)
         self.nextRow()
         self.plots.append(plot_item)
-        
+        self.add_borders(plot_item)
         return plot_item
     
+    def add_borders(self, plot):
+        plot.getViewBox().setBorder(pg.mkPen(color='lightgrey', width=1))  # Set border color and width
 
     def add_scatter(self, plot_item, x_data, y_data, resids=None, color='b', colorbar=False, label=None):
         if colorbar and (not resids is None):

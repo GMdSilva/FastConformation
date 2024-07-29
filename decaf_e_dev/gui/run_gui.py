@@ -95,21 +95,21 @@ class MainFrame(QMainWindow):
 
         self.home_button = QPushButton("Home Page")
         self.submit_new_job_button = QPushButton("Submit New Job")
-        self.job_status_button = QPushButton("Job Status")
+        #self.job_status_button = QPushButton("Job Status")
         self.terminal_button = QPushButton("Log")
 
         self.home_button.clicked.connect(self.show_home_page)
         self.submit_new_job_button.clicked.connect(self.show_new_job_page)
-        self.job_status_button.clicked.connect(self.show_job_status_page)
+        #self.job_status_button.clicked.connect(self.show_job_status_page)
         self.terminal_button.clicked.connect(self.show_terminal)
 
         self.toolbar.addWidget(self.home_button)
         self.toolbar.addWidget(self.submit_new_job_button)
-        self.toolbar.addWidget(self.job_status_button)
+        #self.toolbar.addWidget(self.job_status_button)
         self.toolbar.addWidget(self.terminal_button)
         self.toolbar.setVisible(False)
 
-        self.setWindowTitle('DECAF_E')
+        self.setWindowTitle('FastEnsemble')
         self.set_initial_window_size()
 
         self.apply_styles()
@@ -180,7 +180,7 @@ class MainFrame(QMainWindow):
                 color: palette(text);
             }
             QDockWidget {
-                background-color: lightgrey;
+                background-color: darkgrey;
             }
         """)
 
@@ -206,12 +206,20 @@ class MainFrame(QMainWindow):
         dock_widget = QDockWidget(title, self)
         dock_widget.setAllowedAreas(Qt.AllDockWidgetAreas)
 
-        dock_widget.setWidget(content_widget)
+        # Create a container widget with a layout and add the content_widget
+        container_widget = QWidget()
+        layout = QVBoxLayout(container_widget)
+        layout.addWidget(content_widget)
+        container_widget.setStyleSheet("QWidget { background-color: lightgrey; }")
+
+        # Set the container widget as the dock widget's main widget
+        dock_widget.setWidget(container_widget)
         dock_widget.raise_()
         # Add the dock widget to the main window, ensuring it takes up as much space as possible
         self.addDockWidget(Qt.LeftDockWidgetArea, dock_widget)
         dock_widget.setMinimumWidth(800)
         self.dock_widgets[title] = dock_widget
+
 
     def show_dock_widget(self, title, widget_callable):
         if title in self.dock_widgets:
