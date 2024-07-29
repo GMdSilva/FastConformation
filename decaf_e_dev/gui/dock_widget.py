@@ -5,7 +5,6 @@ from qtpy.QtWidgets import (
     QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout, QSizePolicy
 )
 from qtpy.QtGui import QPixmap
-from decaf_e_dev.gui.directory_selector import DirectorySelector
 from decaf_e_dev.gui.icons import Icons
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget

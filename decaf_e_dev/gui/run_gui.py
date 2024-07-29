@@ -14,7 +14,6 @@ from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
 from decaf_e_dev.gui.dock_widget import MainWidget
 from decaf_e_dev.gui.icons import Icons
-from decaf_e_dev.gui.directory_selector import DirectorySelector
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
 from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
