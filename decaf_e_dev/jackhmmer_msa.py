@@ -125,10 +125,10 @@ def build_jackhmmer_msa(config):
 
     # sets output directory for MSA
     complete_output_dir = f"{config['output_path']}/{config['jobname']}/msas/jackhmmer/"
-
+    print("prima")
     # builds jackhmmer MSA from target sequence
     build_msa(config["sequence_string"], config["jobname"], complete_output_dir, config["homooligomers"], tmp_dir=config["tmp_dir"], use_ramdisk=config["use_ramdisk"])
-
+    print("hv")
     # reformats MSA to something colabfold_batch can use
     converted_msa = convert_msa(f"{complete_output_dir}/msa.pickle")
     save_formatted_sequences_to_file(converted_msa, f"{complete_output_dir}/{config['jobname']}.a3m")

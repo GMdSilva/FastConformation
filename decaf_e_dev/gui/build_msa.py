@@ -53,11 +53,10 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         layout.addWidget(self.run_button)
 
         self.toggle_additional_options()  # Initial call to set the correct visibility
-
     def select_sequence_path(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select Sequence File")
-        if directory:
-            self.sequence_path_input.setText(directory)
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select Sequence File", "", "FASTA files (*.fasta *.fa)")
+        if file_path:
+            self.sequence_path_input.setText(file_path)
 
     def toggle_additional_options(self):
         is_jackhmmer_selected = self.type_dropdown.currentText() == "jackhmmer"
