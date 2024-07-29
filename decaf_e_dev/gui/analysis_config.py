@@ -2,8 +2,9 @@ import sys
 from dataclasses import dataclass
 from typing import Callable
 from pathlib import Path
+import os
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QCheckBox, QHBoxLayout, QSizePolicy
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QCheckBox, QHBoxLayout, QMessageBox
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
@@ -28,8 +29,8 @@ class AnalysisConfigWidget(QWidget):
         
         # General analysis options
         self.general_analysis_widget = GeneralAnalysisWidget()
+
         top_layout.addWidget(self.general_analysis_widget)
-        
         # Icon grid
         self.icon_grid = Icons(self)
         self.icon_grid.addItems(ANALYSIS_CATEGORIES)
@@ -41,7 +42,6 @@ class AnalysisConfigWidget(QWidget):
         # Stacked widget for analysis configuration panels
         self.analysis_stack = QStackedWidget()
         main_layout.addWidget(self.analysis_stack)
-        
         self.setLayout(main_layout)
         self.setWindowTitle("Analysis Configurations")
 
@@ -117,9 +117,10 @@ class GeneralAnalysisWidget(QWidget):
         
         # Seq Pairs
         self.seq_pairs_layout = QVBoxLayout()
-        self.add_seq_pair_button = QPushButton("Add Sequence Pair")
-        self.add_seq_pair_button.clicked.connect(self.add_seq_pair)
-        self.seq_pairs=[]
+        self.add_seq_pair_button = QPushButton("Add Pair:")
+        self.add_seq_pair_button.clicked.connect(lambda: self.add_seq_pair("", ""))
+        self.seq_pairs = []
+        
         layout.addRow("Job Name:", self.jobname_input)
         
         output_path_layout = QHBoxLayout()
@@ -127,13 +128,17 @@ class GeneralAnalysisWidget(QWidget):
         output_path_layout.addWidget(self.output_path_button)
         layout.addRow("Output Path:", output_path_layout)
         
-        self.seq_pairs_layout.addWidget(self.add_seq_pair_button)
-        layout.addRow("Sequence Pairs:", self.seq_pairs_layout)
-        
+        instructions_label = QLabel("Select the path to AF2 predictions which contains subfolders for each subsampling condition.")
+        instructions_label.setWordWrap(True)  # Ensure the text wraps if it's too long
+        layout.addRow(instructions_label)
+
         predictions_path_layout = QHBoxLayout()
         predictions_path_layout.addWidget(self.predictions_path_input)
         predictions_path_layout.addWidget(self.predictions_path_button)
         layout.addRow("Predictions Path:", predictions_path_layout)
+        
+        self.seq_pairs_layout.addWidget(self.add_seq_pair_button)
+        layout.addRow("max_seq:extra_seq pairs:", self.seq_pairs_layout)
         
         layout.addRow("Engine:", self.engine_input)
         layout.addRow("Align Range:", self.align_range_input)
@@ -147,7 +152,16 @@ class GeneralAnalysisWidget(QWidget):
 
         self.setLayout(layout)
         
-    
+    def clear_seq_pairs(self):
+        for i in range(len(self.seq_pairs) - 1, -1, -1):
+            layout, seq_pair = self.seq_pairs.pop(i)
+            while layout.count():
+                child = layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.seq_pairs_layout.removeItem(layout)
+            layout.deleteLater()
+
     def select_output_path(self):
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
@@ -157,12 +171,33 @@ class GeneralAnalysisWidget(QWidget):
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.predictions_path_input.setText(directory)
+            self.auto_detect_sequence_pairs(directory)
 
+    def auto_detect_sequence_pairs(self, predictions_path):
+        try:
+            self.clear_seq_pairs()
+            for subdir in os.listdir(predictions_path):
+                subdir_path = os.path.join(predictions_path, subdir)
+                if os.path.isdir(subdir_path):
+                    parts = subdir.split('_')
+                    if len(parts) >= 3 and parts[-2].isdigit() and parts[-1].isdigit():
+                        max_seq = parts[-2]
+                        extra_seq = parts[-1]
+                        self.add_seq_pair(max_seq, extra_seq)
+                    else:
+                        current_pair = subdir.split('_')[-2:]
+                        if all(part.isdigit() for part in current_pair):
+                            max_seq, extra_seq = current_pair
+                            self.add_seq_pair(max_seq, extra_seq)
+                            
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to auto-detect sequence pairs: {e}")
+    
     def get_general_options(self):
         return {
             "jobname": self.jobname_input.text(),
             "output_path": self.output_path_input.text(),
-            "seq_pairs": [[int(seq_pair[0].text()), int(seq_pair[1].text())] for seq_pair in self.seq_pairs],
+            "seq_pairs": [[int(seq_pair[0].text()), int(seq_pair[1].text())] for layout, seq_pair in self.seq_pairs],
             "predictions_path": self.predictions_path_input.text(),
             "engine": self.engine_input.text(),
             "align_range": self.align_range_input.text(),
@@ -172,16 +207,15 @@ class GeneralAnalysisWidget(QWidget):
             "starting_residue": self.starting_residue_input.text(),
         }
 
-    def add_seq_pair(self):
+    def add_seq_pair(self, seq1='', seq2=''):
         seq_pair_layout = QHBoxLayout()
-        seq_pair=[]
-        seq1_input = QLineEdit()
+        seq_pair = []
+        seq1_input = QLineEdit(seq1)
         seq1_input.setPlaceholderText("Sequence 1")
-        seq2_input = QLineEdit()
+        seq2_input = QLineEdit(seq2)
         seq2_input.setPlaceholderText("Sequence 2")
         seq_pair.append(seq1_input)
         seq_pair.append(seq2_input)
-        self.seq_pairs.append(seq_pair)
         
         remove_button = QPushButton("Remove")
         remove_button.clicked.connect(lambda: self.remove_seq_pair(seq_pair_layout, seq_pair))
@@ -190,7 +224,8 @@ class GeneralAnalysisWidget(QWidget):
         seq_pair_layout.addWidget(seq2_input)
         seq_pair_layout.addWidget(remove_button)
 
-        self.seq_pairs_layout.addLayout(seq_pair_layout)
+        self.seq_pairs_layout.insertLayout(self.seq_pairs_layout.count() - 1, seq_pair_layout)
+        self.seq_pairs.append((seq_pair_layout, seq_pair))
 
     def remove_seq_pair(self, layout, seq_pair):
         # Properly remove and delete the layout and its widgets
@@ -199,7 +234,7 @@ class GeneralAnalysisWidget(QWidget):
             if child.widget():
                 child.widget().deleteLater()
         self.seq_pairs_layout.removeItem(layout)
-        self.seq_pairs.remove(seq_pair)
+        self.seq_pairs.remove((layout, seq_pair))
         layout.deleteLater()
 
 class RMSFAnalysisWidget(AnalysisWidgetBase):
@@ -255,7 +290,7 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_rmsf_analysis(config, self.plot_widget)
-        parent.show_plot("rmsf", self.plot_widget)
+        parent.show_plot("RMSF Analysis", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -294,7 +329,7 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_rmsd_analysis(config, self.plot_widget)
-        parent.show_plot("rmsd", self.plot_widget)
+        parent.show_plot("RMSD Analysis", self.plot_widget)
 
 class RMSD2DWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -339,7 +374,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_2d_rmsd_analysis(config, self.plot_widget)
-        parent.show_plot("TMScore-2D", self.plot_widget)
+        parent.show_plot("TMScore-2D  Analysis", self.plot_widget)
 
 class TMSCOREWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -373,7 +408,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_tmscore_analysis(config, self.plot_widget)
-        parent.show_plot("tmscore", self.plot_widget)
+        parent.show_plot("TMScore Analysis", self.plot_widget)
 
 class TwoTMScoreWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):
@@ -420,7 +455,7 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_2d_tmscore_analysis(config, self.plot_widget)
-        parent.show_plot("TMScore-2D", self.plot_widget)
+        parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
 
 class PCAWidget(AnalysisWidgetBase):
@@ -469,7 +504,7 @@ class PCAWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_pca_analysis(config, self.plot_widget)
-        parent.show_plot("TMScore-2D", self.plot_widget)
+        parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
 class TrajectorySavingWidget(AnalysisWidgetBase):
     def __init__(self, general_options_getter):

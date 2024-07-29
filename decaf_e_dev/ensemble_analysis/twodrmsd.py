@@ -101,8 +101,8 @@ class TwodRMSD:
                  f"{self.input_dict['extra_seq']}")
 
         plt.title(title, fontsize=15)
-        plt.xlabel('RMSD vs. Ref1 (A)', fontsize=14)
-        plt.ylabel('RMSD vs. Ref2 (A)', fontsize=14)
+        plt.xlabel('RMSD vs. Ref1 (Å)', fontsize=14)
+        plt.ylabel('RMSD vs. Ref2 (Å)', fontsize=14)
         plt.tick_params(axis='both', which='major', labelsize=12)
         plt.legend(loc='best')
         plt.tight_layout()
@@ -185,8 +185,8 @@ class TwodRMSD:
 
             plt.title(title, fontsize=16)
             plt.legend()
-            plt.xlabel('RMSD vs. Ref1 (A)', fontsize=14)
-            plt.ylabel('RMSD vs. Ref2 (A)', fontsize=14)
+            plt.xlabel('RMSD vs. Ref1 (Å)', fontsize=14)
+            plt.ylabel('RMSD vs. Ref2 (Å)', fontsize=14)
             plt.tick_params(axis='both', which='major', labelsize=12)
             plt.tight_layout()
 

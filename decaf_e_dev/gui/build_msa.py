@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QComboBox, QLineEd
 from PyQt5.QtCore import Qt
 
 class MSAOptionsWidget(AnalysisWidgetBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self.init_ui()
 
     def init_ui(self):
@@ -16,6 +16,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         self.type_label = QLabel("MSA type:")
         self.type_dropdown = QComboBox()
         self.type_dropdown.addItems(["jackhmmer", "mmseqs2"])
+        self.type_dropdown.currentIndexChanged.connect(self.toggle_additional_options)
 
         self.sequence_path_label = QLabel("Sequence Path:")
         self.sequence_path_input = QLineEdit()
@@ -50,13 +51,22 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(lambda: self.run_analysis(general_options=False))
         layout.addWidget(self.run_button)
-        
+
+        self.toggle_additional_options()  # Initial call to set the correct visibility
+
     def select_sequence_path(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Sequence File", "", "FASTA Files (*.fasta);;All Files (*)", options=options)
-        if file_path:
-            self.sequence_path_input.setText(file_path)
+        directory = QFileDialog.getExistingDirectory(self, "Select Sequence File")
+        if directory:
+            self.sequence_path_input.setText(directory)
+
+    def toggle_additional_options(self):
+        is_jackhmmer_selected = self.type_dropdown.currentText() == "jackhmmer"
+        self.tmp_dir_label.setVisible(is_jackhmmer_selected)
+        self.tmp_dir_input.setVisible(is_jackhmmer_selected)
+        self.homooligomers_label.setVisible(is_jackhmmer_selected)
+        self.homooligomers_input.setVisible(is_jackhmmer_selected)
+        self.use_ramdisk_label.setVisible(is_jackhmmer_selected)
+        self.use_ramdisk_checkbox.setVisible(is_jackhmmer_selected)
 
     def validate_inputs(self):
         errors = []
