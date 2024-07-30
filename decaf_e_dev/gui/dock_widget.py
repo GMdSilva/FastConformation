@@ -107,7 +107,6 @@ class MainWidget(QWidget):
         self.icon_grid.itemClicked.connect(self._on_item_clicked)
         new_job_widget.setMinimumSize(600, 400)
 
-    
         layout.addWidget(self.icon_grid)
         return new_job_widget
     
@@ -115,7 +114,6 @@ class MainWidget(QWidget):
         container_widget = QWidget()
         layout = QVBoxLayout(container_widget)
         layout.addWidget(widget)
-        container_widget.setStyleSheet("QWidget { border: 2px solid darkgrey; background-color: lightgrey; }")
         return container_widget
     
     def _on_item_clicked(self, item):
@@ -123,7 +121,6 @@ class MainWidget(QWidget):
         widget = CATEGORIES[name].widget(self.job_manager)
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.new_job_dock.widget().layout().addWidget(self.wrap_with_border(widget))
-
 
     def clear_dock_widget(self):
         dock_widget = self.new_job_dock.widget()
@@ -146,13 +143,6 @@ class MainWidget(QWidget):
         if self.new_job_dock:
             self.new_job_dock.setVisible(False)
         self.create_dock_widget()
-
-    
-    def _on_item_clicked(self, item):
-        name = item.text()
-        widget = CATEGORIES[name].widget(self.job_manager)
-        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.new_job_dock.widget().layout().addWidget(self.wrap_with_border(widget))
 
     def clear_layout(self, layout, start_index=0):
         while layout.count() > start_index:

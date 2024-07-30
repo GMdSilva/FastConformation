@@ -20,10 +20,10 @@ from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
 from decaf_e_dev.gui.plot_widget import PlotWidget
 
 class AnalysisConfigWidget(QWidget):
-    def __init__(self):
+    def __init__(self, job_manager):
         super().__init__()
         main_layout = QVBoxLayout()
-        
+        self.job_manager=job_manager
         # Top part for general analysis options and icon grid
         top_layout = QHBoxLayout()
         
@@ -48,7 +48,7 @@ class AnalysisConfigWidget(QWidget):
     def _on_item_clicked(self, item):
         name = item.text()
         getter = self.general_analysis_widget.get_general_options
-        widget = ANALYSIS_CATEGORIES[name].widget(getter)
+        widget = ANALYSIS_CATEGORIES[name].widget(getter, self.job_manager)
         
         self.analysis_stack.addWidget(widget)
         self.analysis_stack.setCurrentWidget(widget)
@@ -64,31 +64,31 @@ class AnalysisCategory:
 
 ANALYSIS_CATEGORIES = {
     "RMSF Analysis": AnalysisCategory(
-        widget=lambda getter: RMSFAnalysisWidget(getter),
+        widget=lambda getter, job_manager: RMSFAnalysisWidget(getter, job_manager),
         tool_tip="RMSF analysis configurations",
     ),
     "RMSD Analysis": AnalysisCategory(
-        widget=lambda getter: RMSDAnalysisWidget(getter),
+        widget=lambda getter, job_manager: RMSDAnalysisWidget(getter, job_manager),
         tool_tip="RMSD analysis configurations",
     ),
     "RMSD_2D": AnalysisCategory(
-        widget=lambda getter: RMSD2DWidget(getter),
+        widget=lambda getter, job_manager: RMSD2DWidget(getter, job_manager),
         tool_tip="RMSD_2D configurations",
     ),
     "TMSCORE": AnalysisCategory(
-        widget=lambda getter: TMSCOREWidget(getter),
+        widget=lambda getter, job_manager: TMSCOREWidget(getter, job_manager),
         tool_tip="TMSCORE configurations",
     ),
     "TMSCORE_2D": AnalysisCategory(
-        widget=lambda getter: TwoTMScoreWidget(getter),
+        widget=lambda getter, job_manager: TwoTMScoreWidget(getter, job_manager),
         tool_tip="TMSCORE_2D configurations",
     ),
     "PCA": AnalysisCategory(
-        widget=lambda getter: PCAWidget(getter),
+        widget=lambda getter, job_manager: PCAWidget(getter, job_manager),
         tool_tip="PCA configurations",
     ),
     "Trajectory Saving": AnalysisCategory(
-        widget=lambda getter: TrajectorySavingWidget(getter),
+        widget=lambda getter, job_manager: TrajectorySavingWidget(getter, job_manager),
         tool_tip="Trajectory saving configurations",
     ),
 }
@@ -238,8 +238,8 @@ class GeneralAnalysisWidget(QWidget):
         layout.deleteLater()
 
 class RMSFAnalysisWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -293,8 +293,8 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         parent.show_plot("RMSF Analysis", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -332,8 +332,8 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         parent.show_plot("RMSD Analysis", self.plot_widget)
 
 class RMSD2DWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -377,8 +377,8 @@ class RMSD2DWidget(AnalysisWidgetBase):
         parent.show_plot("TMScore-2D  Analysis", self.plot_widget)
 
 class TMSCOREWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -411,8 +411,8 @@ class TMSCOREWidget(AnalysisWidgetBase):
         parent.show_plot("TMScore Analysis", self.plot_widget)
 
 class TwoTMScoreWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -459,8 +459,8 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
 
 
 class PCAWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         
@@ -507,8 +507,8 @@ class PCAWidget(AnalysisWidgetBase):
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
 class TrajectorySavingWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter):
-        super().__init__()
+    def __init__(self, general_options_getter, job_manager):
+        super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
         

@@ -6,10 +6,56 @@ def merge_configs(general_options, specific_options):
     config.update(specific_options)
     return config
 class AnalysisWidgetBase(QWidget):
-    def __init__(self, job_manager):
+    def __init__(self, job_manager, general_options_getter=False):
         super().__init__()
         self.job_manager = job_manager
         self.job_manager.job_finished.connect(self.on_job_finished)
+        self.setStyleSheet("""
+                    QWidget {
+                        background-color: palette(base);
+                        color: palette(text);
+                    }
+                    QLabel {
+                        color: palette(text);
+                    }
+                    QPushButton {
+                        background-color: #D2E3A4;
+                        color: palette(highlightedText);
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 4px;
+                        margin: 5px;
+                    }
+                    QPushButton:hover {
+                        background-color: palette(dark);
+                    }
+                    QPushButton:pressed {
+                        background-color: #ABD149;
+                    }
+                    QLineEdit {
+                        background-color: palette(base);
+                        border: 1px solid palette(mid);
+                        padding: 4px;
+                        border-radius: 4px;
+                        color: palette(text);
+                    }
+                    QComboBox {
+                        background-color: palette(base);
+                        border: 1px solid palette(mid);
+                        padding: 4px;
+                        border-radius: 4px;
+                        color: palette(text);
+                    }
+                    QListWidget {
+                        background-color: palette(base);
+                        border: 1px solid palette(mid);
+                        padding: 4px;
+                        color: palette(text);
+                    }
+                    QDockWidget {
+                        background-color: darkgrey;
+                    }
+                """)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_job_manager_queue)

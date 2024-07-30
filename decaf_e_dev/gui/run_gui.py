@@ -19,19 +19,6 @@ from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
 from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
 
-
-class BackgroundWidget(QWidget):
-    def __init__(self, parent=None):
-        super(BackgroundWidget, self).__init__(parent)
-        self.pixmap = QPixmap("methods-2.png")
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        pixmap_rect = self.pixmap.rect()
-        center_x = (self.width() - pixmap_rect.width()) // 2
-        center_y = (self.height() - pixmap_rect.height()) + 50
-        painter.drawPixmap(center_x, center_y, self.pixmap)
-
 class MainFrame(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -243,12 +230,24 @@ class QPlainTextEditLogger:
     def flush(self):
         pass
     
+
+class BackgroundWidget(QWidget):
+    def __init__(self, parent=None):
+        super(BackgroundWidget, self).__init__(parent)
+        self.pixmap = QPixmap("methods-2.png")
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        pixmap_rect = self.pixmap.rect()
+        center_x = (self.width() - pixmap_rect.width()) // 2
+        center_y = (self.height() - pixmap_rect.height()) + 50
+        painter.drawPixmap(center_x, center_y, self.pixmap)
+
 def main():
     app = QApplication(sys.argv)
     # Set the application icon
     app_icon = QIcon('methods-2.png')  # Update the path as needed
     app.setWindowIcon(app_icon)
-
     main_frame = MainFrame()
     main_frame.show()
     sys.exit(app.exec_())
