@@ -9,6 +9,7 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
+from job_manager import JobStatusPage, JobManager
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
@@ -18,25 +19,7 @@ from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
 from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
 
-@dataclass
-class Category:
-    widget: Callable
-    tool_tip: str = ""
 
-CATEGORIES = {
-    "Build MSA": Category(
-        widget=lambda: MSAOptionsWidget(),
-        tool_tip="Select parameters to build MSA",
-    ),
-    "Make Predictions": Category(
-        widget=lambda: MakePredictionsWidget(),
-        tool_tip="Select parameters to make predictions",
-    ),
-    "Analysis": Category(
-        widget=lambda: AnalysisConfigWidget(),
-        tool_tip="Select parameters to analyze results",
-    ),
-}
 class BackgroundWidget(QWidget):
     def __init__(self, parent=None):
         super(BackgroundWidget, self).__init__(parent)
@@ -52,16 +35,15 @@ class BackgroundWidget(QWidget):
 class MainFrame(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        self.job_manager=JobManager()
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
-
 
         self.layout = QVBoxLayout(self.central_widget)
         self.background_widget = BackgroundWidget(self)
         self.layout.addWidget(self.background_widget)
         # Add the main widget
-        self.main_widget = MainWidget(self)
+        self.main_widget = MainWidget(self, self.job_manager)
         self.layout.addWidget(self.main_widget)
 
         # Add the toolbar

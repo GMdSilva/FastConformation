@@ -192,7 +192,6 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             title = f'{jobname} {max_seq} {extra_seq}'
             x_label = 'C-Alpha RMSF (A)'
             y_label = 'Average pLDDT'
-            print("boh")
             plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True, colorbar=True)
 
             if output_path:

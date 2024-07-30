@@ -122,7 +122,6 @@ def run_mmseqs2_msa(config):
 
     env = os.environ.copy()
     env["PATH"] += os.pathsep + "localcolabfold/colabfold-conda/bin"
-    env["PATH"] += os.pathsep + "/home/gabriel/localcolabfold/colabfold-conda/bin"  ## TODO: remove path
 
     create_directory(f'{output_path}/{jobname}/msas/mmseqs2')
     create_directory(f'{output_path}/{jobname}/target_seq/')

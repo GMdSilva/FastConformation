@@ -60,16 +60,21 @@ def load_pdb_files_as_universe(folder_path, reindex):
     topology = pdb_files[0]
 
     if reindex:
-        # predictions are usually 1-indexed, allow user to reindex so that the first residue = reindex
-        command = f"pdb_reres -{reindex} {topology} > temp.pdb"
+        # Path for the temp.pdb file in the same directory as the original PDB files
+        temp_pdb_path = os.path.join(folder_path, 'temp.pdb')
+
+        # Predictions are usually 1-indexed, allow user to reindex so that the first residue = reindex
+        command = f"pdb_reres -{reindex} \"{topology}\" > \"{temp_pdb_path}\""
         subprocess.run(command, shell=True, check=True)
-        topology = 'temp.pdb'
+        topology = temp_pdb_path
+
 
     u = mda.Universe(topology, *pdb_files, dt=1)
 
     if reindex:
+        temp_pdb_path = os.path.join(folder_path, 'temp.pdb')
         # removes temporary topology from reindexing
-        os.remove("temp.pdb")
+        os.remove(temp_pdb_path)
 
     print(f"Loaded {len(u.trajectory)} predictions from {folder_path}")
     return u

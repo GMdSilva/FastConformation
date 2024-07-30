@@ -78,7 +78,7 @@ def homooligomerize_heterooligomer(msas, deletion_matrices, lengths, homooligome
                 # split sequence
                 _s, _m, _ok = [], [], []
                 for i, j in frag_ij:
-                    _s.append(s[i:j]);
+                    _s.append(s[i:j])
                     _m.append(m[i:j])
                     _ok.append(max([o != "-" for o in _s[-1]]))
 
@@ -163,7 +163,7 @@ def plot_confidence(plddt, pae=None, Ls=None, dpi=100):
     use_ptm = False if pae is None else True
     if use_ptm:
         plt.figure(figsize=(10, 3), dpi=dpi)
-        plt.subplot(1, 2, 1);
+        plt.subplot(1, 2, 1)
     else:
         plt.figure(figsize=(5, 3), dpi=dpi)
     plt.title('Predicted lDDT')
@@ -178,7 +178,7 @@ def plot_confidence(plddt, pae=None, Ls=None, dpi=100):
     plt.ylabel('plDDT')
     plt.xlabel('position')
     if use_ptm:
-        plt.subplot(1, 2, 2);
+        plt.subplot(1, 2, 2)
         plt.title('Predicted Aligned Error')
         Ln = pae.shape[0]
         plt.imshow(pae, cmap="bwr", vmin=0, vmax=30, extent=(0, Ln, Ln, 0))

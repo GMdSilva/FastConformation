@@ -119,9 +119,33 @@ def main():
     build_jackhmmer_msa(config)
 
 def build_jackhmmer_msa(config):
-        # optionally create ramdisk
+    create_directory(f'{config["output_path"]}/{config["jobname"]}/msas/jackhmmer')
+    create_directory(f'{config["output_path"]}/{config["jobname"]}/target_seq/')
+
+    sequence_dict = read_fasta(config['sequence_path'])
+    save_dict_to_fasta(sequence_dict, config['output_path'], config['jobname'])
+
+    sequence_name = list(sequence_dict.keys())[0]
+    config['sequence_string'] = list(sequence_dict.values())[0]
+
+    print(f"\nRunning jackhmmer MSA building for target sequence at {config['sequence_path']}\n")
+
+    print(f"{sequence_name}: \n{config['sequence_string']}\n")
+
+    print("Configurations:")
+    print("***************************************************************")
+    print(f"Job Name: {config['jobname']}")
+    print(f"Sequence File Path: {config['sequence_path']}")
+    print(f"Output Path: {config['output_path']}")
+    print(f"Homooligomers: {config['homooligomers']}")
+    print(f"Use ramdisk? {config['use_ramdisk']}")
+    print("***************************************************************\n")
+
+    # optionally create ramdisk
     if config["use_ramdisk"]:
         prepare_os()
+    create_directory(f'{config["output_path"]}/{config["jobname"]}/msas/jackhmmer')
+    create_directory(f'{config["output_path"]}/{config["jobname"]}/target_seq/')
 
     # sets output directory for MSA
     complete_output_dir = f"{config['output_path']}/{config['jobname']}/msas/jackhmmer/"

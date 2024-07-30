@@ -9,31 +9,34 @@ from decaf_e_dev.gui.icons import Icons
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
 from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
-
+from job_manager import JobStatusPage, JobManager
 @dataclass
 class Category:
-    widget: Callable
+    widget: Callable[[JobManager], QWidget]
     tool_tip: str = ""
 
 CATEGORIES = {
     "Build MSA": Category(
-        widget=lambda: MSAOptionsWidget(),
+        widget=lambda job_manager: MSAOptionsWidget(job_manager),
         tool_tip="Select parameters to build MSA",
     ),
     "Make Predictions": Category(
-        widget=lambda: MakePredictionsWidget(),
+        widget=lambda job_manager: MakePredictionsWidget(job_manager),
         tool_tip="Select parameters to make predictions",
     ),
     "Analysis": Category(
-        widget=lambda: AnalysisConfigWidget(),
+        widget=lambda job_manager: AnalysisConfigWidget(job_manager),
         tool_tip="Select parameters to analyze results",
     ),
 }
 
+
 class MainWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent, job_manager):
         super().__init__(parent)
         self.parent = parent
+
+        self.job_manager = job_manager
 
         # Main layout
         self.layout = QVBoxLayout()
@@ -62,13 +65,13 @@ class MainWidget(QWidget):
         # Add the buttons
         self.button_layout = QHBoxLayout()
         self.new_job_button = QPushButton("Submit New Job")
-        #self.job_status_button = QPushButton("Job Status")
+        self.job_status_button = QPushButton("Job Status")
 
         self.new_job_button.clicked.connect(self.show_new_job_page)
-        #self.job_status_button.clicked.connect(self.show_job_status_page)
+        self.job_status_button.clicked.connect(self.show_job_status_page)
         self.new_job_dock=None
         self.button_layout.addWidget(self.new_job_button)
-        #self.button_layout.addWidget(self.job_status_button)
+        self.button_layout.addWidget(self.job_status_button)
         self.layout.addLayout(self.button_layout)
 
     def create_dock_widget(self):
@@ -117,7 +120,7 @@ class MainWidget(QWidget):
     
     def _on_item_clicked(self, item):
         name = item.text()
-        widget = CATEGORIES[name].widget()
+        widget = CATEGORIES[name].widget(self.job_manager)
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.new_job_dock.widget().layout().addWidget(self.wrap_with_border(widget))
 
@@ -131,6 +134,12 @@ class MainWidget(QWidget):
             if widget:
                 widget.deleteLater()
     
+    def show_job_status_page(self):
+        if not hasattr(self, 'job_status_page'):
+            self.job_status_page = JobStatusPage(self.parent.job_manager)
+            self.layout.addWidget(self.job_status_page)
+        self.job_status_page.show()
+    
     def show_new_job_page(self):
         if self.parent:
             self.parent.toolbar.setVisible(True)
@@ -138,14 +147,13 @@ class MainWidget(QWidget):
             self.new_job_dock.setVisible(False)
         self.create_dock_widget()
 
-    def show_job_status_page(self):
-        pass
     
     def _on_item_clicked(self, item):
         name = item.text()
-        widget_class = CATEGORIES[name].widget
-        self.parent.show_dock_widget(name, widget_class)
-        
+        widget = CATEGORIES[name].widget(self.job_manager)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.new_job_dock.widget().layout().addWidget(self.wrap_with_border(widget))
+
     def clear_layout(self, layout, start_index=0):
         while layout.count() > start_index:
             item = layout.takeAt(start_index)

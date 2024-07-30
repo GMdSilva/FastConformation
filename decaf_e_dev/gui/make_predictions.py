@@ -5,8 +5,8 @@ from decaf_e_dev.predict_ensemble import run_ensemble_prediction
 from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
 
 class MakePredictionsWidget(AnalysisWidgetBase):
-    def __init__(self, general_options_getter=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, job_manager, general_options_getter=None, *args, **kwargs):
+        super().__init__(job_manager, *args, **kwargs)
         self.general_options_getter = general_options_getter
         self.init_ui()
 
@@ -30,9 +30,9 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.msa_from_dropdown.addItems(["mmseqs2", "jackhmmer"])
 
         # Seq Pairs
-        self.seq_pairs_label = QLabel("Sequence Pairs:")
+        self.seq_pairs_label = QLabel("max_seq:extra_seq pairs:")
         self.seq_pairs_layout = QVBoxLayout()
-        self.add_seq_pair_button = QPushButton("Add Sequence Pair")
+        self.add_seq_pair_button = QPushButton("Add Pair")
         self.add_seq_pair_button.clicked.connect(self.add_seq_pair)
 
         # Seeds
@@ -50,9 +50,12 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.save_all_checkbox.setChecked(False)
 
         # Subset MSA To
-        self.subset_msa_to_label = QLabel("Subset MSA To:")
+        self.subset_msa_to_label = QLabel("Max MSA Depth:")
         self.subset_msa_to_input = QLineEdit("")
-
+        self.output_path_label = QLabel("Output Path:")
+        self.output_path_input = QLineEdit("")
+        self.output_path_button = QPushButton("Browse")
+        
         # Adding widgets to the layout
         layout.addWidget(self.engine_label, 0, 0)
         layout.addWidget(self.engine_dropdown, 0, 1)
@@ -72,6 +75,9 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         layout.addWidget(self.save_all_checkbox, 7, 1)
         layout.addWidget(self.subset_msa_to_label, 10, 0)
         layout.addWidget(self.subset_msa_to_input, 10, 1)
+        layout.addWidget(self.output_path_label, 11, 0)
+        layout.addWidget(self.output_path_input, 11, 1)
+        layout.addWidget(self.output_path_button, 11, 2)
 
         self.setLayout(layout)
         self.setWindowTitle("Advanced MSA Options")
@@ -79,7 +85,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         # Run Button
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(lambda: self.run_analysis(general_options=False))
-        layout.addWidget(self.run_button, 11, 1)
+        layout.addWidget(self.run_button, 12, 1)
         
     def select_msa_path(self):
         options = QFileDialog.Options()
@@ -87,6 +93,11 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         file_path, _ = QFileDialog.getOpenFileName(self, "Select MSA File", "", "MSA Files (*.a3m);;All Files (*)", options=options)
         if file_path:
             self.msa_path_input.setText(file_path)
+    
+    def select_output_path(self):
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if directory:
+            self.output_path_input.setText(directory)
 
     def add_seq_pair(self):
         seq_pair_layout = QHBoxLayout()
@@ -126,7 +137,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
     def get_specific_options(self):
         return {
             'msa_path': self.msa_path_input.text(),
-            'output_path': 'output_path',  # Set this as needed
+            'output_path': self.output_path_input.text(),  # Set this as needed
             'jobname': 'jobname',  # Set this as needed
             'seq_pairs': self.get_seq_pairs(),
             'seeds': int(self.seeds_input.text()),
@@ -136,8 +147,22 @@ class MakePredictionsWidget(AnalysisWidgetBase):
             'msa_from': self.msa_from_dropdown.currentText()
         }
 
-    def run_specific_analysis(self, config):
-        run_ensemble_prediction(config)
+    def run_analysis(self):
+        errors = self.validate_inputs()
+        if errors:
+            self.show_error_message(errors)
+            return
+
+        try:
+            g_options = self.general_options_getter()
+        except Exception:
+            g_options = {}
+
+        specific_options = self.get_specific_options()
+        config = merge_configs(g_options, specific_options)
+
+        job_id = self.job_manager.run_job(run_ensemble_prediction, (config,))
+        self.show_info_message(f"Job {job_id} started.")
 
     def get_seq_pairs(self):
         seq_pairs = []
