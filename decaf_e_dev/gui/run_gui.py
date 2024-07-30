@@ -9,7 +9,7 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
-from job_manager import JobStatusPage, JobManager
+from decaf_e_dev.gui.job_manager import JobStatusPage, JobManager
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
