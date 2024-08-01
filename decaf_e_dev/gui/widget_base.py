@@ -78,10 +78,11 @@ class AnalysisWidgetBase(QWidget):
 
         specific_options = self.get_specific_options()
         config = merge_configs(g_options, specific_options)
-
-        job_id = self.job_manager.run_job(self.run_specific_analysis, (config,))
-        self.show_info_message(f"Job {job_id} started.")
-
+        try:
+            self.run_specific_analysis(config)
+        except Exception as e:
+            self.show_error_message([str(e)])
+            
     def get_specific_options(self):
         """Override this method to return specific options."""
         return {}

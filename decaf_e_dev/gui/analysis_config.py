@@ -259,7 +259,7 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         self.layout_rmsf=layout
 
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
+        self.run_button.clicked.connect(self.run_analysis)
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
@@ -305,7 +305,7 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         layout.addRow("Analysis Range Name:", self.analysis_range_name_input)
         
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
+        self.run_button.clicked.connect(self.run_analysis)
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
@@ -350,7 +350,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
         layout.addRow("Number of Clusters (n_clusters):", self.n_clusters_input)
         
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=True))
+        self.run_button.clicked.connect(self.run_analysis)
         layout.addWidget(self.run_button)
         
         self.setLayout(layout)
