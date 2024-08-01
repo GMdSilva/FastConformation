@@ -104,7 +104,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
             "use_ramdisk": self.use_ramdisk_checkbox.isChecked(),
             "homooligomers": int(self.homooligomers_input.text()),
             "tmp_dir": self.tmp_dir_input.text(),
-            "sequence_string": sequence_string,
+            "sequence_string": str(sequence_string),
             "msa_type": self.type_dropdown.currentText()
         }
     
@@ -125,10 +125,11 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         specific_options = self.get_specific_options()
         config = merge_configs(g_options, specific_options)
 
-        job_id = self.job_manager.run_job(run_msa_job, (config,))
+        job_id = self.job_manager.run_job(run_msa_job, (config,), config['jobname'])
         self.show_info_message(f"Job {job_id} started.")
 
 def run_msa_job(config):
+    print("starting")
     msa_type = config["msa_type"]
     if msa_type == "jackhmmer":
         build_jackhmmer_msa(config)

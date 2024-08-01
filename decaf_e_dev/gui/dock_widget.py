@@ -132,10 +132,8 @@ class MainWidget(QWidget):
                 widget.deleteLater()
     
     def show_job_status_page(self):
-        if not hasattr(self, 'job_status_page'):
-            self.job_status_page = JobStatusPage(self.parent.job_manager)
-            self.layout.addWidget(self.job_status_page)
-        self.job_status_page.show()
+        job_status_page = JobStatusPage(self.job_manager)
+        self.parent.show_dock_widget("Job Status", lambda: job_status_page)
     
     def show_new_job_page(self):
         if self.parent:

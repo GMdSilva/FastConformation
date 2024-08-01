@@ -119,9 +119,10 @@ def main():
     build_jackhmmer_msa(config)
 
 def build_jackhmmer_msa(config):
+    print("starting")
     create_directory(f'{config["output_path"]}/{config["jobname"]}/msas/jackhmmer')
     create_directory(f'{config["output_path"]}/{config["jobname"]}/target_seq/')
-
+    print("directories created")
     sequence_dict = read_fasta(config['sequence_path'])
     save_dict_to_fasta(sequence_dict, config['output_path'], config['jobname'])
 
