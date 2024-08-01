@@ -33,7 +33,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.seq_pairs_label = QLabel("max_seq:extra_seq pairs:")
         self.seq_pairs_layout = QVBoxLayout()
         self.add_seq_pair_button = QPushButton("Add Pair")
-        self.add_seq_pair_button.clicked.connect(self.add_seq_pair)
+        self.add_seq_pair_button.clicked.connect(lambda: self.add_seq_pair(seq1="", seq2=""))
 
         # Seeds
         self.seeds_label = QLabel("Seeds:")
@@ -81,10 +81,11 @@ class MakePredictionsWidget(AnalysisWidgetBase):
 
         self.setLayout(layout)
         self.setWindowTitle("Advanced MSA Options")
-
+        self.add_seq_pair(seq1="256", seq2="512")
         # Run Button
         self.run_button = QPushButton("Run")
-        self.run_button.clicked.connect(lambda: self.run_analysis(general_options=False))
+        self.run_button.clicked.connect(lambda: self.run_analysis())
+        self.output_path_button.clicked.connect(self.select_output_path)
         layout.addWidget(self.run_button, 12, 1)
         
     def select_msa_path(self):
@@ -99,12 +100,12 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         if directory:
             self.output_path_input.setText(directory)
 
-    def add_seq_pair(self):
+    def add_seq_pair(self, seq1="", seq2=""):
         seq_pair_layout = QHBoxLayout()
 
-        seq1_input = QLineEdit()
+        seq1_input = QLineEdit(seq1)
         seq1_input.setPlaceholderText("Sequence 1")
-        seq2_input = QLineEdit()
+        seq2_input = QLineEdit(seq2)
         seq2_input.setPlaceholderText("Sequence 2")
 
         remove_button = QPushButton("Remove")
@@ -161,7 +162,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         specific_options = self.get_specific_options()
         config = merge_configs(g_options, specific_options)
 
-        job_id = self.job_manager.run_job(run_ensemble_prediction, (config,))
+        job_id = self.job_manager.run_job(run_ensemble_prediction, (config,), config['jobname'])
         self.show_info_message(f"Job {job_id} started.")
 
     def get_seq_pairs(self):
