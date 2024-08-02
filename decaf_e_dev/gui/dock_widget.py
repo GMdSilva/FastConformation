@@ -117,6 +117,9 @@ class MainWidget(QWidget):
         return container_widget
     
     def _on_item_clicked(self, item):
+        if self.new_job_dock:
+            self.new_job_dock.setVisible(False)
+        self.create_dock_widget()
         name = item.text()
         widget = CATEGORIES[name].widget(self.job_manager)
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
