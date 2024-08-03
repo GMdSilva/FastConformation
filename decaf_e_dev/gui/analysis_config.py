@@ -4,7 +4,7 @@ from typing import Callable
 from pathlib import Path
 import os
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QStackedWidget, QCheckBox, QHBoxLayout, QMessageBox
+    QApplication, QScrollArea, QVBoxLayout, QWidget, QLabel, QStackedWidget, QCheckBox, QHBoxLayout, QMessageBox
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
@@ -18,19 +18,42 @@ from decaf_e_dev.tmscore_mode1d import run_tmscore_analysis
 from decaf_e_dev.tmscore_mode2d import run_2d_tmscore_analysis
 from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
 from decaf_e_dev.gui.plot_widget import PlotWidget
-
 class AnalysisConfigWidget(QWidget):
     def __init__(self, job_manager):
         super().__init__()
+        self.job_manager = job_manager
+
+        # Main layout
         main_layout = QVBoxLayout()
-        self.job_manager=job_manager
+        
         # Top part for general analysis options and icon grid
         top_layout = QHBoxLayout()
+        self.setStyleSheet("""
+            QToolBar {
+                background-color: #333333;
+                color: white;
+                padding: 10px;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 0 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QPushButton:pressed {
+                background-color: #777777;
+            }
+        """)
         
         # General analysis options
         self.general_analysis_widget = GeneralAnalysisWidget()
-
         top_layout.addWidget(self.general_analysis_widget)
+        
         # Icon grid
         self.icon_grid = Icons(self)
         self.icon_grid.addItems(ANALYSIS_CATEGORIES)
@@ -42,14 +65,45 @@ class AnalysisConfigWidget(QWidget):
         # Stacked widget for analysis configuration panels
         self.analysis_stack = QStackedWidget()
         main_layout.addWidget(self.analysis_stack)
-        self.setLayout(main_layout)
+        
+        # Create a scroll area and set the main layout as its widget
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_content.setLayout(main_layout)
+        scroll_area.setWidget(scroll_content)
+        
+        # Set the scroll area as the central widget
+        layout = QVBoxLayout()
+        layout.addWidget(scroll_area)
+        self.setLayout(layout)
         self.setWindowTitle("Analysis Configurations")
 
     def _on_item_clicked(self, item):
         name = item.text()
         getter = self.general_analysis_widget.get_general_options
         widget = ANALYSIS_CATEGORIES[name].widget(getter, self.job_manager)
-        
+        widget.setStyleSheet("""
+            QToolBar {
+                background-color: #333333;
+                color: white;
+                padding: 10px;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 0 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QPushButton:pressed {
+                background-color: #777777;
+            }
+        """)
         self.analysis_stack.addWidget(widget)
         self.analysis_stack.setCurrentWidget(widget)
 

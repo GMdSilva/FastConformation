@@ -11,51 +11,26 @@ class AnalysisWidgetBase(QWidget):
         self.job_manager = job_manager
         self.job_manager.job_finished.connect(self.on_job_finished)
         self.setStyleSheet("""
-                    QWidget {
-                        background-color: palette(base);
-                        color: palette(text);
-                    }
-                    QLabel {
-                        color: palette(text);
-                    }
-                    QPushButton {
-                        background-color: #D2E3A4;
-                        color: palette(highlightedText);
-                        border: none;
-                        padding: 8px 16px;
-                        border-radius: 4px;
-                        margin: 5px;
-                    }
-                    QPushButton:hover {
-                        background-color: palette(dark);
-                    }
-                    QPushButton:pressed {
-                        background-color: #ABD149;
-                    }
-                    QLineEdit {
-                        background-color: palette(base);
-                        border: 1px solid palette(mid);
-                        padding: 4px;
-                        border-radius: 4px;
-                        color: palette(text);
-                    }
-                    QComboBox {
-                        background-color: palette(base);
-                        border: 1px solid palette(mid);
-                        padding: 4px;
-                        border-radius: 4px;
-                        color: palette(text);
-                    }
-                    QListWidget {
-                        background-color: palette(base);
-                        border: 1px solid palette(mid);
-                        padding: 4px;
-                        color: palette(text);
-                    }
-                    QDockWidget {
-                        background-color: darkgrey;
-                    }
-                """)
+            QToolBar {
+                background-color: #333333;
+                color: white;
+                padding: 10px;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 0 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QPushButton:pressed {
+                background-color: #777777;
+            }
+        """)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_job_manager_queue)

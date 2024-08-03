@@ -17,7 +17,27 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.engine_label = QLabel("Engine:")
         self.engine_dropdown = QComboBox()
         self.engine_dropdown.addItems(["alphafold2"])
-
+        self.setStyleSheet("""
+            QToolBar {
+                background-color: #333333;
+                color: white;
+                padding: 10px;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 0 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QPushButton:pressed {
+                background-color: #777777;
+            }
+        """)
         # MSA Path
         self.msa_path_label = QLabel("MSA Path:")
         self.msa_path_input = QLineEdit()
