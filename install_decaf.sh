@@ -28,6 +28,7 @@ conda activate "$DECAFDIR/decaf_e_dev-conda"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install "colabfold[alphafold]"
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade "jax[cuda12]"==0.4.28
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --upgrade tensorflow
+"$DECAFDIR/decaf_e_dev-conda/bin/pip" install silence_tensorflow
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install pdb-tools
 
 "$DECAFDIR/decaf_e_dev-conda/bin/pip" install --no-warn-conflicts \
@@ -43,7 +44,7 @@ sed -i -e "s#from io import StringIO#from io import StringIO\nfrom silence_tenso
 # remove cache directory
 rm -rf __pycache__
 
-sudo apt install tm-align
+# sudo apt install tm-align
 
 # Download weights
 "$DECAFDIR/decaf_e_dev-conda/bin/python3" -m colabfold.download
