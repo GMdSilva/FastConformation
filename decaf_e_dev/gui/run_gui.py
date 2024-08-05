@@ -76,7 +76,7 @@ class MainFrame(QMainWindow):
         self.toolbar.addWidget(self.job_status_button)
         self.toolbar.addWidget(self.terminal_button)
         self.toolbar.setVisible(False)
-
+        
         self.setWindowTitle('FastEnsemble')
         self.set_initial_window_size()
 
@@ -109,6 +109,7 @@ class MainFrame(QMainWindow):
             QWidget {
                 background-color: palette(base);
                 color: palette(text);
+                font-size: 16px;
             }
             QLabel {
                 color: palette(text);
@@ -133,6 +134,7 @@ class MainFrame(QMainWindow):
                 padding: 4px;
                 border-radius: 4px;
                 color: palette(text);
+                font-size: 16px;
             }
             QComboBox {
                 background-color: palette(base);
@@ -140,12 +142,14 @@ class MainFrame(QMainWindow):
                 padding: 4px;
                 border-radius: 4px;
                 color: palette(text);
+                font-size: 16px;
             }
             QListWidget {
                 background-color: palette(base);
                 border: 1px solid palette(mid);
                 padding: 4px;
                 color: palette(text);
+                font-size: 16px;
             }
             QDockWidget {
                 background-color: darkgrey;

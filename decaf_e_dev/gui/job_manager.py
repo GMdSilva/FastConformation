@@ -95,6 +95,11 @@ class JobManagerBackend:
         if job_id not in self.jobs:
             return None
         return self.jobs[job_id]['status']
+    
+    def get_job_name(self, job_id):
+        if job_id not in self.jobs:
+            return None
+        return self.jobs[job_id]['name']
 
     def get_job_log(self, job_id):
         if job_id not in self.jobs:
@@ -111,7 +116,7 @@ import threading
 
 class JobManager(QObject):
     job_finished = pyqtSignal(str, bool, str)  # job_id, success, message
-    job_started = pyqtSignal(str)  # job_id
+    job_started = pyqtSignal(str)  # job_name
 
     def __init__(self):
         super().__init__()
@@ -123,7 +128,7 @@ class JobManager(QObject):
 
     def run_job(self, target, args, job_name):
         job_id = self.backend.run_job(target, args, job_name)
-        self.job_started.emit(job_id)
+        self.job_started.emit(job_name)
         return job_id
 
     def get_job_status(self, job_id):
@@ -131,6 +136,9 @@ class JobManager(QObject):
 
     def get_job_log(self, job_id):
         return self.backend.get_job_log(job_id)
+    
+    def get_job_name(self, job_id):
+        return self.backend.get_job_name(job_id)
 
     def monitor_queue(self):
         while True:
@@ -170,7 +178,7 @@ class JobStatusPage(QWidget):
     def refresh_job_statuses(self):
         self.list_widget.clear()
         for job_id, job_info in self.job_manager.backend.jobs.items():
-            self.add_job_item(job_id, job_info['status'], "")
+            self.add_job_item(job_id, job_info['status'], "", job_info['name'])
 
     def update_job_status(self, job_id, success, message):
         status = "completed" if success else "failed"
@@ -179,23 +187,24 @@ class JobStatusPage(QWidget):
             if item_widget and item_widget.job_id == job_id:
                 item_widget.update_status(status, message)
                 return
-        self.add_job_item(job_id, status, message)
+        self.add_job_item(job_id, status, message, self.job_manager.backend.jobs[job_id]['name'])
 
-    def add_job_item(self, job_id, status, message):
-        item_widget = JobItemWidget(job_id, status, message, self.job_manager)
+    def add_job_item(self, job_id, status, message, name):
+        item_widget = JobItemWidget(job_id, status, message, self.job_manager, name)
         list_item = QListWidgetItem(self.list_widget)
         list_item.setSizeHint(item_widget.sizeHint())
         self.list_widget.addItem(list_item)
         self.list_widget.setItemWidget(list_item, item_widget)
 
 class JobItemWidget(QWidget):
-    def __init__(self, job_id, status, message, job_manager):
+    def __init__(self, job_id, status, message, job_manager, name):
         super().__init__()
         self.job_id = job_id
         self.job_manager = job_manager
+        self.name=name
         self.layout = QHBoxLayout(self)
 
-        self.label = QLabel(f"Job {job_id} {status}: {message}")
+        self.label = QLabel(f"Job {name} {status}: {message}")
         self.layout.addWidget(self.label)
 
         self.log_button = QPushButton("Log")
@@ -203,12 +212,12 @@ class JobItemWidget(QWidget):
         self.layout.addWidget(self.log_button)
 
     def update_status(self, status, message):
-        self.label.setText(f"Job {self.job_id} {status}: {message}")
+        self.label.setText(f"Job {self.name} {status}: {message}")
 
     def show_log(self):
         log_text = self.job_manager.get_job_log(self.job_id)
         log_dialog = QDialog(self)
-        log_dialog.setWindowTitle(f"Job {self.job_id} Log")
+        log_dialog.setWindowTitle(f"Job {self.name} Log")
 
         log_layout = QVBoxLayout(log_dialog)
         log_text_edit = QTextEdit()

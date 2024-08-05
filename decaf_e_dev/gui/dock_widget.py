@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout, QSizePolicy
 )
-from qtpy.QtGui import QPixmap
+from qtpy.QtGui import QFont
 from decaf_e_dev.gui.icons import Icons
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
@@ -56,8 +56,9 @@ class MainWidget(QWidget):
 
         # Add the title
         self.title = QLabel("FastEnsemble")
-        font = self.title.font()
-        font.setPointSize(20)
+        font = QFont()
+        font.setFamily("Arial")
+        font.setPointSize(400)
         self.title.setFont(font)
         self.title.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.title)

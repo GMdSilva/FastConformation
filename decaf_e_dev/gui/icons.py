@@ -8,12 +8,12 @@ STYLES = r"""
     QListWidget {
         min-width: 294px;
         background: none;
-        font-size: 13pt;
+        font-size: 16pt;
         color: palette(text);
     }
     QListWidget::item {
-        width: 80px;
-        height: 90px;
+        width: 95px;
+        height: 100px;
         border-radius: 4px;
         margin: 5px;
         padding: 5px;

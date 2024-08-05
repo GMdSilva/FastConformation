@@ -5,7 +5,8 @@ __pycache__/
 abl_wt/
 # C extensions
 *.so
-
+.DS_Store
+tmp/
 # Distribution / packaging
 .Python
 env/

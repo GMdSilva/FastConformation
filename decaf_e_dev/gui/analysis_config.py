@@ -33,6 +33,7 @@ class AnalysisConfigWidget(QWidget):
                 background-color: #333333;
                 color: white;
                 padding: 10px;
+                font-size: 16px;
             }
             QPushButton {
                 background-color: #555555;
@@ -41,6 +42,7 @@ class AnalysisConfigWidget(QWidget):
                 padding: 8px 16px;
                 border-radius: 4px;
                 margin: 0 5px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background-color: #666666;
@@ -88,6 +90,7 @@ class AnalysisConfigWidget(QWidget):
                 background-color: #333333;
                 color: white;
                 padding: 10px;
+                font-size: 16px;
             }
             QPushButton {
                 background-color: #555555;
@@ -96,6 +99,7 @@ class AnalysisConfigWidget(QWidget):
                 padding: 8px 16px;
                 border-radius: 4px;
                 margin: 0 5px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background-color: #666666;
@@ -345,7 +349,6 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_rmsf_analysis(config, self.plot_widget)
-        print(f'parent_widget {parent}')
         parent.show_plot("RMSF Analysis", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):

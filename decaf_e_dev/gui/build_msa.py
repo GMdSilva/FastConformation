@@ -13,6 +13,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         layout = QVBoxLayout()
         self.jobname_label = QLabel("Job Name: ")
         self.jobname_input = QLineEdit("msa_job")
+        
         # MSA build method
         self.type_label = QLabel("MSA type:")
         self.type_dropdown = QComboBox()
