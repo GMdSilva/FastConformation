@@ -177,12 +177,12 @@ def main():
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--msa_path', type=str, help="Path to the .a3m MSA from jackhmmer")
     parser.add_argument('--output_path', type=str, help="Path to save results to")
-    parser.add.argument('--seq_pairs', type=str, help="List of [max_seq, extra_seq] pairs in the format [[max_seq1, extra_seq1], [max_seq2, extra_seq2], ...]")
-    parser.add.argument('--seeds', type=int, nargs='+', help="Number of predictions to run")
-    parser.add.argument('--save_all', action='store_true', help="Flag to save all results")
-    parser.add.argument('--platform', type=str, choices=['cpu', 'gpu'], help="Platform to run the predictions, GPU recommended")
-    parser.add.argument('--subset_msa_to', type=int, help="Subsets the input MSA to X sequences, use when running out of RAM due to deep MSAs")
-    parser.add.argument('--msa_from', type=str, choices=['jackhmmer', 'mmseqs2'], help="MSA building tool used to build the input MSA, used to automatically find the MSA if --msa_path is not provided")
+    parser.add_argument('--seq_pairs', type=str, help="List of [max_seq, extra_seq] pairs in the format [[max_seq1, extra_seq1], [max_seq2, extra_seq2], ...]")
+    parser.add_argument('--seeds', type=int, nargs='+', help="Number of predictions to run")
+    parser.add_argument('--save_all', action='store_true', help="Flag to save all results")
+    parser.add_argument('--platform', type=str, choices=['cpu', 'gpu'], help="Platform to run the predictions, GPU recommended")
+    parser.add_argument('--subset_msa_to', type=int, help="Subsets the input MSA to X sequences, use when running out of RAM due to deep MSAs")
+    parser.add_argument('--msa_from', type=str, choices=['jackhmmer', 'mmseqs2'], help="MSA building tool used to build the input MSA, used to automatically find the MSA if --msa_path is not provided")
 
     args = parser.parse_args()
 
