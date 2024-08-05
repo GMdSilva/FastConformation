@@ -15,6 +15,7 @@ class AnalysisWidgetBase(QWidget):
                 background-color: #333333;
                 color: white;
                 padding: 10px;
+                font-size: 16px;
             }
             QPushButton {
                 background-color: #555555;
@@ -23,6 +24,7 @@ class AnalysisWidgetBase(QWidget):
                 padding: 8px 16px;
                 border-radius: 4px;
                 margin: 0 5px;
+                font-size: 16px;
             }
             QPushButton:hover {
                 background-color: #666666;

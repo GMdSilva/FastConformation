@@ -145,9 +145,6 @@ def build_jackhmmer_msa(config):
     # optionally create ramdisk
     if config["use_ramdisk"]:
         prepare_os()
-    create_directory(f'{config["output_path"]}/{config["jobname"]}/msas/jackhmmer')
-    create_directory(f'{config["output_path"]}/{config["jobname"]}/target_seq/')
-
     # sets output directory for MSA
     complete_output_dir = f"{config['output_path']}/{config['jobname']}/msas/jackhmmer/"
     print("prima")

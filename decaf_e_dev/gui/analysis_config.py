@@ -109,6 +109,7 @@ class AnalysisConfigWidget(QWidget):
 
     def show_plot(self, name, plot_widget):
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget()
+        print(f'parent_widget {parent}')
         parent.show_plot(name, plot_widget)
 
 @dataclass
@@ -342,8 +343,9 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
     def run_specific_analysis(self, config):
         # Plot widget
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_rmsf_analysis(config, self.plot_widget)
+        print(f'parent_widget {parent}')
         parent.show_plot("RMSF Analysis", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
