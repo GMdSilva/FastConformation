@@ -183,7 +183,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         config = merge_configs(g_options, specific_options)
 
         job_id = self.job_manager.run_job(run_ensemble_prediction, (config,), config['jobname'])
-        self.show_info_message(f"Job {job_id} started.")
+        self.show_info_message(f"Job {config['jobname']} started.")
 
     def get_seq_pairs(self):
         seq_pairs = []

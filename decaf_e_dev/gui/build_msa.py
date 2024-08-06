@@ -13,7 +13,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         layout = QVBoxLayout()
         self.jobname_label = QLabel("Job Name: ")
         self.jobname_input = QLineEdit("msa_job")
-        
+
         # MSA build method
         self.type_label = QLabel("MSA type:")
         self.type_dropdown = QComboBox()
@@ -127,7 +127,7 @@ class MSAOptionsWidget(AnalysisWidgetBase):
         config = merge_configs(g_options, specific_options)
 
         job_id = self.job_manager.run_job(run_msa_job, (config,), config['jobname'])
-        self.show_info_message(f"Job {job_id} started.")
+        self.show_info_message(f"Job {config['jobname']} started.")
 
 def run_msa_job(config):
     print("starting")
