@@ -13,19 +13,7 @@ import uuid
 import sys
 import io
 
-from PyQt5.QtCore import pyqtSignal, QObject
-import threading
-import multiprocessing as mp
-from multiprocessing import Manager, Queue
-import uuid
-import sys
-import io
-import multiprocessing as mp
-from multiprocessing import Manager, Queue
-import uuid
-import sys
-import io
-
+from queue import Empty
 
 
 def job_wrapper(job_id, target, log_list, queue, *args):
@@ -167,7 +155,7 @@ class JobManager(QObject):
                 job_id, success, message = self.backend.queue.get(timeout=1)  # Add timeout to allow periodic check
                 self.backend.update_job_status(job_id, "completed" if success else "failed")
                 self.update_job_status(job_id, success, message)
-            except Queue.Empty:
+            except Empty:
                 continue
             
     def stop(self):
@@ -198,56 +186,6 @@ class JobStatusPage(QWidget):
         self.layout.addWidget(self.list_widget)
         self.job_manager.job_finished.connect(self.update_job_status)
         self.refresh_job_statuses()
-        self.setStyleSheet("""
-            QWidget {
-                background-color: palette(base);
-                color: palette(text);
-                font-size: 16px;
-            }
-            QLabel {
-                color: palette(text);
-            }
-            QPushButton {
-                background-color: #D2E3A4;
-                color: palette(highlightedText);
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                margin: 5px;
-            }
-            QPushButton:hover {
-                background-color: palette(dark);
-            }
-            QPushButton:pressed {
-                background-color: #ABD149;
-            }
-            QLineEdit {
-                background-color: palette(base);
-                border: 1px solid palette(mid);
-                padding: 4px;
-                border-radius: 4px;
-                color: palette(text);
-                font-size: 16px;
-            }
-            QComboBox {
-                background-color: palette(base);
-                border: 1px solid palette(mid);
-                padding: 4px;
-                border-radius: 4px;
-                color: palette(text);
-                font-size: 16px;
-            }
-            QListWidget {
-                background-color: palette(base);
-                border: 1px solid palette(mid);
-                padding: 4px;
-                color: palette(text);
-                font-size: 16px;
-            }
-            QDockWidget {
-                background-color: darkgrey;
-            }
-        """)
         
 
     def refresh_job_statuses(self):
@@ -282,7 +220,8 @@ class JobItemWidget(QWidget):
         self.label = QLabel(f"Job {name} {status}: {message}")
         self.layout.addWidget(self.label)
 
-        self.log_button = QPushButton("Log")
+        self.log_button = QPushButton("Show Log")
+        self.log_button.setMinimumHeight(50)
         self.log_button.clicked.connect(self.show_log)
         self.layout.addWidget(self.log_button)
 
@@ -293,11 +232,13 @@ class JobItemWidget(QWidget):
         log_text = self.job_manager.get_job_log(self.job_id)
         log_dialog = QDialog(self)
         log_dialog.setWindowTitle(f"Job {self.name} Log")
+        log_dialog.setMinimumWidth(500)
 
         log_layout = QVBoxLayout(log_dialog)
         log_text_edit = QTextEdit()
         log_text_edit.setReadOnly(True)
         log_text_edit.setPlainText(log_text)
+        
         log_layout.addWidget(log_text_edit)
 
         log_dialog.setLayout(log_layout)

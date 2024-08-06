@@ -65,8 +65,8 @@ class MainFrame(QMainWindow):
 
         self.home_button = QPushButton("Home Page")
         self.submit_new_job_button = QPushButton("Submit New Job")
-        self.job_status_button = QPushButton("Job Status")
-        self.terminal_button = QPushButton("Log")
+        self.job_status_button = QPushButton("MSA and Predictions Job Status")
+        self.terminal_button = QPushButton("Analysis Log")
 
         self.home_button.clicked.connect(self.show_home_page)
         self.submit_new_job_button.clicked.connect(self.show_new_job_page)
@@ -159,7 +159,7 @@ class MainFrame(QMainWindow):
         """)
 
     def show_home_page(self):
-        self.toolbar.setVisible(False)
+        self.toolbar.setVisible(True)
         self.hide_all_dock_widgets()
         self.main_widget.new_job_dock.setVisible(False)
         self.main_widget.create_welcome_page()

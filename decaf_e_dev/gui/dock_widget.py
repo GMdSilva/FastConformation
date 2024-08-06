@@ -66,13 +66,13 @@ class MainWidget(QWidget):
         # Add the buttons
         self.button_layout = QHBoxLayout()
         self.new_job_button = QPushButton("Submit New Job")
-        self.job_status_button = QPushButton("Job Status")
+        #self.job_status_button = QPushButton("Job Status")
 
         self.new_job_button.clicked.connect(self.show_new_job_page)
-        self.job_status_button.clicked.connect(self.show_job_status_page)
+        #self.job_status_button.clicked.connect(self.show_job_status_page)
         self.new_job_dock=None
         self.button_layout.addWidget(self.new_job_button)
-        self.button_layout.addWidget(self.job_status_button)
+        #self.button_layout.addWidget(self.job_status_button)
         self.layout.addLayout(self.button_layout)
 
     def create_dock_widget(self):
