@@ -47,6 +47,10 @@ def job_wrapper(job_id, target, log_list, queue, *args):
         target(*args)
         success = True
         message = "Job completed successfully."
+    except KeyboardInterrupt:
+        success = False
+        message = "Job was interrupted by the user."
+        raise  # Re-raise the exception to allow the program to terminate
     except Exception as e:
         success = False
         message = str(e)
@@ -54,7 +58,7 @@ def job_wrapper(job_id, target, log_list, queue, *args):
         queue.put((job_id, success, message))
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-
+    
 class JobManagerBackend:
     def __init__(self):
         self.jobs = {}
@@ -138,7 +142,7 @@ class JobManager(QObject):
     def __init__(self):
         super().__init__()
         self.backend = JobManagerBackend()
-
+        self._stop_event=threading.Event()
         # Start a thread to monitor the queue
         self.monitor_thread = threading.Thread(target=self.monitor_queue, daemon=True)
         self.monitor_thread.start()
@@ -158,14 +162,17 @@ class JobManager(QObject):
         return self.backend.get_job_name(job_id)
 
     def monitor_queue(self):
-        while True:
+        while not self._stop_event.is_set():
             try:
-                job_id, success, message = self.backend.queue.get()
-                job_name = self.backend.get_job_name(job_id)
+                job_id, success, message = self.backend.queue.get(timeout=1)  # Add timeout to allow periodic check
                 self.backend.update_job_status(job_id, "completed" if success else "failed")
-                self.update_job_status(job_name, success, message)
-            except EOFError:
-                break
+                self.update_job_status(job_id, success, message)
+            except Queue.Empty:
+                continue
+            
+    def stop(self):
+        self._stop_event.set()
+        self.monitor_thread.join()
 
     def update_job_status(self, job_name, success, message):
         self.job_finished.emit(job_name, success, message)
@@ -191,6 +198,57 @@ class JobStatusPage(QWidget):
         self.layout.addWidget(self.list_widget)
         self.job_manager.job_finished.connect(self.update_job_status)
         self.refresh_job_statuses()
+        self.setStyleSheet("""
+            QWidget {
+                background-color: palette(base);
+                color: palette(text);
+                font-size: 16px;
+            }
+            QLabel {
+                color: palette(text);
+            }
+            QPushButton {
+                background-color: #D2E3A4;
+                color: palette(highlightedText);
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin: 5px;
+            }
+            QPushButton:hover {
+                background-color: palette(dark);
+            }
+            QPushButton:pressed {
+                background-color: #ABD149;
+            }
+            QLineEdit {
+                background-color: palette(base);
+                border: 1px solid palette(mid);
+                padding: 4px;
+                border-radius: 4px;
+                color: palette(text);
+                font-size: 16px;
+            }
+            QComboBox {
+                background-color: palette(base);
+                border: 1px solid palette(mid);
+                padding: 4px;
+                border-radius: 4px;
+                color: palette(text);
+                font-size: 16px;
+            }
+            QListWidget {
+                background-color: palette(base);
+                border: 1px solid palette(mid);
+                padding: 4px;
+                color: palette(text);
+                font-size: 16px;
+            }
+            QDockWidget {
+                background-color: darkgrey;
+            }
+        """)
+        
 
     def refresh_job_statuses(self):
         self.list_widget.clear()

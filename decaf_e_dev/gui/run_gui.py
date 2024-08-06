@@ -18,6 +18,8 @@ from decaf_e_dev.gui.icons import Icons
 from decaf_e_dev.gui.build_msa import MSAOptionsWidget
 from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
 from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
+import signal
+import warnings
 
 class MainFrame(QMainWindow):
     def __init__(self):
@@ -248,14 +250,26 @@ class BackgroundWidget(QWidget):
         center_y = (self.height() - pixmap_rect.height()) + 50
         painter.drawPixmap(center_x, center_y, self.pixmap)
 
+def handle_sigint(signal, frame):
+    print("SIGINT received, shutting down...")
+    QApplication.quit()
+
 def main():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    signal.signal(signal.SIGINT, handle_sigint)
     app = QApplication(sys.argv)
     # Set the application icon
     app_icon = QIcon('methods-2.png')  # Update the path as needed
     app.setWindowIcon(app_icon)
     main_frame = MainFrame()
     main_frame.show()
-    sys.exit(app.exec_())
+    try:
+        sys.exit(app.exec_())
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        main_frame.job_manager.stop()
+        sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
