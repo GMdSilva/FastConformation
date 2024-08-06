@@ -144,13 +144,14 @@ class JobManager(QObject):
         while True:
             try:
                 job_id, success, message = self.backend.queue.get()
-                self.backend.update_job_status(job_id, "completed" if success else "failed")
-                self.update_job_status(job_id, success, message)
+                job_name = self.backend.get_job_name(job_id)
+                self.backend.update_job_status(job_name, "completed" if success else "failed")
+                self.update_job_status(job_name, success, message)
             except EOFError:
                 break
 
-    def update_job_status(self, job_id, success, message):
-        self.job_finished.emit(job_id, success, message)
+    def update_job_status(self, job_name, success, message):
+        self.job_finished.emit(job_name, success, message)
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QPushButton, QDialog, QTextEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
@@ -164,14 +165,13 @@ class JobStatusPage(QWidget):
 
         self.title = QLabel("Job Status")
         font = self.title.font()
-        font.setPointSize(20)
+        font.setPointSize(16)
         self.title.setFont(font)
         self.title.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.title)
 
         self.list_widget = QListWidget(self)
         self.layout.addWidget(self.list_widget)
-
         self.job_manager.job_finished.connect(self.update_job_status)
         self.refresh_job_statuses()
 
