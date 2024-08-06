@@ -1,7 +1,3 @@
-Here's a comprehensive README based on the abstract of your paper:
-
----
-
 # FastEnsemble
 ![FastEnsemble Logo](background_logo.png)
 
