@@ -27,10 +27,22 @@ import sys
 import io
 
 
+
 def job_wrapper(job_id, target, log_list, queue, *args):
-    # Redirect stdout and stderr to capture logs
-    sys.stdout = io.TextIOWrapper(io.BytesIO(), write_through=True)
-    sys.stderr = sys.stdout
+    class StreamToLogger(io.StringIO):
+        def __init__(self, log_list):
+            super().__init__()
+            self.log_list = log_list
+
+        def write(self, message):
+            super().write(message)
+            self.log_list.append(message)
+
+    stdout_logger = StreamToLogger(log_list)
+    stderr_logger = StreamToLogger(log_list)
+    sys.stdout = stdout_logger
+    sys.stderr = stderr_logger
+
     try:
         target(*args)
         success = True
@@ -39,10 +51,15 @@ def job_wrapper(job_id, target, log_list, queue, *args):
         success = False
         message = str(e)
     finally:
-        log_list.append(sys.stdout.buffer.getvalue().decode())
         queue.put((job_id, success, message))
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+
+class JobManagerBackend:
+    def __init__(self):
+        self.jobs = {}
+        self.manager = Manager()
+        self.queue = self.manager.Queue()
 
 class JobManagerBackend:
     def __init__(self):
