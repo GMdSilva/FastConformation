@@ -83,7 +83,7 @@ def prep_inputs(sequence, jobname="test", homooligomer="1", output_dir=None, cle
         print(f"\nhomooligomer: {I['homooligomer']}")
         print(f"total_length: {len(I['full_sequence'])}")
         print(f"output_dir: {I['output_dir']}\n")
-    print("prepped inputs, running JackHMMER")
+
     return I
 
 
@@ -120,14 +120,14 @@ def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=T
             break
 
         dbs = []
-        print("running JackHMMER")
+
         num_jackhmmer_chunks = {'uniref90': 59, 'smallbfd': 17, 'mgnify': 71}
         total_jackhmmer_chunks = sum(num_jackhmmer_chunks.values())
         disable_tqdm = not verbose
         with tqdm(total=total_jackhmmer_chunks, bar_format=TQDM_BAR_FORMAT, disable=disable_tqdm) as pbar:
             def jackhmmer_chunk_callback(i):
                 pbar.update(n=1)
-            print("starting search")
+
             pbar.set_description('Searching uniref90')
             jackhmmer_uniref90_runner = jackhmmer.Jackhmmer(
                 binary_path=jackhmmer_binary_path,
@@ -164,7 +164,7 @@ def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=T
         # --- Extract the MSAs and visualize ---
         # Extract the MSAs from the Stockholm files.
         # NB: deduplication happens later in pipeline.make_msa_features.
-        print("prepare results")
+
         mgnify_max_hits = 501
         msas = []
         deletion_matrices = []
