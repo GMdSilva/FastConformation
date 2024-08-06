@@ -21,7 +21,7 @@ Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput predicti
 
 ## Features
 
-- **MSA Generation**: Automatically generate multiple sequence alignments (MSAs) from amino acid sequences using JACKHMMER and MMSEQ.
+- **MSA Generation**: Automatically generate multiple sequence alignments (MSAs) from amino acid sequences using JACKHMMER and MMseqs2.
 - **Structure Prediction**: Predict protein structures using ColabFold's implementation of AlphaFold 2 (AF2).
 - **Conformational Ensembles**: Generate alternative protein conformations through random MSA subsampling.
 - **Interactive Analysis**: Analyze protein conformational ensembles and the effects of mutations on protein dynamics using our suite of analysis tools.
