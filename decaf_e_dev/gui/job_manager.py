@@ -145,7 +145,7 @@ class JobManager(QObject):
             try:
                 job_id, success, message = self.backend.queue.get()
                 job_name = self.backend.get_job_name(job_id)
-                self.backend.update_job_status(job_name, "completed" if success else "failed")
+                self.backend.update_job_status(job_id, "completed" if success else "failed")
                 self.update_job_status(job_name, success, message)
             except EOFError:
                 break
