@@ -77,7 +77,7 @@ class MainFrame(QMainWindow):
         self.toolbar.addWidget(self.submit_new_job_button)
         self.toolbar.addWidget(self.job_status_button)
         self.toolbar.addWidget(self.terminal_button)
-        self.toolbar.setVisible(False)
+        self.toolbar.setVisible(True)
         
         self.setWindowTitle('FastEnsemble')
         self.set_initial_window_size()
@@ -162,11 +162,12 @@ class MainFrame(QMainWindow):
         self.toolbar.setVisible(True)
         self.hide_all_dock_widgets()
         self.main_widget.new_job_dock.setVisible(False)
-        self.main_widget.create_welcome_page()
+        self.terminal_dock.setVisible(False)
 
     def show_new_job_page(self):
         self.hide_all_dock_widgets()
-        self.main_widget.new_job_dock.setVisible(False)
+        if self.main_widget.new_job_dock:
+            self.main_widget.new_job_dock.setVisible(False)
         self.toolbar.setVisible(True)
         self.main_widget.create_dock_widget()
 
@@ -241,13 +242,13 @@ class QPlainTextEditLogger:
 class BackgroundWidget(QWidget):
     def __init__(self, parent=None):
         super(BackgroundWidget, self).__init__(parent)
-        self.pixmap = QPixmap("methods-2.png")
+        self.pixmap = QPixmap("background_logo.png")
 
     def paintEvent(self, event):
         painter = QPainter(self)
         pixmap_rect = self.pixmap.rect()
         center_x = (self.width() - pixmap_rect.width()) // 2
-        center_y = (self.height() - pixmap_rect.height()) + 50
+        center_y = (self.height() - pixmap_rect.height()) + 30
         painter.drawPixmap(center_x, center_y, self.pixmap)
 
 def handle_sigint(signal, frame):

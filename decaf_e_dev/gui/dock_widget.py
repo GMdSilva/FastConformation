@@ -43,46 +43,19 @@ class MainWidget(QWidget):
         self.layout.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
 
         # Create the welcome page
-        self.create_welcome_page()
-
+        self.clear_layout(self.layout)
+        self.new_job_dock=None
         self.dock_widgets={}
 
         # Set the main layout
         self.setLayout(self.layout)
-    
-    def create_welcome_page(self):
-        # Clear the layout
-        self.clear_layout(self.layout)
-
-        # Add the title
-        self.title = QLabel("FastEnsemble")
-        font = QFont()
-        font.setFamily("Arial")
-        font.setPointSize(400)
-        self.title.setFont(font)
-        self.title.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.title)
-
-        # Add the buttons
-        self.button_layout = QHBoxLayout()
-        self.new_job_button = QPushButton("Submit New Job")
-        #self.job_status_button = QPushButton("Job Status")
-
-        self.new_job_button.clicked.connect(self.show_new_job_page)
-        #self.job_status_button.clicked.connect(self.show_job_status_page)
-        self.new_job_dock=None
-        self.button_layout.addWidget(self.new_job_button)
-        #self.button_layout.addWidget(self.job_status_button)
-        self.layout.addLayout(self.button_layout)
-
+ 
     def create_dock_widget(self):
         if self.new_job_dock:
             self.clear_dock_widget()
-        self.clear_layout(self.button_layout)
         self.new_job_dock = QDockWidget("Select options", self)
         self.new_job_dock.setAllowedAreas(Qt.TopDockWidgetArea | Qt.RightDockWidgetArea)
         self.new_job_dock.setWidget(self.create_new_job_widget())
-        self.title.setVisible(False)
 
         if self.parent:
             self.parent.addDockWidget(Qt.RightDockWidgetArea, self.new_job_dock)
