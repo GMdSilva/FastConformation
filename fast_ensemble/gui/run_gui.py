@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass
 import sys
-sys.path.append('/Users/fmgaleazzi/decaf_e_dev')
+sys.path.append('/Users/fmgaleazzi/fast_ensemble')
 import sys
 from dataclasses import dataclass
 from typing import Callable
@@ -9,15 +9,15 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
-from decaf_e_dev.gui.job_manager import JobStatusPage, JobManager
+from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
-from decaf_e_dev.gui.dock_widget import MainWidget
-from decaf_e_dev.gui.icons import Icons
-from decaf_e_dev.gui.build_msa import MSAOptionsWidget
-from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
-from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
+from fast_ensemble.gui.dock_widget import MainWidget
+from fast_ensemble.gui.icons import Icons
+from fast_ensemble.gui.build_msa import MSAOptionsWidget
+from fast_ensemble.gui.make_predictions import MakePredictionsWidget
+from fast_ensemble.gui.analysis_config import AnalysisConfigWidget
 import signal
 import warnings
 

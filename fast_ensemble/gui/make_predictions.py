@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QCheckBox
 import sys
-from decaf_e_dev.predict_ensemble import run_ensemble_prediction
-from decaf_e_dev.predict_ensemble import run_ensemble_prediction
-from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
+from fast_ensemble.predict_ensemble import run_ensemble_prediction
+from fast_ensemble.predict_ensemble import run_ensemble_prediction
+from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
 
 class MakePredictionsWidget(AnalysisWidgetBase):
     def __init__(self, job_manager, general_options_getter=None, *args, **kwargs):

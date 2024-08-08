@@ -5,11 +5,11 @@ from qtpy.QtWidgets import (
     QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout, QSizePolicy
 )
 from qtpy.QtGui import QFont
-from decaf_e_dev.gui.icons import Icons
-from decaf_e_dev.gui.build_msa import MSAOptionsWidget
-from decaf_e_dev.gui.make_predictions import MakePredictionsWidget
-from decaf_e_dev.gui.analysis_config import AnalysisConfigWidget
-from decaf_e_dev.gui.job_manager import JobStatusPage, JobManager
+from fast_ensemble.gui.icons import Icons
+from fast_ensemble.gui.build_msa import MSAOptionsWidget
+from fast_ensemble.gui.make_predictions import MakePredictionsWidget
+from fast_ensemble.gui.analysis_config import AnalysisConfigWidget
+from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
 @dataclass
 class Category:
     widget: Callable[[JobManager], QWidget]

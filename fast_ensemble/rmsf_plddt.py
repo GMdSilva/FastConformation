@@ -1,9 +1,9 @@
 import os
 import warnings
-from decaf_e_dev.ensemble_analysis.analysis_utils import (
+from fast_ensemble.ensemble_analysis.analysis_utils import (
     load_config, create_directory, load_predictions, load_predictions_json
 )
-from decaf_e_dev.ensemble_analysis.rmsf import (
+from fast_ensemble.ensemble_analysis.rmsf import (
     calculate_rmsf_multiple, calculate_rmsf_and_call_peaks, build_dataset_rmsf_peaks, plot_plddt_line, plot_plddt_rmsf_corr
 )
 

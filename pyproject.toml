@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "decaf_e_dev"
+name = "fast_ensemble"
 version = "0.1.1"
 description = "A toolset for protein dynamics prediction and analysis"
 authors = [
@@ -7,7 +7,7 @@ authors = [
 ]
 readme = "README.md"
 license = "MIT, but separate licenses for the trained weights"
-repository = "https://github.com/GMdSilva/decaf_e_dev"
+repository = "https://github.com/GMdSilva/fast_ensemble"
 classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
@@ -42,37 +42,37 @@ jupyter = "^1.0.0"
 pytest = "^6.2.5"
 
 [tool.poetry.extras]
-decaf_e_dev = ["decaf_e_dev"]
+fast_ensemble = ["fast_ensemble"]
 
 [tool.pytest.ini_options]
 addopts = "--tb=short"
 
 [tool.poetry.scripts]
-decaf_init = 'decaf_e_dev.decaf_init:main'
-mmseqs2_msa = 'decaf_e_dev.mmseqs2_msa:main'
-jackhmmer_msa = 'decaf_e_dev.jackhmmer_msa:main'
-predict_ensemble = 'decaf_e_dev.predict_ensemble:main'
-rmsd_mode1d = 'decaf_e_dev.rmsd_mode1d:main'
-rmsd_mode2d = 'decaf_e_dev.rmsd_mode2d:main'
-tmscore_mode2d = 'decaf_e_dev.tmscore_mode2d:main'
-tmscore_mode1d = 'decaf_e_dev.tmscore_mode1d:main'
-pca_clustering = 'decaf_e_dev.pca_clustering:main'
-rmsf_plddt = 'decaf_e_dev.rmsf_plddt:main'
-save_traj = 'decaf_e_dev.save_traj:main'
-run_gui = "decaf_e_dev.gui.run_gui:main"
+decaf_init = 'fast_ensemble.decaf_init:main'
+mmseqs2_msa = 'fast_ensemble.mmseqs2_msa:main'
+jackhmmer_msa = 'fast_ensemble.jackhmmer_msa:main'
+predict_ensemble = 'fast_ensemble.predict_ensemble:main'
+rmsd_mode1d = 'fast_ensemble.rmsd_mode1d:main'
+rmsd_mode2d = 'fast_ensemble.rmsd_mode2d:main'
+tmscore_mode2d = 'fast_ensemble.tmscore_mode2d:main'
+tmscore_mode1d = 'fast_ensemble.tmscore_mode1d:main'
+pca_clustering = 'fast_ensemble.pca_clustering:main'
+rmsf_plddt = 'fast_ensemble.rmsf_plddt:main'
+save_traj = 'fast_ensemble.save_traj:main'
+run_gui = "fast_ensemble.gui.run_gui:main"
 
 [tool.black]
 # Format only the new package, don't touch the existing stuff
 include = '''
 /(
-  | decaf_e_dev
+  | fast_ensemble
 )/
 '''
 # The colabfold.py exclude doesn't work, but the "fmt: off" inside of it does
 extend-exclude = '''
 /(
   | __pycache__
-  | decaf_e_dev/decaf_e_dev.py
+  | fast_ensemble/fast_ensemble.py
 )/
 '''
 

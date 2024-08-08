@@ -1,7 +1,7 @@
 import os
 import warnings
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
-from decaf_e_dev.ensemble_analysis.tmscore import build_dataset_tmscore_modes, tmscore_mode_analysis
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
+from fast_ensemble.ensemble_analysis.tmscore import build_dataset_tmscore_modes, tmscore_mode_analysis
 
 warnings.filterwarnings("ignore")
 

@@ -8,16 +8,16 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
-from decaf_e_dev.gui.icons import Icons
-from decaf_e_dev.rmsf_plddt import run_rmsf_analysis
-from decaf_e_dev.rmsd_mode1d import run_rmsd_analysis
-from decaf_e_dev.rmsd_mode2d import run_2d_rmsd_analysis
-from decaf_e_dev.pca_clustering import run_pca_analysis
-from decaf_e_dev.save_traj import run_trajectory_saving
-from decaf_e_dev.tmscore_mode1d import run_tmscore_analysis
-from decaf_e_dev.tmscore_mode2d import run_2d_tmscore_analysis
-from decaf_e_dev.gui.widget_base import AnalysisWidgetBase, merge_configs
-from decaf_e_dev.gui.plot_widget import PlotWidget
+from fast_ensemble.gui.icons import Icons
+from fast_ensemble.rmsf_plddt import run_rmsf_analysis
+from fast_ensemble.rmsd_mode1d import run_rmsd_analysis
+from fast_ensemble.rmsd_mode2d import run_2d_rmsd_analysis
+from fast_ensemble.pca_clustering import run_pca_analysis
+from fast_ensemble.save_traj import run_trajectory_saving
+from fast_ensemble.tmscore_mode1d import run_tmscore_analysis
+from fast_ensemble.tmscore_mode2d import run_2d_tmscore_analysis
+from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
+from fast_ensemble.gui.plot_widget import PlotWidget
 class AnalysisConfigWidget(QWidget):
     def __init__(self, job_manager):
         super().__init__()

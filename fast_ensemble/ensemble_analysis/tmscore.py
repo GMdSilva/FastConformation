@@ -21,7 +21,7 @@ from scipy.stats import gaussian_kde
 from scipy.signal import find_peaks
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 

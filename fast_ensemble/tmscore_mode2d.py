@@ -1,7 +1,7 @@
 import os
 import warnings
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config, auto_select_2d_references
-from decaf_e_dev.ensemble_analysis.twotmscore import TwoTMScore
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config, auto_select_2d_references
+from fast_ensemble.ensemble_analysis.twotmscore import TwoTMScore
 
 warnings.filterwarnings("ignore")
 

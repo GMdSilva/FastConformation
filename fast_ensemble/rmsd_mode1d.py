@@ -1,7 +1,7 @@
 import os
 import warnings
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
-from decaf_e_dev.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
+from fast_ensemble.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
 
 warnings.filterwarnings("ignore")
 
