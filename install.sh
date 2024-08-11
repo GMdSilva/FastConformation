@@ -32,7 +32,7 @@ conda activate "$FENSEMBLEDIR/fast_ensemble-conda"
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install pdb-tools
 
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install --no-warn-conflicts \
-    "fast_ensemble @ git+https://github.com/GMdSilva/fast_ensemble"
+    "fast_ensemble @ git+https://github.com/GMdSilva/FastEnsemble"
 
 # use 'agg' for non-GUI backend
 cd "${FENSEMBLEDIR}/fast_ensemble-conda/lib/python3.10/site-packages/colabfold"
