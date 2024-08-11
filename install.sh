@@ -20,7 +20,7 @@ conda create -p "$FENSEMBLEDIR/fast_ensemble-conda" -c conda-forge -c bioconda -
 conda activate "$FENSEMBLEDIR/fast_ensemble-conda"
 
 # Install additional Python packages for the GUI
-"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install PyQt5 pandas pyqt matplotlib silence_tensorflow pyqtgraph
+"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install PyQt5 pandas matplotlib silence_tensorflow pyqtgraph
 
 # Install ColabFold and Jaxlib
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install --no-warn-conflicts \
@@ -55,5 +55,6 @@ echo "Add ${FENSEMBLEDIR}/fast_ensemble-conda/bin to your PATH environment varia
 echo -e "i.e. for Bash:\n\texport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin:\$PATH\""
 echo "For more details, please run 'fast_ensemble --help'."
 
+cd $FENSEMBLEDIR
 # Run the GUI
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/python" -m fast_ensemble.gui.run_gui
