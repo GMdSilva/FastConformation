@@ -4,10 +4,10 @@ import argparse
 import warnings
 warnings.filterwarnings("ignore")
 
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
-from decaf_e_dev.ensemble_analysis.pca import pca_from_ensemble
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
+from fast_ensemble.ensemble_analysis.analysis_utils import load_predictions
+from fast_ensemble.ensemble_analysis.analysis_utils import load_config
+from fast_ensemble.ensemble_analysis.pca import pca_from_ensemble
 
 
 def main():

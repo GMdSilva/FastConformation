@@ -8,8 +8,8 @@ from scipy.optimize import curve_fit
 
 from tqdm import tqdm
 
-from decaf_e_dev.ensemble_analysis.analysis_utils import parabola
-from decaf_e_dev.ensemble_analysis.rmsd import calculate_rmsd
+from fast_ensemble.ensemble_analysis.analysis_utils import parabola
+from fast_ensemble.ensemble_analysis.rmsd import calculate_rmsd
 
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'

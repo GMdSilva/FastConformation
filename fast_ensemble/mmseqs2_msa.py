@@ -4,7 +4,7 @@ import argparse
 import json
 import shutil
 
-from decaf_e_dev.msa_generation.msa_utils import read_fasta, save_dict_to_fasta, create_directory
+from fast_ensemble.msa_generation.msa_utils import read_fasta, save_dict_to_fasta, create_directory
 
 def validate_inputs(fasta_path, output_path, jobname):
     # Check if fasta_path is a valid file

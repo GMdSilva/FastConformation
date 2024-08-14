@@ -5,11 +5,11 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
-from decaf_e_dev.ensemble_analysis.analysis_utils import create_directory
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_predictions
-from decaf_e_dev.ensemble_analysis.analysis_utils import load_config
-from decaf_e_dev.ensemble_analysis.analysis_utils import auto_select_2d_references
-from decaf_e_dev.ensemble_analysis.twodrmsd import TwodRMSD
+from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
+from fast_ensemble.ensemble_analysis.analysis_utils import load_predictions
+from fast_ensemble.ensemble_analysis.analysis_utils import load_config
+from fast_ensemble.ensemble_analysis.analysis_utils import auto_select_2d_references
+from fast_ensemble.ensemble_analysis.twodrmsd import TwodRMSD
 
 ## TODO: add sanity checks, rewrite help snipets
 
