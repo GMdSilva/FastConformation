@@ -34,7 +34,7 @@ Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput predicti
 To install FastEnsemble, run the installation script provided in the repository:
 
 ```bash
-./install_decaf.sh
+./install.sh
 ```
 
 This script will set up the necessary environment and dependencies.

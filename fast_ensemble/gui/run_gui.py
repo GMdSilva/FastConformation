@@ -1,8 +1,5 @@
 import sys
 from dataclasses import dataclass
-import sys
-sys.path.append('/Users/fmgaleazzi/fast_ensemble')
-import sys
 from dataclasses import dataclass
 from typing import Callable
 from pathlib import Path

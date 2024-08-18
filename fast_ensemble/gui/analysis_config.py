@@ -18,6 +18,7 @@ from fast_ensemble.tmscore_mode1d import run_tmscore_analysis
 from fast_ensemble.tmscore_mode2d import run_2d_tmscore_analysis
 from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
 from fast_ensemble.gui.plot_widget import PlotWidget
+
 class AnalysisConfigWidget(QWidget):
     def __init__(self, job_manager):
         super().__init__()
