@@ -1,7 +1,5 @@
 import pandas as pd
-
 from tqdm import tqdm
-
 from fast_ensemble.ensemble_analysis.analysis_utils import save_traj, reorder_frames_by
 
 
@@ -9,6 +7,20 @@ TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaini
 
 
 def save_trajs(prediction_dicts, input_dict, reorder, traj_format):
+    """
+    Saves molecular dynamics trajectories for a set of predictions, with optional reordering based on analysis results.
+
+    Parameters:
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    input_dict (dict): A dictionary containing job-related metadata (jobname, analysis range, output path, etc.).
+    reorder (str): Specifies the method of reordering the trajectory frames before saving. 
+                   Options include 'pca', 'tmscore', or other analysis range names. 
+                   If None, the trajectories are saved without reordering.
+    traj_format (str): The format to use for saving the trajectory files (e.g., 'pdb', 'xtc').
+
+    Returns:
+    dict: The updated prediction_dicts with saved trajectories.
+    """
     jobname = input_dict['jobname']
     analysis_range = input_dict['analysis_range']
     analysis_range_name = input_dict['analysis_range_name']

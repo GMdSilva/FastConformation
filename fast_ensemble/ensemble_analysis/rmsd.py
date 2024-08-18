@@ -10,31 +10,27 @@ import MDAnalysis as mda
 from MDAnalysis.analysis import rms
 
 from tqdm import tqdm
-
-import numpy as np
-from scipy.stats import gaussian_kde
-from scipy.signal import find_peaks
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
-
 
 def calculate_rmsd(u: mda.Universe,
                    ref: mda.Universe = None,
                    align_range: str = "backbone",
                    analysis_range: str = "backbone") -> dict:
     """
-    Calculate the rmsd of a universe
-    Parameters:
-        u (mda.Universe): Universe to be analyzed
-        ref (mda.Universe): Reference universe to be analyzed
-        align_range (str):
-        analysis_range (str):
-    Returns:
-        rmsd_dict (dict):
-    """
+    Calculate the Root Mean Square Deviation (RMSD) of a given molecular dynamics trajectory.
 
+    Parameters:
+    u (mda.Universe): The MDAnalysis Universe containing the trajectory to be analyzed.
+    ref (mda.Universe): The reference Universe for RMSD calculation. If None, the first frame of `u` is used.
+    align_range (str): The atom selection string for alignment of the trajectory (default is "backbone").
+    analysis_range (str): The atom selection string for RMSD calculation (default is "backbone").
+
+    Returns:
+    dict: A dictionary containing the RMSD values for each frame with keys 'frame', `align_range`, and `analysis_range`.
+    """
     # if reference is not supplied, use first frame
     if ref is None:
         ref = u.select_atoms('protein')
@@ -52,6 +48,17 @@ def calculate_rmsd(u: mda.Universe,
 
 
 def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
+    """
+    Perform Kernel Density Estimation (KDE) on RMSD data and identify the most distant modes.
+
+    Parameters:
+    rmsd_data (list): A list of RMSD values.
+    input_dict (dict): A dictionary containing job-related metadata (jobname, max_seq, extra_seq, analysis range, etc.).
+    widget (object): A widget object for interactive plotting.
+
+    Returns:
+    dict: A dictionary containing information about the identified modes, including their indices, values, and densities.
+    """
     jobname = input_dict['jobname']
     max_seq = input_dict['max_seq']
     extra_seq = input_dict['extra_seq']
@@ -136,6 +143,18 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
 
 
 def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget):
+    """
+    Perform 1D RMSD mode analysis for each prediction in the provided dictionary.
+
+    Parameters:
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    input_dict (dict): A dictionary containing job-related metadata (jobname, analysis range, alignment range, etc.).
+    ref1d (str): Path to the reference PDB file for RMSD calculation.
+    widget (object): A widget object for interactive plotting.
+
+    Returns:
+    dict: The updated prediction_dicts with calculated RMSD data and identified modes.
+    """
     jobname = input_dict['jobname']
     rmsd_range = input_dict['analysis_range']
     align_range = input_dict['align_range']
@@ -206,6 +225,16 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget):
 
 
 def build_dataset_rmsd_modes(results_dict, input_dict):
+    """
+    Build a dataset from the RMSD mode analysis results and save it as a CSV file.
+
+    Parameters:
+    results_dict (dict): A dictionary containing the results of the RMSD mode analysis.
+    input_dict (dict): A dictionary containing job-related metadata (jobname, analysis range, output path, etc.).
+
+    Returns:
+    None: The function saves the dataset as a CSV file in the specified output directory.
+    """
     jobname = input_dict['jobname']
     rmsd_range = input_dict['analysis_range']
     output_path = input_dict['output_path']

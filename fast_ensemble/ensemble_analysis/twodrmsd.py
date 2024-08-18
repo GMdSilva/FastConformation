@@ -14,18 +14,85 @@ from fast_ensemble.ensemble_analysis.rmsd import calculate_rmsd
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
-
 class TwodRMSD:
+    """
+    A class to perform 2D RMSD analysis on molecular dynamics simulations.
+
+    Attributes:
+    ----------
+    prediction_dicts : dict
+        A dictionary containing prediction data with associated MDAnalysis Universes.
+    input_dict : dict
+        A dictionary containing job-related metadata (jobname, analysis range, etc.).
+    ref_gr : str or None, optional
+        The reference structure file path for the first RMSD calculation (default is None).
+    ref_alt : str or None, optional
+        The reference structure file path for the second RMSD calculation (default is None).
+    filtering_dict : dict
+        A dictionary to store data related to the filtering of RMSD values.
+    clustering_dict : dict
+        A dictionary to store data related to the clustering of 2D RMSD values.
+    widget : object
+        A widget object to handle the plotting of the analysis results.
+
+    Methods:
+    -------
+    calculate_2d_rmsd(trial):
+        Calculate 2D RMSD for a given trial.
+    fit_and_filter_data(rmsd_2d_data, n_stdevs):
+        Fit a parabola to the 2D RMSD data and filter points based on the standard deviation threshold.
+    show_filt_data(rmsd_2d_data):
+        Plot the 2D RMSD data along with the fitted curve and filtered points.
+    plot_filtering_data(rmsd_2d_data):
+        Generate and save a plot of the filtered 2D RMSD data with the fitted curve.
+    cluster_2d_data(rmsd_2d_data, n_clusters):
+        Perform clustering on the filtered 2D RMSD data and store clustering results.
+    plot_and_save_2d_data(output_path):
+        Plot the clustered 2D RMSD data, save the plot, and return a DataFrame with the clustering information.
+    get_2d_rmsd(rmsd_mode_df_path, n_stdevs, n_clusters, output_path):
+        Execute the full 2D RMSD analysis for all trials, including fitting, filtering, clustering, and saving results.
+
+    """
+
     def __init__(self, prediction_dicts, input_dict, widget, ref_gr=None, ref_alt=None):
+        """
+        Initialize the TwodRMSD class.
+
+        Parameters:
+        ----------
+        prediction_dicts : dict
+            A dictionary containing prediction data with associated MDAnalysis Universes.
+        input_dict : dict
+            A dictionary containing job-related metadata (jobname, analysis range, etc.).
+        widget : object
+            A widget object to handle the plotting of the analysis results.
+        ref_gr : str or None, optional
+            The reference structure file path for the first RMSD calculation (default is None).
+        ref_alt : str or None, optional
+            The reference structure file path for the second RMSD calculation (default is None).
+        """
         self.prediction_dicts = prediction_dicts
         self.input_dict = input_dict
         self.ref_gr = ref_gr
         self.ref_alt = ref_alt
         self.filtering_dict = {}
         self.clustering_dict = {}
-        self.widget=widget
+        self.widget = widget
 
     def calculate_2d_rmsd(self, trial):
+        """
+        Calculate 2D RMSD for a given trial.
+
+        Parameters:
+        ----------
+        trial : str
+            The identifier for the trial being analyzed.
+
+        Returns:
+        -------
+        rmsd_2d_data : np.ndarray
+            A 2D array of RMSD values against two reference structures.
+        """
         universe = self.prediction_dicts[trial]['mda_universe']
         rmsd_gr = calculate_rmsd(universe,
                                  ref=self.ref_gr,
@@ -42,6 +109,20 @@ class TwodRMSD:
         return rmsd_2d_data
 
     def fit_and_filter_data(self, rmsd_2d_data, n_stdevs):
+        """
+        Fit a parabola to the 2D RMSD data and filter points based on the standard deviation threshold.
+
+        Parameters:
+        ----------
+        rmsd_2d_data : np.ndarray
+            A 2D array of RMSD values.
+        n_stdevs : int
+            Number of standard deviations to use for filtering the data.
+
+        Returns:
+        -------
+        None
+        """
         popt, _ = curve_fit(parabola, rmsd_2d_data[:, 0], rmsd_2d_data[:, 1])
         fit_x = np.linspace(min(rmsd_2d_data[:, 0]), max(rmsd_2d_data[:, 0]), 100)
         fit_y = parabola(fit_x, *popt)
@@ -72,17 +153,45 @@ class TwodRMSD:
             'x_close': x_close,
             'y_close': y_close,
         }
-    
+
     def show_filt_data(self, rmsd_2d_data):
-        title = (f"{self.input_dict['jobname']} "f"{self.input_dict['max_seq']} " f"{self.input_dict['extra_seq']}")
-        plotter=self.widget.add_plot(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], title=title, x_label='RMSD vs. Ref1 (A)', y_label='RMSD vs. Ref2 (A)', scatter=True)
-        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        """
+        Plot the 2D RMSD data along with the fitted curve and filtered points.
+
+        Parameters:
+        ----------
+        rmsd_2d_data : np.ndarray
+            A 2D array of RMSD values.
+
+        Returns:
+        -------
+        None
+        """
+        title = (f"{self.input_dict['jobname']} "
+                 f"{self.input_dict['max_seq']} "
+                 f"{self.input_dict['extra_seq']}")
+        plotter = self.widget.add_plot(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], title=title,
+                                       x_label='RMSD vs. Ref1 (Å)', y_label='RMSD vs. Ref2 (Å)', scatter=True)
+        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'],
+                             label='Fitted Curve', color='r')
         self.widget.add_scatter(plotter, self.filtering_dict['x_close'],
-                    self.filtering_dict['y_close'],
-                    label='Close Points',
-                    color=[68, 1, 84, 255])
-    
+                                self.filtering_dict['y_close'],
+                                label='Close Points',
+                                color=[68, 1, 84, 255])
+
     def plot_filtering_data(self, rmsd_2d_data):
+        """
+        Generate and save a plot of the filtered 2D RMSD data with the fitted curve.
+
+        Parameters:
+        ----------
+        rmsd_2d_data : np.ndarray
+            A 2D array of RMSD values.
+
+        Returns:
+        -------
+        None
+        """
         plt.figure(figsize=(5, 4))
         plt.scatter(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], s=10)
 
@@ -120,6 +229,20 @@ class TwodRMSD:
         plt.close()
 
     def cluster_2d_data(self, rmsd_2d_data, n_clusters):
+        """
+        Perform clustering on the filtered 2D RMSD data and store clustering results.
+
+        Parameters:
+        ----------
+        rmsd_2d_data : np.ndarray
+            A 2D array of RMSD values.
+        n_clusters : int
+            Number of clusters to form.
+
+        Returns:
+        -------
+        None
+        """
         kmeans = KMeans(n_clusters)
         close_points_2d = np.array([self.filtering_dict['x_close'],
                                     self.filtering_dict['y_close']]).T
@@ -154,6 +277,19 @@ class TwodRMSD:
         }
 
     def plot_and_save_2d_data(self, output_path):
+        """
+        Plot the clustered 2D RMSD data, save the plot, and return a DataFrame with the clustering information.
+
+        Parameters:
+        ----------
+        output_path : str
+            The path where the plot will be saved.
+
+        Returns:
+        -------
+        df : pd.DataFrame
+            A DataFrame containing the clustering information.
+        """
         unique_labels = self.clustering_dict['unique_labels']
         correct_labels = self.clustering_dict['correct_labels']
         cluster_counts = self.clustering_dict['cluster_counts']
@@ -165,7 +301,7 @@ class TwodRMSD:
                  f"Score: {self.filtering_dict['ratio']:.2f}")
         colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
             
-        plotter=self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='RMSD vs. Ref1 (A)', y_label='RMSD vs. Ref2 (A)', label='Centroids', scatter=True)
+        plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='RMSD vs. Ref1 (Å)', y_label='RMSD vs. Ref2 (Å)', label='Centroids', scatter=True)
         self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
     
         for i in unique_labels:
@@ -219,6 +355,24 @@ class TwodRMSD:
         return df
 
     def get_2d_rmsd(self, rmsd_mode_df_path, n_stdevs, n_clusters, output_path):
+        """
+        Execute the full 2D RMSD analysis for all trials, including fitting, filtering, clustering, and saving results.
+
+        Parameters:
+        ----------
+        rmsd_mode_df_path : str
+            The path to the RMSD mode data file.
+        n_stdevs : int
+            Number of standard deviations to use for filtering the data.
+        n_clusters : int
+            Number of clusters to form.
+        output_path : str
+            The path where the results will be saved.
+
+        Returns:
+        -------
+        None
+        """
         df = pd.read_csv(rmsd_mode_df_path)
         unique_trials = df['trial'].unique()
 

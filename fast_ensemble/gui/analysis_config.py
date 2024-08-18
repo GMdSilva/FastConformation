@@ -18,9 +18,28 @@ from fast_ensemble.tmscore_mode1d import run_tmscore_analysis
 from fast_ensemble.tmscore_mode2d import run_2d_tmscore_analysis
 from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
 from fast_ensemble.gui.plot_widget import PlotWidget
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit, QPushButton, QFileDialog, QListWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
+from dataclasses import dataclass
+from typing import Callable
+
 
 class AnalysisConfigWidget(QWidget):
+    """
+    The AnalysisConfigWidget class is responsible for providing a user interface 
+    to configure various analysis options. It contains general analysis options 
+    and specific configurations for different types of analysis (RMSF, RMSD, TMScore, etc.).
+
+    Attributes:
+        job_manager: A manager object that handles job submissions and execution.
+    """
     def __init__(self, job_manager):
+        """
+        Initialize the AnalysisConfigWidget with a job manager.
+
+        Args:
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__()
         self.job_manager = job_manager
 
@@ -83,6 +102,13 @@ class AnalysisConfigWidget(QWidget):
         self.setWindowTitle("Analysis Configurations")
 
     def _on_item_clicked(self, item):
+        """
+        Handle the event when an item is clicked in the icon grid. It loads the 
+        corresponding analysis widget in the stacked widget.
+
+        Args:
+            item: The clicked item in the icon grid.
+        """
         name = item.text()
         getter = self.general_analysis_widget.get_general_options
         widget = ANALYSIS_CATEGORIES[name].widget(getter, self.job_manager)
@@ -113,12 +139,26 @@ class AnalysisConfigWidget(QWidget):
         self.analysis_stack.setCurrentWidget(widget)
 
     def show_plot(self, name, plot_widget):
+        """
+        Display the plot for the given analysis.
+
+        Args:
+            name: The name of the analysis.
+            plot_widget: The widget containing the plot to be displayed.
+        """
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget()
         print(f'parent_widget {parent}')
         parent.show_plot(name, plot_widget)
 
 @dataclass
 class AnalysisCategory:
+    """
+    Data class to represent an analysis category.
+
+    Attributes:
+        widget: A callable that returns the widget associated with the analysis.
+        tool_tip: A string that provides a description of the analysis category.
+    """
     widget: Callable
     tool_tip: str = ""
 
@@ -153,13 +193,24 @@ ANALYSIS_CATEGORIES = {
     ),
 }
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit, QPushButton, QFileDialog, QListWidget, QVBoxLayout
-from PyQt5.QtCore import Qt
-from dataclasses import dataclass
-from typing import Callable
-
 class GeneralAnalysisWidget(QWidget):
+    """
+    GeneralAnalysisWidget provides the user interface for setting general analysis 
+    options like job name, output path, sequence pairs, and other configurations.
+
+    Methods:
+        clear_seq_pairs: Clears the list of sequence pairs.
+        select_output_path: Opens a file dialog to select the output path directory.
+        select_predictions_path: Opens a file dialog to select the predictions path directory.
+        auto_detect_sequence_pairs: Automatically detects sequence pairs from the selected directory.
+        get_general_options: Returns a dictionary of the current general analysis options.
+        add_seq_pair: Adds a new sequence pair to the list.
+        remove_seq_pair: Removes a sequence pair from the list.
+    """
     def __init__(self):
+        """
+        Initialize the GeneralAnalysisWidget with input fields and layout.
+        """
         super().__init__()
         layout = QFormLayout()
         
@@ -213,6 +264,9 @@ class GeneralAnalysisWidget(QWidget):
         self.setLayout(layout)
         
     def clear_seq_pairs(self):
+        """
+        Clears all sequence pairs from the layout.
+        """
         for i in range(len(self.seq_pairs) - 1, -1, -1):
             layout, seq_pair = self.seq_pairs.pop(i)
             while layout.count():
@@ -223,17 +277,29 @@ class GeneralAnalysisWidget(QWidget):
             layout.deleteLater()
 
     def select_output_path(self):
+        """
+        Opens a file dialog to allow the user to select an output directory.
+        """
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.output_path_input.setText(directory)
 
     def select_predictions_path(self):
+        """
+        Opens a file dialog to allow the user to select a directory containing AF2 predictions.
+        """
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.predictions_path_input.setText(directory)
             self.auto_detect_sequence_pairs(directory)
 
     def auto_detect_sequence_pairs(self, predictions_path):
+        """
+        Automatically detects sequence pairs based on the structure of the predictions path directory.
+
+        Args:
+            predictions_path: The path to the directory containing predictions.
+        """
         try:
             self.clear_seq_pairs()
             for subdir in os.listdir(predictions_path):
@@ -254,6 +320,12 @@ class GeneralAnalysisWidget(QWidget):
             QMessageBox.critical(self, "Error", f"Failed to auto-detect sequence pairs: {e}")
     
     def get_general_options(self):
+        """
+        Retrieves the current general options set in the widget.
+
+        Returns:
+            A dictionary containing the general options.
+        """
         return {
             "jobname": self.jobname_input.text(),
             "output_path": self.output_path_input.text(),
@@ -268,6 +340,13 @@ class GeneralAnalysisWidget(QWidget):
         }
 
     def add_seq_pair(self, seq1='', seq2=''):
+        """
+        Adds a new sequence pair to the widget.
+
+        Args:
+            seq1: The first sequence in the pair.
+            seq2: The second sequence in the pair.
+        """
         seq_pair_layout = QHBoxLayout()
         seq_pair = []
         seq1_input = QLineEdit(seq1)
@@ -288,7 +367,13 @@ class GeneralAnalysisWidget(QWidget):
         self.seq_pairs.append((seq_pair_layout, seq_pair))
 
     def remove_seq_pair(self, layout, seq_pair):
-        # Properly remove and delete the layout and its widgets
+        """
+        Removes a sequence pair from the widget.
+
+        Args:
+            layout: The layout containing the sequence pair widgets.
+            seq_pair: The sequence pair to be removed.
+        """
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
@@ -298,7 +383,22 @@ class GeneralAnalysisWidget(QWidget):
         layout.deleteLater()
 
 class RMSFAnalysisWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run RMSF (Root Mean Square Fluctuation) analysis.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for RMSF analysis.
+        run_specific_analysis: Runs the RMSF analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the RMSFAnalysisWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -325,6 +425,12 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for RMSF analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.peak_width_input.text().isdigit():
             errors.append("Peak Width must be a number.")
@@ -337,6 +443,12 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options for RMSF analysis.
+
+        Returns:
+            A dictionary containing the specific options for RMSF analysis.
+        """
         return {
             "detect_mobile": self.detect_mobile_checkbox.isChecked(),
             "peak_width": int(self.peak_width_input.text()),
@@ -346,14 +458,34 @@ class RMSFAnalysisWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
-        # Plot widget
+        """
+        Runs the RMSF analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the RMSF analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_rmsf_analysis(config, self.plot_widget)
         parent.show_plot("RMSF Analysis", self.plot_widget)
 
 class RMSDAnalysisWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run RMSD (Root Mean Square Deviation) analysis.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for RMSD analysis.
+        run_specific_analysis: Runs the RMSD analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the RMSDAnalysisWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -371,6 +503,12 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for RMSD analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.analysis_range_input.text():
             errors.append("Analysis Range cannot be empty.")
@@ -379,20 +517,46 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options for RMSD analysis.
+
+        Returns:
+            A dictionary containing the specific options for RMSD analysis.
+        """
         return {
             "analysis_range": self.analysis_range_input.text(),
             "analysis_range_name": self.analysis_range_name_input.text()
         }
 
     def run_specific_analysis(self, config):
-         # Plot widget
+        """
+        Runs the RMSD analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the RMSD analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_rmsd_analysis(config, self.plot_widget)
         parent.show_plot("RMSD Analysis", self.plot_widget)
 
 class RMSD2DWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run 2D RMSD (Root Mean Square Deviation) analysis.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for 2D RMSD analysis.
+        run_specific_analysis: Runs the 2D RMSD analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the RMSD2DWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -416,12 +580,24 @@ class RMSD2DWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for 2D RMSD analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.n_stdevs_input.text().isdigit():
             errors.append("Number of Standard Deviations (n_stdevs) must be a number.")
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options for 2D RMSD analysis.
+
+        Returns:
+            A dictionary containing the specific options for 2D RMSD analysis.
+        """
         return {
             "mode_results": self.mode_results_input.text(),
             "ref2d1": self.ref2d1_input.text(),
@@ -431,13 +607,34 @@ class RMSD2DWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
+        """
+        Runs the 2D RMSD analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the 2D RMSD analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_2d_rmsd_analysis(config, self.plot_widget)
-        parent.show_plot("TMScore-2D  Analysis", self.plot_widget)
+        parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
 class TMSCOREWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run TMScore analysis.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for TMScore analysis.
+        run_specific_analysis: Runs the TMScore analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the TMSCOREWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -455,23 +652,56 @@ class TMSCOREWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for TMScore analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         return errors
     
     def get_specific_options(self):
+        """
+        Retrieves the specific options for TMScore analysis.
+
+        Returns:
+            A dictionary containing the specific options for TMScore analysis.
+        """
         return {
             "slice_predictions": self.slice_predictions_input.text(),
             "ref1": self.ref1_input.text()
         }
 
     def run_specific_analysis(self, config):
+        """
+        Runs the TMScore analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the TMScore analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_tmscore_analysis(config, self.plot_widget)
         parent.show_plot("TMScore Analysis", self.plot_widget)
 
 class TwoTMScoreWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run 2D TMScore analysis.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for 2D TMScore analysis.
+        run_specific_analysis: Runs the 2D TMScore analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the TwoTMScoreWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -495,6 +725,12 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for 2D TMScore analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.mode_results_input.text():
             errors.append("Mode Results cannot be empty.")
@@ -503,6 +739,12 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options for 2D TMScore analysis.
+
+        Returns:
+            A dictionary containing the specific options for 2D TMScore analysis.
+        """
         return {
             "mode_results": self.mode_results_input.text(),
             "ref2d1": self.ref2d1_input.text(),
@@ -512,14 +754,34 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
+        """
+        Runs the 2D TMScore analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the 2D TMScore analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_2d_tmscore_analysis(config, self.plot_widget)
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
-
 class PCAWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run PCA (Principal Component Analysis).
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for PCA analysis.
+        run_specific_analysis: Runs the PCA analysis with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the PCAWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -541,6 +803,12 @@ class PCAWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for PCA analysis.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.align_range_input.text():
             errors.append("Align Range cannot be empty.")
@@ -553,6 +821,12 @@ class PCAWidget(AnalysisWidgetBase):
         return errors
     
     def get_specific_options(self):
+        """
+        Retrieves the specific options for PCA analysis.
+
+        Returns:
+            A dictionary containing the specific options for PCA analysis.
+        """
         return {
             "align_range": self.align_range_input.text(),
             "analysis_range": self.analysis_range_input.text(),
@@ -561,13 +835,34 @@ class PCAWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
+        """
+        Runs the PCA analysis with the given configuration.
+
+        Args:
+            config: The configuration options for the PCA analysis.
+        """
         self.plot_widget = PlotWidget(self)
         parent=self.parentWidget().parentWidget()
         run_pca_analysis(config, self.plot_widget)
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
 class TrajectorySavingWidget(AnalysisWidgetBase):
+    """
+    Widget to configure and run trajectory saving.
+
+    Methods:
+        validate_inputs: Validates the inputs provided by the user.
+        get_specific_options: Retrieves the specific options for trajectory saving.
+        run_specific_analysis: Runs the trajectory saving process with the given configuration.
+    """
     def __init__(self, general_options_getter, job_manager):
+        """
+        Initialize the TrajectorySavingWidget with general options getter and job manager.
+
+        Args:
+            general_options_getter: Callable to retrieve general analysis options.
+            job_manager: The manager responsible for handling job execution.
+        """
         super().__init__(job_manager)
         self.general_options_getter = general_options_getter
         layout = QFormLayout()
@@ -589,6 +884,12 @@ class TrajectorySavingWidget(AnalysisWidgetBase):
         self.setLayout(layout)
 
     def validate_inputs(self):
+        """
+        Validates the inputs provided by the user for trajectory saving.
+
+        Returns:
+            A list of errors if any input is invalid, otherwise an empty list.
+        """
         errors = []
         if not self.analysis_range_input.text():
             errors.append("Analysis Range cannot be empty.")
@@ -601,6 +902,12 @@ class TrajectorySavingWidget(AnalysisWidgetBase):
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options for trajectory saving.
+
+        Returns:
+            A dictionary containing the specific options for trajectory saving.
+        """
         return {
             "analysis_range": self.analysis_range_input.text(),
             "analysis_range_name": self.analysis_range_name_input.text(),
@@ -609,4 +916,10 @@ class TrajectorySavingWidget(AnalysisWidgetBase):
         }
 
     def run_specific_analysis(self, config):
+        """
+        Runs the trajectory saving process with the given configuration.
+
+        Args:
+            config: The configuration options for trajectory saving.
+        """
         run_trajectory_saving(config)

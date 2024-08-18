@@ -7,28 +7,49 @@ from fast_ensemble.msa_generation.msa_utils import create_directory
 
 
 def validate_inputs(config):
-    # Check if msa_path is a valid file
+    """
+    Validate the input configuration parameters.
+
+    Args:
+        config (dict): Configuration dictionary containing all necessary parameters.
+
+    Raises:
+        ValueError: If any of the configuration parameters are invalid.
+    """
     if not os.path.isfile(config['msa_path']):
         raise ValueError(f"MSA path '{config['msa_path']}' is not a valid file.")
 
     if not os.path.isdir(config['output_path']):
         raise ValueError(f"Output path '{config['output_path']}' is not a valid directory.")
 
-    # Check if jobname is a string
     if not isinstance(config['jobname'], str):
         raise ValueError(f"Jobname '{config['jobname']}' is not a valid string.")
 
-    # Check if seq_pairs is a list of pairs of integers
     if not isinstance(config['seq_pairs'], list) or not all(isinstance(pair, list) and len(pair) == 2 and
                                                             all(isinstance(num, int) for num in pair) for pair in config['seq_pairs']):
         raise ValueError(f"Seq_pairs '{config['seq_pairs']}' is not a valid list of [max_seq, extra_seq] pairs.")
 
-    # Check if seeds is an integer
     if not isinstance(config['seeds'], int):
         raise ValueError(f"Seeds '{config['seeds']}' is not a valid integer.")
 
 
 def run_ensemble_prediction_single(msa_path, output_path, jobname, max_seq, extra_seq, env, seeds=10, save_all=False):
+    """
+    Run a single ensemble prediction with the specified parameters.
+
+    Args:
+        msa_path (str): Path to the MSA file.
+        output_path (str): Path to save the prediction results.
+        jobname (str): Name of the job.
+        max_seq (int): Maximum number of sequences to consider in the MSA.
+        extra_seq (int): Number of extra sequences to consider in the MSA.
+        env (dict): Environment variables for the subprocess.
+        seeds (int, optional): Number of predictions to run. Default is 10.
+        save_all (bool, optional): Flag to save all results. Default is False.
+
+    Returns:
+        int: The return code of the subprocess.
+    """
     complete_output_path = f'{output_path}/{jobname}/predictions/alphafold2/{jobname}'
 
     if save_all:
@@ -55,6 +76,12 @@ def run_ensemble_prediction_single(msa_path, output_path, jobname, max_seq, extr
 
 
 def run_ensemble_prediction(config):
+    """
+    Run the ensemble predictions based on the provided configuration.
+
+    Args:
+        config (dict): Configuration dictionary containing all necessary parameters.
+    """
     validate_inputs(config)
 
     msa_path = config['msa_path']
@@ -113,6 +140,14 @@ def run_ensemble_prediction(config):
 
 
 def subset_msa(input_file, output_path, X):
+    """
+    Subset the MSA file to a specified number of sequences.
+
+    Args:
+        input_file (str): Path to the input MSA file.
+        output_path (str): Directory path to save the subsetted MSA file.
+        X (int): Number of sequences to include in the subset.
+    """
     with open(input_file, 'r') as infile:
         lines = infile.readlines()
 
@@ -142,7 +177,15 @@ def subset_msa(input_file, output_path, X):
 
 
 def load_config(config_file):
-    # Default configuration values
+    """
+    Load the configuration from a JSON file.
+
+    Args:
+        config_file (str): Path to the configuration file.
+
+    Returns:
+        dict: Configuration dictionary with default values if the file is not found or if there's an error in reading the file.
+    """
     default_config = {
         'msa_path': None,
         'output_path': './',
@@ -166,11 +209,21 @@ def load_config(config_file):
 
 
 def save_config(config, file_path):
+    """
+    Save the configuration to a JSON file.
+
+    Args:
+        config (dict): Configuration dictionary to save.
+        file_path (str): Path to save the configuration file.
+    """
     with open(file_path, 'w') as file:
         json.dump(config, file, indent=4)
 
 
 def main():
+    """
+    Main function to parse command-line arguments and run ensemble predictions.
+    """
     parser = argparse.ArgumentParser(description="Run multiple ensemble predictions.")
 
     parser.add_argument('--config_file', type=str, help="Path to the configuration file")

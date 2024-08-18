@@ -3,14 +3,43 @@ import sys
 from fast_ensemble.predict_ensemble import run_ensemble_prediction
 from fast_ensemble.predict_ensemble import run_ensemble_prediction
 from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
+from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QCheckBox, QFileDialog, QHBoxLayout
 
 class MakePredictionsWidget(AnalysisWidgetBase):
+    """
+    The MakePredictionsWidget class provides a user interface for configuring 
+    and running predictions using different MSA (Multiple Sequence Alignment) 
+    options and settings.
+
+    Methods:
+        init_ui: Initializes the user interface components.
+        select_msa_path: Opens a file dialog to select the MSA file.
+        select_output_path: Opens a file dialog to select the output directory.
+        add_seq_pair: Adds a new sequence pair input to the interface.
+        remove_seq_pair: Removes an existing sequence pair input.
+        validate_inputs: Validates the user inputs to ensure they are correct.
+        get_specific_options: Retrieves the specific options set by the user.
+        run_analysis: Validates inputs, merges configurations, and starts the prediction job.
+        get_seq_pairs: Retrieves the sequence pairs input by the user.
+    """
     def __init__(self, job_manager, general_options_getter=None, *args, **kwargs):
+        """
+        Initialize the MakePredictionsWidget with a job manager and optional general options getter.
+
+        Args:
+            job_manager: The manager responsible for handling job execution.
+            general_options_getter: An optional callable to retrieve general analysis options.
+            *args: Additional arguments to pass to the parent class.
+            **kwargs: Additional keyword arguments to pass to the parent class.
+        """
         super().__init__(job_manager, *args, **kwargs)
         self.general_options_getter = general_options_getter
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initializes the user interface components and layout for the widget.
+        """
         layout = QGridLayout()
 
         # Engine
@@ -38,6 +67,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
                 background-color: #777777;
             }
         """)
+        
         # MSA Path
         self.msa_path_label = QLabel("MSA Path:")
         self.msa_path_input = QLineEdit()
@@ -72,6 +102,8 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         # Subset MSA To
         self.subset_msa_to_label = QLabel("Max MSA Depth:")
         self.subset_msa_to_input = QLineEdit("")
+
+        # Output Path
         self.output_path_label = QLabel("Output Path:")
         self.output_path_input = QLineEdit("")
         self.output_path_button = QPushButton("Browse")
@@ -102,6 +134,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.setLayout(layout)
         self.setWindowTitle("Advanced MSA Options")
         self.add_seq_pair(seq1="256", seq2="512")
+
         # Run Button
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(lambda: self.run_analysis())
@@ -109,6 +142,9 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         layout.addWidget(self.run_button, 12, 1)
         
     def select_msa_path(self):
+        """
+        Opens a file dialog to allow the user to select the MSA file.
+        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_path, _ = QFileDialog.getOpenFileName(self, "Select MSA File", "", "MSA Files (*.a3m);;All Files (*)", options=options)
@@ -116,11 +152,21 @@ class MakePredictionsWidget(AnalysisWidgetBase):
             self.msa_path_input.setText(file_path)
     
     def select_output_path(self):
+        """
+        Opens a file dialog to allow the user to select the output directory.
+        """
         directory = QFileDialog.getExistingDirectory(self, "Select Directory")
         if directory:
             self.output_path_input.setText(directory)
 
     def add_seq_pair(self, seq1="", seq2=""):
+        """
+        Adds a new sequence pair input to the interface.
+
+        Args:
+            seq1: The first sequence in the pair.
+            seq2: The second sequence in the pair.
+        """
         seq_pair_layout = QHBoxLayout()
 
         seq1_input = QLineEdit(seq1)
@@ -138,6 +184,12 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.seq_pairs_layout.addLayout(seq_pair_layout)
 
     def remove_seq_pair(self, layout):
+        """
+        Removes an existing sequence pair input from the interface.
+
+        Args:
+            layout: The layout containing the sequence pair to be removed.
+        """
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
@@ -146,6 +198,12 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         layout.deleteLater()
 
     def validate_inputs(self):
+        """
+        Validates the user inputs to ensure they are correct.
+
+        Returns:
+            A list of error messages if validation fails, otherwise an empty list.
+        """
         errors = []
         if not self.msa_path_input.text():
             errors.append("MSA Path cannot be empty.")
@@ -156,9 +214,15 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         return errors
 
     def get_specific_options(self):
+        """
+        Retrieves the specific options set by the user.
+
+        Returns:
+            A dictionary containing the options for the prediction job.
+        """
         return {
             'msa_path': self.msa_path_input.text(),
-            'output_path': self.output_path_input.text(),  # Set this as needed
+            'output_path': self.output_path_input.text(),
             'jobname': 'jobname',  # Set this as needed
             'seq_pairs': self.get_seq_pairs(),
             'seeds': int(self.seeds_input.text()),
@@ -169,6 +233,9 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         }
 
     def run_analysis(self):
+        """
+        Validates inputs, merges configurations, and starts the prediction job.
+        """
         errors = self.validate_inputs()
         if errors:
             self.show_error_message(errors)
@@ -186,6 +253,12 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.show_info_message(f"Job {config['jobname']} started.")
 
     def get_seq_pairs(self):
+        """
+        Retrieves the sequence pairs input by the user.
+
+        Returns:
+            A list of sequence pairs, each represented as a list of two integers.
+        """
         seq_pairs = []
         for i in range(self.seq_pairs_layout.count()):
             layout = self.seq_pairs_layout.itemAt(i).layout()

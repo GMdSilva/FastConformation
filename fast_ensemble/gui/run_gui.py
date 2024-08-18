@@ -19,15 +19,35 @@ import signal
 import warnings
 
 class MainFrame(QMainWindow):
+    """
+    MainFrame is the main application window for the FastEnsemble application. 
+    It contains the central widget, toolbar, and dock widgets for managing different tasks.
+
+    Methods:
+        create_terminal_dock: Creates a dock widget for displaying the analysis log (terminal output).
+        show_terminal: Toggles the visibility of the terminal dock widget.
+        apply_styles: Applies custom styles to the main window and widgets.
+        show_home_page: Displays the home page, hiding other dock widgets.
+        show_new_job_page: Displays the new job page, allowing users to submit new jobs.
+        show_job_status_page: Displays the job status page, showing the status of submitted jobs.
+        show_plot: Displays a plot in a dock widget.
+        show_dock_widget: Displays a specified dock widget.
+        hide_all_dock_widgets: Hides all currently visible dock widgets.
+        set_initial_window_size: Sets the initial size of the main window.
+    """
     def __init__(self):
+        """
+        Initializes the MainFrame with its central widget, toolbar, and job manager.
+        """
         super().__init__()
-        self.job_manager=JobManager()
+        self.job_manager = JobManager()
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
         self.layout = QVBoxLayout(self.central_widget)
         self.background_widget = BackgroundWidget(self)
         self.layout.addWidget(self.background_widget)
+
         # Add the main widget
         self.main_widget = MainWidget(self, self.job_manager)
         self.layout.addWidget(self.main_widget)
@@ -88,6 +108,9 @@ class MainFrame(QMainWindow):
         sys.stderr = QPlainTextEditLogger(self.terminal_output)
 
     def create_terminal_dock(self):
+        """
+        Creates a dock widget for displaying the analysis log (terminal output).
+        """
         self.terminal_output = QPlainTextEdit(self)
         self.terminal_output.setReadOnly(True)
 
@@ -98,12 +121,18 @@ class MainFrame(QMainWindow):
         self.terminal_dock.setVisible(False)
 
     def show_terminal(self):
+        """
+        Toggles the visibility of the terminal dock widget.
+        """
         if self.terminal_dock.isVisible():
             self.terminal_dock.setVisible(False)
         else:
             self.terminal_dock.setVisible(True)
 
     def apply_styles(self):
+        """
+        Applies custom styles to the main window and its widgets.
+        """
         self.setStyleSheet("""
             QWidget {
                 background-color: palette(base);
@@ -156,12 +185,18 @@ class MainFrame(QMainWindow):
         """)
 
     def show_home_page(self):
+        """
+        Displays the home page, hiding all other dock widgets.
+        """
         self.toolbar.setVisible(True)
         self.hide_all_dock_widgets()
         self.main_widget.new_job_dock.setVisible(False)
         self.terminal_dock.setVisible(False)
 
     def show_new_job_page(self):
+        """
+        Displays the new job submission page, hiding other dock widgets.
+        """
         self.hide_all_dock_widgets()
         if self.main_widget.new_job_dock:
             self.main_widget.new_job_dock.setVisible(False)
@@ -169,32 +204,45 @@ class MainFrame(QMainWindow):
         self.main_widget.create_dock_widget()
 
     def show_job_status_page(self):
+        """
+        Displays the job status page, hiding other dock widgets.
+        """
         self.hide_all_dock_widgets()
         self.main_widget.new_job_dock.setVisible(False)
         self.toolbar.setVisible(True)
         self.main_widget.show_job_status_page()
 
     def show_plot(self, title, content_widget):
-        # Create a dock widget
+        """
+        Displays a plot in a new dock widget.
+
+        Args:
+            title: The title of the dock widget.
+            content_widget: The widget containing the plot content.
+        """
         dock_widget = QDockWidget(title, self)
         dock_widget.setAllowedAreas(Qt.AllDockWidgetAreas)
 
-        # Create a container widget with a layout and add the content_widget
         container_widget = QWidget()
         layout = QVBoxLayout(container_widget)
         layout.addWidget(content_widget)
         container_widget.setStyleSheet("QWidget { background-color: lightgrey; }")
 
-        # Set the container widget as the dock widget's main widget
         dock_widget.setWidget(container_widget)
         dock_widget.raise_()
-        # Add the dock widget to the main window, ensuring it takes up as much space as possible
+
         self.addDockWidget(Qt.LeftDockWidgetArea, dock_widget)
         dock_widget.setMinimumWidth(800)
         self.dock_widgets[title] = dock_widget
 
-
     def show_dock_widget(self, title, widget_callable):
+        """
+        Displays a specified dock widget. If it does not exist, creates and displays it.
+
+        Args:
+            title: The title of the dock widget.
+            widget_callable: A callable that returns the content widget for the dock.
+        """
         if title in self.dock_widgets:
             dock_widget = self.dock_widgets[title]
             dock_widget.setVisible(True)
@@ -217,31 +265,75 @@ class MainFrame(QMainWindow):
                 dock_value.setVisible(False)
 
     def hide_all_dock_widgets(self):
+        """
+        Hides all currently visible dock widgets.
+        """
         for dock_widget in self.dock_widgets.values():
             dock_widget.setVisible(False)
 
     def set_initial_window_size(self):
+        """
+        Sets the initial size of the main window based on the screen size.
+        """
         screen = QDesktopWidget().screenGeometry()
         self.setGeometry(100, 100, screen.width() - 100, screen.height() - 100)
 
-# show "terminal" on screen
 class QPlainTextEditLogger:
+    """
+    A custom logger that redirects stdout and stderr to a QPlainTextEdit widget.
+
+    Methods:
+        write: Appends a message to the text edit widget.
+        flush: Dummy method to comply with the logging interface.
+    """
     def __init__(self, text_edit):
+        """
+        Initializes the logger with the QPlainTextEdit widget.
+
+        Args:
+            text_edit: The QPlainTextEdit widget where logs will be displayed.
+        """
         self.widget = text_edit
 
     def write(self, message):
+        """
+        Appends a message to the text edit widget.
+
+        Args:
+            message: The message to append.
+        """
         self.widget.appendPlainText(message)
 
     def flush(self):
+        """
+        Dummy method to comply with the logging interface.
+        """
         pass
-    
 
 class BackgroundWidget(QWidget):
+    """
+    A custom QWidget that displays a background image in the main window.
+
+    Methods:
+        paintEvent: Handles the painting of the background image.
+    """
     def __init__(self, parent=None):
+        """
+        Initializes the BackgroundWidget with a parent widget.
+
+        Args:
+            parent: The parent widget, if any.
+        """
         super(BackgroundWidget, self).__init__(parent)
         self.pixmap = QPixmap("background_logo.png")
 
     def paintEvent(self, event):
+        """
+        Handles the painting of the background image, centering it in the widget.
+
+        Args:
+            event: The paint event.
+        """
         painter = QPainter(self)
         pixmap_rect = self.pixmap.rect()
         center_x = (self.width() - pixmap_rect.width()) // 2
@@ -249,14 +341,24 @@ class BackgroundWidget(QWidget):
         painter.drawPixmap(center_x, center_y, self.pixmap)
 
 def handle_sigint(signal, frame):
+    """
+    Handles the SIGINT signal, allowing the application to shut down gracefully.
+
+    Args:
+        signal: The signal received.
+        frame: The current stack frame.
+    """
     print("SIGINT received, shutting down...")
     QApplication.quit()
 
 def main():
+    """
+    The main entry point for the application. It sets up the application, handles signals,
+    and starts the main event loop.
+    """
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     signal.signal(signal.SIGINT, handle_sigint)
     app = QApplication(sys.argv)
-    # Set the application icon
     app_icon = QIcon('methods-2.png')  # Update the path as needed
     app.setWindowIcon(app_icon)
     main_frame = MainFrame()
@@ -267,7 +369,6 @@ def main():
         print("Shutting down...")
         main_frame.job_manager.stop()
         sys.exit(0)
-
 
 if __name__ == '__main__':
     main()

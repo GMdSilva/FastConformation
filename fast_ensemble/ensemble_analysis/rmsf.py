@@ -14,15 +14,23 @@ from tqdm import tqdm
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
+def calculate_rmsf_and_call_peaks(jobname, prediction_dicts, align_range, output_path, peak_width, prominence, threshold, widget):
+    """
+    Calculate Root Mean Square Fluctuation (RMSF) and detect peaks for multiple molecular dynamics predictions.
 
-def calculate_rmsf_and_call_peaks(jobname,
-                                  prediction_dicts,
-                                  align_range,
-                                  output_path,
-                                  peak_width,
-                                  prominence,
-                                  threshold, widget):
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    align_range (str): Atom selection string for alignment of trajectories (MDAnalysis selection syntax).
+    output_path (str): Directory where the analysis results and plots will be saved.
+    peak_width (int): Minimum width of peaks in the RMSF data to be considered.
+    prominence (float): Prominence required for a peak in the RMSF data.
+    threshold (float): Threshold for peak detection based on the standard deviation of RMSF values.
+    widget (object): A widget object for displaying plots interactively.
 
+    Returns:
+    dict: The updated prediction_dicts with detected peaks added to each prediction's data.
+    """
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         for result in prediction_dicts:
             pbar.set_description(f'Running RMSF peak analysis for {result}')
@@ -46,17 +54,16 @@ def calculate_rmsf_and_call_peaks(jobname,
             # Detect peaks
             peaks, properties = find_peaks(rmsf_values, width=peak_width, prominence=prominence)
 
-            x_label='Residue Number'
-            y_label='RMSF (Å)'
-            title=f'{jobname} {max_seq} {extra_seq}'
+            # Plot RMSF with detected peaks
+            x_label = 'Residue Number'
+            y_label = 'RMSF (Å)'
+            title = f'{jobname} {max_seq} {extra_seq}'
 
             plt.figure(figsize=(8, 3))
             plt.title(title, fontsize=16)
-            #plt.title(f'{jobname} {max_seq} {extra_seq} aligned to {align_range}', fontsize=16)
             plt.xlabel(x_label, fontsize=14)
             plt.ylabel(y_label, fontsize=14)
-            plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-            plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+            plt.tick_params(axis='both', which='major', labelsize=12)
 
             plt.plot(resids, rmsf_values)
             plt.plot(resids[peaks], rmsf_values[peaks], "x", color="C1")
@@ -78,23 +85,22 @@ def calculate_rmsf_and_call_peaks(jobname,
 
             plt.savefig(full_output_path, dpi=300)
 
+            # Extract and save detected peaks information
             detected_peaks = {}
             peak_counter = 0
-            # Extract resid values for each peak
             for i, peak in enumerate(peaks):
                 left_ip = int(properties["left_ips"][i])
                 right_ip = int(properties["right_ips"][i])
                 peak_resids = resids[left_ip:right_ip + 1]
 
-                peak_prop = {f'starting_residue': peak_resids[0],
-                             f'ending_residue': peak_resids[-1],
-                             f'length': len(peak_resids),
-                             f'peak_value': rmsf_values[peak],
-                             f'prominence': properties["prominences"][i],
-                             f'width_height': properties["width_heights"][i]}
+                peak_prop = {'starting_residue': peak_resids[0],
+                             'ending_residue': peak_resids[-1],
+                             'length': len(peak_resids),
+                             'peak_value': rmsf_values[peak],
+                             'prominence': properties["prominences"][i],
+                             'width_height': properties["width_heights"][i]}
 
                 peak_counter += 1
-
                 detected_peaks[f'detected_peak_{peak_counter}'] = peak_prop
 
             prediction_dicts[result]['detected_peaks'] = detected_peaks
@@ -103,27 +109,36 @@ def calculate_rmsf_and_call_peaks(jobname,
     return prediction_dicts
 
 
-def calculate_rmsf_multiple(jobname,
-                            prediction_dicts,
-                            align_range,
-                            output_path, widget):
+def calculate_rmsf_multiple(jobname, prediction_dicts, align_range, output_path, widget):
+    """
+    Calculate Root Mean Square Fluctuation (RMSF) for multiple molecular dynamics predictions and plot the results.
 
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    align_range (str): Atom selection string for alignment of trajectories (MDAnalysis selection syntax).
+    output_path (str): Directory where the analysis results and plots will be saved.
+    widget (object): A widget object for displaying plots interactively.
+
+    Returns:
+    None
+    """
     labels = []
-    x_label='Residue number'
-    y_label='RMSF (Å)'
-    title=f'{jobname}'
+    x_label = 'Residue number'
+    y_label = 'RMSF (Å)'
+    title = f'{jobname}'
+    
     if output_path:
         plt.figure(figsize=(8, 3))
         plt.title(title, fontsize=16)
         plt.xlabel(x_label, fontsize=14)
         plt.ylabel(y_label, fontsize=14)
-        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
-    
+        plt.tick_params(axis='both', which='major', labelsize=12)
+
     colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
 
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
-        plotter=None
+        plotter = None
         for idx, (result, data) in enumerate(prediction_dicts.items()):
             pbar.set_description(f'Measuring RMSF for {result}')
             u = data['mda_universe']
@@ -140,15 +155,15 @@ def calculate_rmsf_multiple(jobname,
             if output_path:
                 plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
             if plotter is None:
-                plotter=widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+                plotter = widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
             else:
                 widget.add_line(plotter, resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
     
-            labels.append(result)  # Add the result to labels list
+            labels.append(result)
             pbar.update(n=1)
     
     if output_path:
-        plt.legend()  # Add the legend at the end
+        plt.legend()
         plt.tight_layout()
 
         full_output_path = (f"{output_path}/"
@@ -161,8 +176,20 @@ def calculate_rmsf_multiple(jobname,
         plt.close()
 
 
-
 def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, widget):
+    """
+    Plot the correlation between pLDDT scores and RMSF values for each prediction.
+
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    plddt_dict (dict): A dictionary containing pLDDT scores for each prediction.
+    output_path (str): Directory where the analysis results and plots will be saved.
+    widget (object): A widget object for displaying plots interactively.
+
+    Returns:
+    None
+    """
     with tqdm(total=len(prediction_dicts), bar_format='{l_bar}{bar:20}{r_bar}{bar:-20b}') as pbar:
         plot_item = None
 
@@ -218,40 +245,52 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
 
             pbar.update(n=1)
 
+
 def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widget):
-    plotter=None
+    """
+    Plot pLDDT scores across residues for multiple predictions.
+
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    plddt_dict (dict): A dictionary containing pLDDT scores for each prediction.
+    output_path (str): Directory where the analysis results and plots will be saved.
+    custom_start_residue (int): A custom starting residue number for plotting.
+    widget (object): A widget object for displaying plots interactively.
+
+    Returns:
+    None
+    """
+    plotter = None
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'grey', 'brown', 'cyan', 'magenta']
-    x_label='Residue number'
-    y_label='pLDDT'
-    title=f'{jobname}'
+    x_label = 'Residue number'
+    y_label = 'pLDDT'
+    title = f'{jobname}'
+
     if output_path:
         plt.figure(figsize=(8, 3))
         plt.title(title, fontsize=16)
         plt.xlabel(x_label, fontsize=14)
         plt.ylabel(y_label, fontsize=14)
-        plt.tick_params(axis='both', which='major', labelsize=12)  # Major ticks
-        plt.tick_params(axis='both', which='minor', labelsize=12)  # Minor ticks (if any)
+        plt.tick_params(axis='both', which='major', labelsize=12)
 
     for idx, result in enumerate(plddt_dict):
         plddt_data = plddt_dict[result]['all_plddts']
         arrays = np.array(plddt_data)
         plddt_avg = np.mean(arrays, axis=0)
         
-        # Determine the length of pLDDT data
         length_avg = plddt_avg.shape[0] if np.ndim(arrays) != 1 else arrays.shape[0]
-
-        # Create residue numbers array
         residue_numbers = np.arange(length_avg)
         if custom_start_residue is not None:
             residue_numbers += custom_start_residue
         if output_path:
             plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
         if plotter is None:
-            plotter=widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+            plotter = widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
         else:
             widget.add_line(plotter, residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
+
     if output_path:
-        plt.legend()  # Add the legend at the end
+        plt.legend()
         plt.tight_layout()
         full_output_path = (f"{output_path}/"
                             f"{jobname}/"
@@ -263,7 +302,20 @@ def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widg
         plt.savefig(full_output_path, dpi=300)
         plt.close()
 
+
 def build_dataset_rmsf_peaks(jobname, results_dict, output_path, engine):
+    """
+    Build a dataset from detected RMSF peaks and save it as a CSV file.
+
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    results_dict (dict): A dictionary containing detected peaks for each prediction.
+    output_path (str): Directory where the analysis results and dataset will be saved.
+    engine (str): The name of the engine used for the analysis (e.g., AlphaFold2, OpenFold).
+
+    Returns:
+    None: The function saves the dataset as a CSV file in the specified output directory.
+    """
     trials = []
     peak_labels = []
     peak_starting_residues = []

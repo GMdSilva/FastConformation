@@ -23,6 +23,29 @@ def pca_from_ensemble(jobname,
                       align_range,
                       analysis_range,
                       n_clusters, widget):
+    """
+    Perform Principal Component Analysis (PCA) on an ensemble of molecular dynamics predictions and generate plots.
+
+    Parameters:
+    jobname (str): The name of the job or analysis.
+    prediction_dicts (dict): A dictionary containing prediction data with associated MDAnalysis Universes.
+    output_path (str): The directory where the analysis results and plots will be saved.
+    align_range (str): Atom selection string for alignment of trajectories (MDAnalysis selection syntax).
+    analysis_range (str): Atom selection string for PCA analysis (MDAnalysis selection syntax).
+    n_clusters (int): The number of clusters to form using K-Means clustering.
+    widget (object): A widget object for displaying plots interactively.
+
+    Returns:
+    None
+
+    This function performs the following steps:
+    1. Aligns the trajectories based on the provided alignment range.
+    2. Runs PCA on the aligned trajectories, transforming the coordinates into principal components.
+    3. Performs K-Means clustering on the first two principal components (PC1 and PC2).
+    4. Fits a parabola to the PC1 and PC2 data and calculates the R² score for the fit.
+    5. Generates interactive scatter plots with clustering information and fitted curve using the provided widget.
+    6. Saves the plots and PCA data to the specified output directory.
+    """
 
     pcas = {}
     print('')

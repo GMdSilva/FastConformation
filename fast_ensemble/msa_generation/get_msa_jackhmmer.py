@@ -21,6 +21,23 @@ TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaini
 #######################################################################################################################################
 
 def prep_inputs(sequence, jobname="test", homooligomer="1", output_dir=None, clean=False, verbose=True):
+    """
+    Prepares the input sequence and parameters for MSA generation.
+
+    Args:
+        sequence (str): The protein sequence to be processed.
+        jobname (str): The name of the job. Default is "test".
+        homooligomer (str): A string specifying the number of homooligomers for each sequence segment.
+                            Default is "1".
+        output_dir (str): The directory where output files will be saved. If None, a default directory
+                          is created based on the jobname and sequence hash.
+        clean (bool): If True, cleans the output directory by removing existing files. Default is False.
+        verbose (bool): If True, prints warnings and information during execution. Default is True.
+
+    Returns:
+        dict: A dictionary containing the processed inputs, including sequences, homooligomer information,
+              and output directory.
+    """
     # process inputs
     sequence = str(sequence)
     sequence = re.sub("[^A-Z:/]", "", sequence.upper())
@@ -92,6 +109,19 @@ def prep_inputs(sequence, jobname="test", homooligomer="1", output_dir=None, cle
 #######################################################################################################################################
 
 def run_jackhmmer(sequence, prefix, jackhmmer_binary_path='jackhmmer', verbose=True, use_ramdisk=False):
+    """
+    Runs the jackhmmer tool to search for homologous sequences in a protein sequence database.
+
+    Args:
+        sequence (str): The query protein sequence.
+        prefix (str): The prefix for output files.
+        jackhmmer_binary_path (str): Path to the jackhmmer binary executable. Default is 'jackhmmer'.
+        verbose (bool): If True, prints progress and information during execution. Default is True.
+        use_ramdisk (bool): If True, uses a RAM disk for temporary storage. Default is False.
+
+    Returns:
+        tuple: A tuple containing the MSAs, deletion matrices, and sequence names.
+    """
     fasta_path = f"{prefix}.fasta"
     with open(fasta_path, 'wt') as f:
         f.write(f'>query\n{sequence}')
@@ -205,6 +235,30 @@ def prep_msa(I, msa_method="mmseqs2", add_custom_msa=False, msa_format="fas",
              custom_msa=None, precomputed=None,
              mmseqs_host_url="https://a3m.mmseqs.com",
              verbose=True, use_ramdisk=False):
+    """
+    Prepares and processes MSAs for the given sequences using the specified MSA method.
+
+    Args:
+        I (dict): Dictionary containing input sequences and other parameters.
+        msa_method (str): Method used to generate MSAs. Default is "mmseqs2".
+        add_custom_msa (bool): Whether to add a custom MSA. Default is False.
+        msa_format (str): The format of the MSA file. Default is "fas".
+        pair_mode (str): Pairing mode for sequences. Can be "unpaired", "paired", or "unpaired+paired".
+                         Default is "unpaired".
+        pair_cov (int): Coverage threshold for pairing sequences. Default is 50.
+        pair_qid (int): Identity threshold for pairing sequences. Default is 20.
+        hhfilter_loc (str): Path to the hhfilter binary. Default is "hhfilter".
+        reformat_loc (str): Path to the reformat.pl script. Default is "reformat.pl".
+        TMP_DIR (str): Path to the temporary directory. Default is "tmp".
+        custom_msa (str): Path to a custom MSA file (optional).
+        precomputed (str): Path to a precomputed MSA file (optional).
+        mmseqs_host_url (str): URL of the MMseqs2 server. Default is "https://a3m.mmseqs.com".
+        verbose (bool): If True, prints progress and information during execution. Default is True.
+        use_ramdisk (bool): If True, uses a RAM disk for temporary storage. Default is False.
+
+    Returns:
+        dict: The updated dictionary I containing the generated MSAs and deletion matrices.
+    """
     # make temp directory
     os.makedirs(TMP_DIR, exist_ok=True)
 

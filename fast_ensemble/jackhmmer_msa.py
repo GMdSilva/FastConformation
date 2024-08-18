@@ -7,7 +7,15 @@ from fast_ensemble.msa_generation.msa_utils import create_ram_disk, read_fasta, 
 
 
 def load_config(file_path):
-    # Default configuration values
+    """
+    Load the configuration file in JSON format.
+
+    Args:
+        file_path (str): Path to the configuration file.
+
+    Returns:
+        dict: Configuration dictionary with default values if the file is not found or if there's an error in reading the file.
+    """
     default_config = {
         'sequences_file': None,
         'output_path': './',
@@ -30,6 +38,15 @@ def load_config(file_path):
 
 
 def reformat_sequences(input_msa):
+    """
+    Reformat sequences from MSA for use in colabfold_batch.
+
+    Args:
+        input_msa (list): List of sequences from the MSA.
+
+    Returns:
+        list: Formatted sequences in FASTA format.
+    """
     formatted_sequences = []
     for idx, sequence in enumerate(input_msa[0]):
         formatted_sequence = f">sequence_{idx + 1}\n{sequence}\n"
@@ -38,6 +55,15 @@ def reformat_sequences(input_msa):
 
 
 def convert_msa(filename):
+    """
+    Convert the MSA pickle file to a formatted sequence list.
+
+    Args:
+        filename (str): Path to the MSA pickle file.
+
+    Returns:
+        list: Converted and formatted sequences from the MSA.
+    """
     with open(filename, 'rb') as f:
         msa_data = pickle.load(f)
 
@@ -47,21 +73,47 @@ def convert_msa(filename):
 
 
 def save_formatted_sequences_to_file(formatted_sequences, output_file):
+    """
+    Save the formatted sequences to a file.
+
+    Args:
+        formatted_sequences (list): List of formatted sequences.
+        output_file (str): Path to save the formatted sequences.
+    """
     with open(f'{output_file}', 'w') as f:
         for sequence in formatted_sequences:
             f.write(sequence)
 
 
 def prepare_os():
+    """
+    Prepare the operating system environment by creating a RAM disk.
+    """
     create_ram_disk()
 
 
 def build_msa(sequence, jobname, complete_output_dir, homooligomer, tmp_dir, use_ramdisk):
+    """
+    Build the MSA using jackhmmer for the target sequence.
+
+    Args:
+        sequence (str): The target sequence for MSA.
+        jobname (str): The job name.
+        complete_output_dir (str): The output directory path.
+        homooligomer (int): The number of copies of the protein.
+        tmp_dir (str): Temporary directory path.
+        use_ramdisk (bool): Whether to use a RAM disk for the process.
+    """
     prepped_msa = get_msa_jackhmmer.prep_inputs(sequence, jobname, homooligomer,  output_dir=complete_output_dir)
 
     get_msa_jackhmmer.prep_msa(prepped_msa, msa_method='jackhmmer', add_custom_msa=False, msa_format="fas",
-                     pair_mode="unpaired", pair_cov=50, pair_qid=20, TMP_DIR=tmp_dir, use_ramdisk=use_ramdisk)
+                               pair_mode="unpaired", pair_cov=50, pair_qid=20, TMP_DIR=tmp_dir, use_ramdisk=use_ramdisk)
+
+
 def main():
+    """
+    Main function that handles command-line arguments and initiates the MSA building process.
+    """
     parser = argparse.ArgumentParser(description="Assemble MSA for target sequence with jackhmmer")
     parser.add_argument('--config_file', type=str, help="Path to the configuration file")
     parser.add_argument('--jobname', type=str, help="The job name")
@@ -118,7 +170,14 @@ def main():
 
     build_jackhmmer_msa(config)
 
+
 def build_jackhmmer_msa(config):
+    """
+    Build the MSA using jackhmmer for the target sequence based on the provided configuration.
+
+    Args:
+        config (dict): Configuration dictionary containing all necessary parameters.
+    """
     print("starting")
     create_directory(f'{config["output_path"]}/{config["jobname"]}/msas/jackhmmer')
     create_directory(f'{config["output_path"]}/{config["jobname"]}/target_seq/')
@@ -155,6 +214,7 @@ def build_jackhmmer_msa(config):
     save_formatted_sequences_to_file(converted_msa, f"{complete_output_dir}/{config['jobname']}.a3m")
 
     print(f'\nSaved {config["jobname"]} jackhmmer MSA to {complete_output_dir}/{config["jobname"]}.a3m\n')
+
 
 if __name__ == "__main__":
     main()

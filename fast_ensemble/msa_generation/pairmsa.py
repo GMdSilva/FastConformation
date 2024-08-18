@@ -4,8 +4,20 @@ import urllib.parse
 import urllib.request
 import time
 
-
 def parse_a3m(a3m_lines=None, a3m_file=None, filter_qid=0.15, filter_cov=0.5, N=100000):
+    """
+    Parses an A3M file or lines and filters sequences based on sequence identity and coverage.
+
+    Args:
+        a3m_lines (list of str): Lines from an A3M file (optional).
+        a3m_file (str): Path to an A3M file (optional).
+        filter_qid (float): Minimum sequence identity to retain a sequence. Default is 0.15.
+        filter_cov (float): Minimum coverage to retain a sequence. Default is 0.5.
+        N (int): Maximum number of sequences to retain. Default is 100000.
+
+    Returns:
+        tuple: (sequences, deletion_matrices, names) where each is a list.
+    """
     def seqid(a, b):
         return sum(c1 == c2 for c1, c2 in zip(a, b))
 
@@ -76,7 +88,19 @@ def parse_a3m(a3m_lines=None, a3m_file=None, filter_qid=0.15, filter_cov=0.5, N=
 
 
 def get_uni_jackhmmer(msa, mtx, lab, filter_qid=0.15, filter_cov=0.5):
-    '''filter entries to uniprot'''
+    """
+    Filters sequences to retain only UniProt entries from a multiple sequence alignment (MSA).
+
+    Args:
+        msa (list of str): List of sequences in the MSA.
+        mtx (list of list of int): List of deletion matrices corresponding to the MSA.
+        lab (list of str): List of labels corresponding to the MSA.
+        filter_qid (float): Minimum sequence identity to retain a sequence. Default is 0.15.
+        filter_cov (float): Minimum coverage to retain a sequence. Default is 0.5.
+
+    Returns:
+        tuple: Filtered (msa, mtx, lab) where each is a list.
+    """
     lab_, msa_, mtx_ = [], [], []
     ref_seq = np.array(list(msa[0]))
     rL = len(ref_seq)
@@ -95,7 +119,15 @@ def get_uni_jackhmmer(msa, mtx, lab, filter_qid=0.15, filter_cov=0.5):
 
 
 def uni_num(ids):
-    ########################################
+    """
+    Converts UniProt IDs to numerical representations.
+
+    Args:
+        ids (list of str): List of UniProt IDs.
+
+    Returns:
+        list of int: Numerical representations of the UniProt IDs.
+    """
     pa = {a: 0 for a in ascii_uppercase}
     for a in ["O", "P", "Q"]: pa[a] = 1
     ma = [[{} for k in range(6)], [{} for k in range(6)]]
@@ -109,7 +141,7 @@ def uni_num(ids):
     for n, t in enumerate(ascii_uppercase):
         ma[0][3][str(t)] = n
         for i in [0, 1]: ma[i][5][str(t)] = n
-    ########################################
+
     nums = []
     for uni in ids:
         p = pa[uni[0]]
@@ -126,6 +158,16 @@ def uni_num(ids):
 
 
 def map_retrieve(ids, call_uniprot=False):
+    """
+    Maps UniRef IDs to UniProt accession numbers.
+
+    Args:
+        ids (list of str): List of UniRef IDs.
+        call_uniprot (bool): Whether to query UniProt for mapping information. Default is False.
+
+    Returns:
+        dict: Mapping from UniRef IDs to UniProt accession numbers.
+    """
     if call_uniprot:
         mode = "NF100" if "UniRef100" in ids[0] else "NF90"
         url = 'https://www.uniprot.org/uploadlists/'
@@ -164,6 +206,18 @@ def map_retrieve(ids, call_uniprot=False):
 
 
 def hash_it(_seq, _lab, _mtx, call_uniprot=False):
+    """
+    Generates a hash for a given sequence and label.
+
+    Args:
+        _seq (list of str): List of sequences.
+        _lab (list of str): List of labels corresponding to the sequences.
+        _mtx (list of list of int): List of deletion matrices corresponding to the sequences.
+        call_uniprot (bool): Whether to query UniProt for mapping information. Default is False.
+
+    Returns:
+        dict: Contains mappings of sequences, labels, and hashes.
+    """
     if _seq is None or _lab is None:
         _seq, _lab = parse_a3m(a3m_lines)
 
@@ -197,13 +251,37 @@ def hash_it(_seq, _lab, _mtx, call_uniprot=False):
             "_hash_to_lab": _hash_to_lab}
 
 
-# keeping old function for compatability
 def stitch(_hash_a, _hash_b, stitch_min=1, stitch_max=20, filter_id=None):
+    """
+    Stitches two hashed sequences together based on their alignment.
+
+    Args:
+        _hash_a (dict): First sequence hash information.
+        _hash_b (dict): Second sequence hash information.
+        stitch_min (int): Minimum allowed distance between aligned sequences. Default is 1.
+        stitch_max (int): Maximum allowed distance between aligned sequences. Default is 20.
+        filter_id (None): Placeholder for a potential filtering ID (not used).
+
+    Returns:
+        tuple: (sequences, deletion matrices) for the stitched sequences.
+    """
     o = _stitch(_hash_a, _hash_b, stitch_min, stitch_max)
     return (*o["seq"], *o["mtx"])
 
 
 def _stitch(_hash_a, _hash_b, stitch_min=1, stitch_max=20):
+    """
+    Internal function to stitch two sequences based on their hashes.
+
+    Args:
+        _hash_a (dict): First sequence hash information.
+        _hash_b (dict): Second sequence hash information.
+        stitch_min (int): Minimum allowed distance between aligned sequences. Default is 1.
+        stitch_max (int): Maximum allowed distance between aligned sequences. Default is 20.
+
+    Returns:
+        dict: Contains sequences, deletion matrices, labels, and delta gene information.
+    """
     _seq, _mtx, _lab, _delta_gene = [[], []], [[], []], [[], []], []
     TOTAL = len(_hash_a["_lab_to_hash"])
     H_A = np.asarray(list(_hash_a["_hash_to_lab"].keys()))

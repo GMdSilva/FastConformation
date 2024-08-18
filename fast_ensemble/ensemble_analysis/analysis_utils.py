@@ -2,27 +2,56 @@ import json
 import os
 import shutil
 import subprocess
-
 import pandas as pd
-
 from glob import glob
-
 import MDAnalysis as mda
 from MDAnalysis.analysis import align
 
-
 def parabola(x, a, b, c):
+    """
+    Calculate the value of a parabola given the coefficients.
+
+    Parameters:
+    x (float or array-like): The independent variable.
+    a (float): Coefficient for the quadratic term.
+    b (float): Coefficient for the linear term.
+    c (float): Constant term.
+
+    Returns:
+    float or array-like: The value of the parabola at x.
+    """
     return a * x**2 + b * x + c
 
 
 def create_directory(path):
-    # removes directory if it already exists
+    """
+    Create a directory at the specified path. If the directory already exists, it is removed and recreated.
+
+    Parameters:
+    path (str): The path to the directory.
+
+    Raises:
+    OSError: If the directory cannot be created.
+    """
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
 
 
 def load_config(config_file):
+    """
+    Load a JSON configuration file.
+
+    Parameters:
+    config_file (str): The path to the configuration file.
+
+    Returns:
+    dict: The configuration as a dictionary.
+
+    Raises:
+    FileNotFoundError: If the file does not exist.
+    json.JSONDecodeError: If the file is not a valid JSON.
+    """
     try:
         with open(config_file, 'r') as file:
             config = json.load(file)
@@ -34,46 +63,49 @@ def load_config(config_file):
 
 
 def load_frames(file_list):
+    """
+    Load a list of molecular dynamics files as MDAnalysis Universes.
+
+    Parameters:
+    file_list (list): A list of file paths to load.
+
+    Returns:
+    list: A list of MDAnalysis Universes.
+    """
     universes = [mda.Universe(f) for f in file_list]
     return universes
 
 
 def load_pdb_files_as_universe(folder_path, reindex):
     """
-    Load all PDB files in the specified folder as a Universe,
-    using the first PDB file (sorted alphabetically) as the topology.
+    Load all PDB files in the specified folder as a Universe, using the first PDB file as the topology.
 
     Parameters:
     folder_path (str): Path to the folder containing PDB files.
+    reindex (int or None): If provided, reindex the PDB files so the first residue matches this index.
 
     Returns:
     MDAnalysis.Universe: The loaded Universe.
+
+    Raises:
+    FileNotFoundError: If no PDB files are found in the folder.
     """
-    # Get a list of all PDB files in the folder, sorted alphabetically
     pdb_files = sorted(glob(os.path.join(folder_path, '*.pdb')))
 
-    # Check if there are any PDB files in the folder
     if not pdb_files:
         raise FileNotFoundError("No PDB files found in the specified folder.")
 
-    # Use the first PDB file as the topology
     topology = pdb_files[0]
 
     if reindex:
-        # Path for the temp.pdb file in the same directory as the original PDB files
         temp_pdb_path = os.path.join(folder_path, 'temp.pdb')
-
-        # Predictions are usually 1-indexed, allow user to reindex so that the first residue = reindex
         command = f"pdb_reres -{reindex} \"{topology}\" > \"{temp_pdb_path}\""
         subprocess.run(command, shell=True, check=True)
         topology = temp_pdb_path
 
-
     u = mda.Universe(topology, *pdb_files, dt=1)
 
     if reindex:
-        temp_pdb_path = os.path.join(folder_path, 'temp.pdb')
-        # removes temporary topology from reindexing
         os.remove(temp_pdb_path)
 
     print(f"Loaded {len(u.trajectory)} predictions from {folder_path}")
@@ -81,6 +113,18 @@ def load_pdb_files_as_universe(folder_path, reindex):
 
 
 def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
+    """
+    Load predictions from a set of PDB files as MDAnalysis Universes.
+
+    Parameters:
+    predictions_path (str): Path to the directory containing the predictions.
+    seq_pairs (list): A list of sequence pairs for the predictions.
+    jobname (str): The job name associated with the predictions.
+    starting_residue (int or None): The starting residue index for reindexing.
+
+    Returns:
+    dict: A dictionary of Universes and associated metadata.
+    """
     predictions_dict = {}
     for seq_pair in seq_pairs:
         max_seq = seq_pair[0]
@@ -99,6 +143,17 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
 
 
 def load_predictions_json(predictions_path, seq_pairs, jobname):
+    """
+    Load pLDDT scores from JSON files associated with predictions.
+
+    Parameters:
+    predictions_path (str): Path to the directory containing the predictions.
+    seq_pairs (list): A list of sequence pairs for the predictions.
+    jobname (str): The job name associated with the predictions.
+
+    Returns:
+    dict: A dictionary of pLDDT scores for each prediction.
+    """
     plddt_dict = {}
 
     for seq_pair in seq_pairs:
@@ -125,9 +180,19 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
 
 
 def reorder_frames_by(frames, values):
+    """
+    Reorder trajectory frames based on associated values (e.g., RMSD).
+
+    Parameters:
+    frames (MDAnalysis.Universe): The Universe containing the trajectory frames to reorder.
+    values (list): A list of values associated with each frame.
+
+    Returns:
+    MDAnalysis.Universe: A new Universe with frames reordered by the associated values.
+    """
     top = frames._topology
     frame_value_pairs = list(enumerate(values))
-    sorted_values = sorted(frame_value_pairs, key=lambda x: x[1])  # Sort by rmsd_value (x[1])
+    sorted_values = sorted(frame_value_pairs, key=lambda x: x[1])
     sorted_indices = [idx for idx, _ in sorted_values]
     traj_temp = []
     create_directory('tmp_frames')
@@ -145,6 +210,21 @@ def reorder_frames_by(frames, values):
 
 
 def save_traj(universe, traj_output_path, jobname, max_seq, extra_seq, traj_format, ordered):
+    """
+    Save the trajectory of a Universe to a file.
+
+    Parameters:
+    universe (MDAnalysis.Universe): The Universe containing the trajectory to save.
+    traj_output_path (str): The directory where the trajectory file will be saved.
+    jobname (str): The job name associated with the trajectory.
+    max_seq (str): The maximum sequence associated with the trajectory.
+    extra_seq (str): The extra sequence associated with the trajectory.
+    traj_format (str): The format to save the trajectory in (e.g., 'pdb').
+    ordered (str): A description of the ordering of the frames (default is 'raw').
+
+    Returns:
+    None
+    """
     ag = universe.select_atoms('all')
 
     if not ordered:
@@ -155,16 +235,25 @@ def save_traj(universe, traj_output_path, jobname, max_seq, extra_seq, traj_form
 
 
 def auto_select_2d_references(references_dataset_path, analysis_type):
-    # gets the 2 most distant mode representatives as references
+    """
+    Automatically select two 2D references based on the most distant mode representatives.
+
+    Parameters:
+    references_dataset_path (str): Path to the CSV file containing reference data.
+    analysis_type (str): The type of analysis (e.g., 'tmscore', 'rmsd') to use for mode selection.
+
+    Returns:
+    tuple: Paths to the two selected reference structures.
+    """
     df_references = pd.read_csv(references_dataset_path)
-    # Get unique values in the 'trial' column
     unique_trials = df_references['trial'].unique()
     all_modes_diff = {}
-    modes_diff_partial = {}
-    # Iterate over each unique trial and create a subset
+
     for trial in unique_trials:
         subset = df_references[df_references['trial'] == trial]
         modes_subset = list(subset[analysis_type])
+        modes_diff_partial = {}
+
         if len(modes_subset) > 1:
             max_difference = 0
             index1 = 0
@@ -176,10 +265,10 @@ def auto_select_2d_references(references_dataset_path, analysis_type):
                         max_difference = difference
                         index1 = i
                         index2 = j
-                modes_diff_partial = {"trial": trial,
-                                      "max_difference": max_difference,
-                                      "index1": index1,
-                                      "index2": index2}
+            modes_diff_partial = {"trial": trial,
+                                  "max_difference": max_difference,
+                                  "index1": index1,
+                                  "index2": index2}
         else:
             modes_diff_partial = {"trial": trial,
                                   "max_difference": None,
@@ -190,9 +279,7 @@ def auto_select_2d_references(references_dataset_path, analysis_type):
     max_diff_key = None
     max_diff_value = float('-inf')
 
-    # Iterate over the dictionary items
     for key, value in all_modes_diff.items():
-        # Skip entries with None as max_difference
         if value['max_difference'] is not None and value['max_difference'] > max_diff_value:
             max_diff_value = value['max_difference']
             max_diff_key = key

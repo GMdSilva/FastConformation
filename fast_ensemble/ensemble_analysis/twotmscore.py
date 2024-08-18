@@ -3,19 +3,13 @@ import os
 import shutil
 import subprocess
 from glob import glob
-
 import pandas as pd
 import numpy as np
-
 import matplotlib.pyplot as plt
-
 from sklearn.cluster import KMeans
 from scipy.optimize import curve_fit
-
 import MDAnalysis as mda
-
 from tqdm import tqdm
-
 from fast_ensemble.ensemble_analysis.analysis_utils import parabola
 from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
 
@@ -23,7 +17,70 @@ from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'
 
 class TwoTMScore:
+    """
+    A class to perform 2D TM-Score analysis on molecular dynamics simulations.
+
+    Attributes:
+    ----------
+    prediction_dicts : dict
+        A dictionary containing prediction data with associated MDAnalysis Universes.
+    input_dict : dict
+        A dictionary containing job-related metadata (jobname, analysis range, etc.).
+    slice_predictions : str or None
+        A selection string for slicing the predictions (default is None).
+    ref_gr : str or None
+        The reference structure file path for the first TM-Score calculation (default is None).
+    ref_alt : str or None
+        The reference structure file path for the second TM-Score calculation (default is None).
+    filtering_dict : dict
+        A dictionary to store data related to the filtering of TM-Score values.
+    clustering_dict : dict
+        A dictionary to store data related to the clustering of 2D TM-Score values.
+    widget : object
+        A widget object to handle the plotting of the analysis results.
+
+    Methods:
+    -------
+    slice_models(universe, selection, temp_traj_path):
+        Static method to slice models according to a given selection and save the results.
+    tmscore_wrapper(mobile, reference):
+        Static method to run the TM-Score command and return the TM-Score value.
+    run_tmscore(folder_path, custom_ref):
+        Run TM-Score on all PDB files in a folder against a custom reference structure.
+    calculate_2d_tmscore(trial):
+        Calculate 2D TM-Score for a given trial.
+    fit_and_filter_data(tmscore_2d_data, n_stdevs):
+        Fit a parabola to the 2D TM-Score data and filter points based on the standard deviation threshold.
+    plot_filtering_data(tmscore_2d_data):
+        Generate and save a plot of the filtered 2D TM-Score data with the fitted curve.
+    cluster_2d_data(tmscore_2d_data, n_clusters):
+        Perform clustering on the filtered 2D TM-Score data and store clustering results.
+    plot_and_save_2d_data(output_path):
+        Plot the clustered 2D TM-Score data, save the plot, and return a DataFrame with the clustering information.
+    get_2d_tmscore(tmscore_mode_df_path, n_stdevs, n_clusters, output_path):
+        Execute the full 2D TM-Score analysis for all trials, including fitting, filtering, clustering, and saving results.
+
+    """
+
     def __init__(self, prediction_dicts, input_dict, widget, ref_gr=None, ref_alt=None, slice_predictions=None):
+        """
+        Initialize the TwoTMScore class.
+
+        Parameters:
+        ----------
+        prediction_dicts : dict
+            A dictionary containing prediction data with associated MDAnalysis Universes.
+        input_dict : dict
+            A dictionary containing job-related metadata (jobname, analysis range, etc.).
+        widget : object
+            A widget object to handle the plotting of the analysis results.
+        ref_gr : str or None, optional
+            The reference structure file path for the first TM-Score calculation (default is None).
+        ref_alt : str or None, optional
+            The reference structure file path for the second TM-Score calculation (default is None).
+        slice_predictions : str or None, optional
+            A selection string for slicing the predictions (default is None).
+        """
         self.prediction_dicts = prediction_dicts
         self.input_dict = input_dict
         self.slice_predictions = slice_predictions
@@ -31,23 +88,53 @@ class TwoTMScore:
         self.ref_alt = ref_alt
         self.filtering_dict = {}
         self.clustering_dict = {}
-        self.widget=widget
+        self.widget = widget
 
     @staticmethod
     def slice_models(universe, selection, temp_traj_path):
+        """
+        Static method to slice models according to a given selection and save the results.
+
+        Parameters:
+        ----------
+        universe : MDAnalysis.Universe
+            The Universe containing the trajectory data.
+        selection : str
+            The selection string for slicing the models.
+        temp_traj_path : str
+            The path where the sliced models will be saved.
+
+        Returns:
+        -------
+        None
+        """
         for idx, ts in enumerate(universe.trajectory):
             ag = universe.select_atoms(selection)
             ag.write(f"{temp_traj_path}/tmp_{idx:0>5}.pdb")
 
     @staticmethod
     def tmscore_wrapper(mobile, reference):
-        command = (f"TMscore {mobile} {reference} -outfmt 2")
+        """
+        Static method to run the TM-Score command and return the TM-Score value.
+
+        Parameters:
+        ----------
+        mobile : str
+            The path to the mobile structure (the structure being compared).
+        reference : str
+            The path to the reference structure.
+
+        Returns:
+        -------
+        tmscore : float
+            The TM-Score value from the comparison.
+        """
+        command = f"TMscore {mobile} {reference} -outfmt 2"
 
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
         tmscore = None
 
-        # Read line by line as they are output
         while True:
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
@@ -61,32 +148,43 @@ class TwoTMScore:
 
     def run_tmscore(self, folder_path, custom_ref):
         """
-        Load all PDB files in the specified folder as a Universe,
-        using the first PDB file (sorted alphabetically) as the topology.
+        Run TM-Score on all PDB files in a folder against a custom reference structure.
 
         Parameters:
-        folder_path (str): Path to the folder containing PDB files.
+        ----------
+        folder_path : str
+            The path to the folder containing PDB files.
+        custom_ref : str
+            The custom reference structure file path.
 
         Returns:
-        MDAnalysis.Universe: The loaded Universe.
+        -------
+        tmscore_dict : dict
+            A dictionary containing the TM-Score results for each frame.
         """
-        # Get a list of all PDB files in the folder, sorted alphabetically
         pdb_files = sorted(glob(os.path.join(folder_path, '*.pdb')))
         if not custom_ref:
             custom_ref = pdb_files[0]
-        tmscore_dict = {}
-        tmscores = []
-        frames = []
+        tmscore_dict = {'frame': [], 'tmscore': []}
         for idx, pdb_file in enumerate(pdb_files):
-            frames.append(idx)
-            tmscores.append(self.tmscore_wrapper(pdb_file, custom_ref))
-        tmscore_dict['frame'] = frames
-        tmscore_dict['tmscore'] = tmscores
+            tmscore_dict['frame'].append(idx)
+            tmscore_dict['tmscore'].append(self.tmscore_wrapper(pdb_file, custom_ref))
         return tmscore_dict
 
-
     def calculate_2d_tmscore(self, trial):
+        """
+        Calculate 2D TM-Score for a given trial.
 
+        Parameters:
+        ----------
+        trial : str
+            The identifier for the trial being analyzed.
+
+        Returns:
+        -------
+        tmscore_2d_data : np.ndarray
+            A 2D array of TM-Score values against two reference structures.
+        """
         predictions_path_trial = f"{self.input_dict['predictions_path']}/{trial}"
         universe = self.prediction_dicts[trial]['mda_universe']
 
@@ -114,6 +212,20 @@ class TwoTMScore:
         return tmscore_2d_data
 
     def fit_and_filter_data(self, tmscore_2d_data, n_stdevs):
+        """
+        Fit a parabola to the 2D TM-Score data and filter points based on the standard deviation threshold.
+
+        Parameters:
+        ----------
+        tmscore_2d_data : np.ndarray
+            A 2D array of TM-Score values.
+        n_stdevs : int
+            Number of standard deviations to use for filtering the data.
+
+        Returns:
+        -------
+        None
+        """
         popt, _ = curve_fit(parabola, tmscore_2d_data[0], tmscore_2d_data[1])
         fit_x = np.linspace(min(tmscore_2d_data[0]), max(tmscore_2d_data[0]), 100)
         fit_y = parabola(fit_x, *popt)
@@ -121,7 +233,7 @@ class TwoTMScore:
         fitted_curve_values = parabola(tmscore_2d_data[0], *popt)
         distances = np.abs(tmscore_2d_data[1] - fitted_curve_values)
 
-        threshold = np.mean(distances) + n_stdevs * np.std(distances)  # Mean + 2*Std as threshold
+        threshold = np.mean(distances) + n_stdevs * np.std(distances)
         close_points = distances < threshold
         x_close = tmscore_2d_data[0, close_points]
         y_close = tmscore_2d_data[1, close_points]
@@ -145,6 +257,18 @@ class TwoTMScore:
         }
 
     def plot_filtering_data(self, tmscore_2d_data):
+        """
+        Generate and save a plot of the filtered 2D TM-Score data with the fitted curve.
+
+        Parameters:
+        ----------
+        tmscore_2d_data : np.ndarray
+            A 2D array of TM-Score values.
+
+        Returns:
+        -------
+        None
+        """
         plt.figure(figsize=(5, 4))
         plt.scatter(tmscore_2d_data[0], tmscore_2d_data[1], s=10)
         plt.plot(self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='red')
@@ -171,6 +295,20 @@ class TwoTMScore:
         plt.close()
 
     def cluster_2d_data(self, tmscore_2d_data, n_clusters):
+        """
+        Perform clustering on the filtered 2D TM-Score data and store clustering results.
+
+        Parameters:
+        ----------
+        tmscore_2d_data : np.ndarray
+            A 2D array of TM-Score values.
+        n_clusters : int
+            Number of clusters to form.
+
+        Returns:
+        -------
+        None
+        """
         kmeans = KMeans(n_clusters)
         close_points_2d = np.array([self.filtering_dict['x_close'], self.filtering_dict['y_close']]).T
 
@@ -204,15 +342,21 @@ class TwoTMScore:
             'unique_labels': unique_labels,
             'close_points_2d': close_points_2d
         }
-    def show_filt_data(self, rmsd_2d_data):
-        title = (f"{self.input_dict['jobname']} "f"{self.input_dict['max_seq']} " f"{self.input_dict['extra_seq']}")
-        plotter=self.widget.add_plot(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], title=title, x_label='TM-Score vs. Ref1 (A)', y_label='TM-Score vs. Ref2 (A)', scatter=True)
-        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
-        self.widget.add_scatter(plotter, self.filtering_dict['x_close'],
-                    self.filtering_dict['y_close'],
-                    label='Close Points',
-                    color=[68, 1, 84, 255])
+
     def plot_and_save_2d_data(self, output_path):
+        """
+        Plot the clustered 2D TM-Score data, save the plot, and return a DataFrame with the clustering information.
+
+        Parameters:
+        ----------
+        output_path : str
+            The path where the plot will be saved.
+
+        Returns:
+        -------
+        df : pd.DataFrame
+            A DataFrame containing the clustering information.
+        """
         colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
         unique_labels = self.clustering_dict['unique_labels']
         correct_labels = self.clustering_dict['correct_labels']
@@ -220,9 +364,7 @@ class TwoTMScore:
         centroids = self.clustering_dict['centroids']
         outliers = self.clustering_dict['outliers']
 
-        colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
-            
-        plotter=self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='TM-Score vs. Ref1 (A)', y_label='TM-Score vs. Ref2 (A)', label='Centroids', scatter=True)
+        plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='TM-Score vs. Ref1 (Å)', y_label='TM-Score vs. Ref2 (Å)', label='Centroids', scatter=True)
         self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
     
         for i in unique_labels:
@@ -275,11 +417,28 @@ class TwoTMScore:
         return df
 
     def get_2d_tmscore(self, tmscore_mode_df_path, n_stdevs, n_clusters, output_path):
+        """
+        Execute the full 2D TM-Score analysis for all trials, including fitting, filtering, clustering, and saving results.
+
+        Parameters:
+        ----------
+        tmscore_mode_df_path : str
+            The path to the TM-Score mode data file.
+        n_stdevs : int
+            Number of standard deviations to use for filtering the data.
+        n_clusters : int
+            Number of clusters to form.
+        output_path : str
+            The path where the results will be saved.
+
+        Returns:
+        -------
+        None
+        """
         df = pd.read_csv(tmscore_mode_df_path)
         unique_trials = df['trial'].unique()
 
         df_all_trials = pd.DataFrame()
-        print('')
         with tqdm(total=len(self.prediction_dicts), bar_format=TQDM_BAR_FORMAT) as pbar:
             for trial in unique_trials:
                 if not n_clusters:
@@ -293,7 +452,7 @@ class TwoTMScore:
                 tmscore_2d_data = self.calculate_2d_tmscore(trial)
                 if len(tmscore_2d_data) > 0:
                     self.fit_and_filter_data(tmscore_2d_data, n_stdevs)
-                    self.plot_filtering_data(tmscore_2d_data, output_path)
+                    self.plot_filtering_data(tmscore_2d_data)
                     self.show_filt_data(self, tmscore_2d_data)
                     self.cluster_2d_data(tmscore_2d_data, n_clusters_trial)
                     df_to_save = self.plot_and_save_2d_data(output_path)

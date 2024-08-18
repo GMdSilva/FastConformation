@@ -7,26 +7,46 @@ import shutil
 from fast_ensemble.msa_generation.msa_utils import read_fasta, save_dict_to_fasta, create_directory
 
 def validate_inputs(fasta_path, output_path, jobname):
-    # Check if fasta_path is a valid file
+    """
+    Validate the inputs to ensure they are correct.
+
+    Args:
+        fasta_path (str): Path to the FASTA file containing the target sequence.
+        output_path (str): Directory path to save the output results.
+        jobname (str): Name of the job.
+
+    Raises:
+        ValueError: If the FASTA path is not a valid file, the output path is not a valid directory, or the jobname is not a string.
+    """
     if not os.path.isfile(fasta_path):
         raise ValueError(f"MSA path '{fasta_path}' is not a valid file.")
 
     if not os.path.isdir(output_path):
         raise ValueError(f"Output path '{output_path}' is not a valid directory.")
 
-    # Check if jobname is a string
     if not isinstance(jobname, str):
         raise ValueError(f"Jobname '{jobname}' is not a valid string.")
 
 
 def get_mmseqs_msa(sequence_file_path, output_path, jobname, env):
+    """
+    Run mmseqs2 to generate the MSA (Multiple Sequence Alignment) for the target sequence.
+
+    Args:
+        sequence_file_path (str): Path to the file containing the target sequence.
+        output_path (str): Directory path to save the output results.
+        jobname (str): Name of the job.
+        env (dict): Environment variables for the subprocess.
+
+    Raises:
+        RuntimeError: If the subprocess fails to execute.
+    """
     complete_output_path = f'{output_path}/{jobname}/msas/mmseqs2'
 
     command = (f"colabfold_batch {sequence_file_path} {complete_output_path}/temp_msa --msa-only")
 
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
 
-    # Read line by line as they are output
     while True:
         output = process.stdout.readline()
         if output == '' and process.poll() is not None:
@@ -39,8 +59,17 @@ def get_mmseqs_msa(sequence_file_path, output_path, jobname, env):
     shutil.copy(f"{complete_output_path}/temp_msa/{jobname}_coverage.png", complete_output_path)
     copy_msa_and_clean(f"{complete_output_path}/temp_msa/{jobname}.a3m", complete_output_path)
 
+
 def load_config(config_file):
-    # Default configuration values
+    """
+    Load the configuration from a JSON file.
+
+    Args:
+        config_file (str): Path to the configuration file.
+
+    Returns:
+        dict: Configuration dictionary with default values if the file is not found or if there's an error in reading the file.
+    """
     default_config = {
         'fasta_path': None,
         'output_path': './',
@@ -64,11 +93,24 @@ def load_config(config_file):
 
 
 def save_config(config, file_path):
+    """
+    Save the configuration to a JSON file.
+
+    Args:
+        config (dict): Configuration dictionary to save.
+        file_path (str): Path to save the configuration file.
+    """
     with open(file_path, 'w') as file:
         json.dump(config, file, indent=4)
 
 
 def remove_first_line(file_path):
+    """
+    Remove the first line from a file.
+
+    Args:
+        file_path (str): Path to the file to modify.
+    """
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
@@ -77,6 +119,12 @@ def remove_first_line(file_path):
 
 
 def remove_duplicate_sequences(input_file):
+    """
+    Remove duplicate sequences from a FASTA file.
+
+    Args:
+        input_file (str): Path to the FASTA file containing sequences.
+    """
     with open(input_file, 'r') as f:
         lines = f.readlines()
 
@@ -99,6 +147,16 @@ def remove_duplicate_sequences(input_file):
 
 
 def copy_msa_and_clean(src_file_path, dest_dir_path):
+    """
+    Clean up and copy the MSA file to the destination directory.
+
+    Args:
+        src_file_path (str): Path to the source MSA file.
+        dest_dir_path (str): Path to the destination directory.
+
+    Raises:
+        OSError: If the source directory cannot be deleted.
+    """
     remove_first_line(src_file_path)
     remove_duplicate_sequences(src_file_path)
 
@@ -111,7 +169,14 @@ def copy_msa_and_clean(src_file_path, dest_dir_path):
     # Delete the source directory and all its contents
     shutil.rmtree(src_dir_path)
 
+
 def run_mmseqs2_msa(config):
+    """
+    Run the full MSA pipeline using mmseqs2.
+
+    Args:
+        config (dict): Configuration dictionary containing necessary parameters.
+    """
     jobname = config['jobname']
     sequence_path = config['sequence_path']
     output_path = config['output_path']
@@ -143,15 +208,19 @@ def run_mmseqs2_msa(config):
     print(f"Output Path: {output_path}")
     print("***************************************************************")
 
-    # loads target sequence
+    # Load target sequence
     single_sequence_path = f'{output_path}/{jobname}/target_seq/{jobname}.fasta'
 
-    # gets mmseqs2 MSA
+    # Get mmseqs2 MSA
     get_mmseqs_msa(single_sequence_path, output_path, jobname, env)
 
     print(f'\nSaved {jobname} mmseqs2 MSA to {output_path}/{jobname}/msas/mmseqs2/{jobname}.a3m\n')
 
+
 def main():
+    """
+    Main function to parse command-line arguments and execute the MSA pipeline.
+    """
     parser = argparse.ArgumentParser(description="Assemble MSA for target sequence with mmseqs2")
     parser.add_argument('--config_file', type=str, help="Path to the configuration file")
     parser.add_argument('--jobname', type=str, help="The job name")
@@ -171,6 +240,7 @@ def main():
     config['use_ramdisk'] = True  # or set this based on your needs or add as an argument
 
     run_mmseqs2_msa(config)
+
 
 if __name__ == "__main__":
     main()

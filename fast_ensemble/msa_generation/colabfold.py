@@ -9,7 +9,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patheffects
 
 from string import ascii_uppercase, ascii_lowercase
+import hashlib
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patheffects
+from string import ascii_uppercase, ascii_lowercase
 
+# List of colors used in PyMOL
 pymol_color_list = ["#33ff33", "#00ffff", "#ff33cc", "#ffff00", "#ff9999", "#e5e5e5", "#7f7fff", "#ff7f00",
                     "#7fff7f", "#199999", "#ff007f", "#ffdd5e", "#8c3f99", "#b2b2b2", "#007fff", "#c4b200",
                     "#8cb266", "#00bfbf", "#b27f7f", "#fcd1a5", "#ff7f7f", "#ffbfdd", "#7fffff", "#ffff7f",
@@ -21,12 +27,30 @@ alphabet_list = list(ascii_uppercase + ascii_lowercase)
 
 aatypes = set('ACDEFGHIKLMNPQRSTVWY')
 
-
 def get_hash(x):
+    """
+    Generate a SHA-1 hash for a given string.
+
+    Args:
+        x (str): The input string to be hashed.
+
+    Returns:
+        str: The SHA-1 hash of the input string.
+    """
     return hashlib.sha1(x.encode()).hexdigest()
 
-
 def homooligomerize(msas, deletion_matrices, homooligomer=1):
+    """
+    Homooligomerizes the input MSAs (Multiple Sequence Alignments) and deletion matrices.
+
+    Args:
+        msas (list of lists): A list of MSAs.
+        deletion_matrices (list of lists): A list of deletion matrices corresponding to the MSAs.
+        homooligomer (int): The number of homooligomeric copies. Default is 1 (no homooligomerization).
+
+    Returns:
+        tuple: A tuple containing the homooligomerized MSAs and deletion matrices.
+    """
     if homooligomer == 1:
         return msas, deletion_matrices
     else:
@@ -41,41 +65,49 @@ def homooligomerize(msas, deletion_matrices, homooligomer=1):
                 new_mtxs.append([[0] * L + m + [0] * R for m in mtx])
         return new_msas, new_mtxs
 
-
-# keeping typo for cross-compatibility
+# Keeping the typo for cross-compatibility
 def homooliomerize(msas, deletion_matrices, homooligomer=1):
+    """
+    Homooligomerizes the input MSAs and deletion matrices.
+    This function is a typo version of `homooligomerize` for cross-compatibility.
+
+    Args:
+        msas (list of lists): A list of MSAs.
+        deletion_matrices (list of lists): A list of deletion matrices corresponding to the MSAs.
+        homooligomer (int): The number of homooligomeric copies. Default is 1 (no homooligomerization).
+
+    Returns:
+        tuple: A tuple containing the homooligomerized MSAs and deletion matrices.
+    """
     return homooligomerize(msas, deletion_matrices, homooligomer=homooligomer)
 
-
 def homooligomerize_heterooligomer(msas, deletion_matrices, lengths, homooligomers):
-    '''
-    ----- inputs -----
-    msas: list of msas
-    deletion_matrices: list of deletion matrices
-    lengths: list of lengths for each component in complex
-    homooligomers: list of number of homooligomeric copies for each component
-    ----- outputs -----
-    (msas, deletion_matrices)
-    '''
+    """
+    Homooligomerizes the input MSAs and deletion matrices for heterooligomeric complexes.
+
+    Args:
+        msas (list of lists): A list of MSAs.
+        deletion_matrices (list of lists): A list of deletion matrices corresponding to the MSAs.
+        lengths (list of int): A list of lengths for each component in the complex.
+        homooligomers (list of int): A list of homooligomeric copies for each component.
+
+    Returns:
+        tuple: A tuple containing the homooligomerized MSAs and deletion matrices.
+    """
     if max(homooligomers) == 1:
         return msas, deletion_matrices
-
     elif len(homooligomers) == 1:
         return homooligomerize(msas, deletion_matrices, homooligomers[0])
-
     else:
         frag_ij = [[0, lengths[0]]]
         for length in lengths[1:]:
             j = frag_ij[-1][-1]
             frag_ij.append([j, j + length])
 
-        # for every msa
         mod_msas, mod_mtxs = [], []
         for msa, mtx in zip(msas, deletion_matrices):
             mod_msa, mod_mtx = [], []
-            # for every sequence
             for n, (s, m) in enumerate(zip(msa, mtx)):
-                # split sequence
                 _s, _m, _ok = [], [], []
                 for i, j in frag_ij:
                     _s.append(s[i:j])
@@ -83,12 +115,9 @@ def homooligomerize_heterooligomer(msas, deletion_matrices, lengths, homooligome
                     _ok.append(max([o != "-" for o in _s[-1]]))
 
                 if n == 0:
-                    # if first query sequence
                     mod_msa.append("".join([x * h for x, h in zip(_s, homooligomers)]))
                     mod_mtx.append(sum([x * h for x, h in zip(_m, homooligomers)], []))
-
                 elif sum(_ok) == 1:
-                    # elif one fragment: copy each fragment to every homooligomeric copy
                     a = _ok.index(True)
                     for h_a in range(homooligomers[a]):
                         _blank_seq = [["-" * l] * h for l, h in zip(lengths, homooligomers)]
@@ -98,7 +127,6 @@ def homooligomerize_heterooligomer(msas, deletion_matrices, lengths, homooligome
                         mod_msa.append("".join(["".join(x) for x in _blank_seq]))
                         mod_mtx.append(sum([sum(x, []) for x in _blank_mtx], []))
                 else:
-                    # else: copy fragment pair to every homooligomeric copy pair
                     for a in range(len(lengths) - 1):
                         if _ok[a]:
                             for b in range(a + 1, len(lengths)):
@@ -116,37 +144,53 @@ def homooligomerize_heterooligomer(msas, deletion_matrices, lengths, homooligome
             mod_mtxs.append(mod_mtx)
         return mod_msas, mod_mtxs
 
-
 def chain_break(idx_res, Ls, length=200):
-    # Minkyung's code
-    # add big enough number to residue index to indicate chain breaks
+    """
+    Adds a large number to residue indices to indicate chain breaks in a sequence.
+
+    Args:
+        idx_res (ndarray): The array of residue indices.
+        Ls (list of int): The lengths of different segments in the sequence.
+        length (int): The value to add to the residue index at chain breaks.
+
+    Returns:
+        ndarray: The updated array of residue indices with chain breaks.
+    """
     L_prev = 0
     for L_i in Ls[:-1]:
         idx_res[L_prev + L_i:] += length
         L_prev += L_i
     return idx_res
 
-
 ##################################################
-# plotting
+# plotting functions
 ##################################################
 
 def plot_plddt_legend(dpi=100):
+    """
+    Plots a legend for pLDDT (predicted Local Distance Difference Test) scores.
+
+    Args:
+        dpi (int): Dots per inch setting for the plot.
+
+    Returns:
+        matplotlib.pyplot: The plot object with the pLDDT legend.
+    """
     thresh = ['plDDT:', 'Very low (<50)', 'Low (60)', 'OK (70)', 'Confident (80)', 'Very high (>90)']
     plt.figure(figsize=(1, 0.1), dpi=dpi)
-    ########################################
     for c in ["#FFFFFF", "#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF"]:
         plt.bar(0, 0, color=c)
-    plt.legend(thresh, frameon=False,
-               loc='center', ncol=6,
-               handletextpad=1,
-               columnspacing=1,
-               markerscale=0.5, )
+    plt.legend(thresh, frameon=False, loc='center', ncol=6, handletextpad=1, columnspacing=1, markerscale=0.5)
     plt.axis(False)
     return plt
 
-
 def plot_ticks(Ls):
+    """
+    Plots tick marks indicating segment boundaries on a plot.
+
+    Args:
+        Ls (list of int): The lengths of different segments in the sequence.
+    """
     Ln = sum(Ls)
     L_prev = 0
     for L_i in Ls[:-1]:
@@ -158,8 +202,19 @@ def plot_ticks(Ls):
     ticks = (ticks[1:] + ticks[:-1]) / 2
     plt.yticks(ticks, alphabet_list[:len(ticks)])
 
-
 def plot_confidence(plddt, pae=None, Ls=None, dpi=100):
+    """
+    Plots predicted confidence metrics (pLDDT and PAE) for a protein structure.
+
+    Args:
+        plddt (ndarray): Array of predicted Local Distance Difference Test (pLDDT) scores.
+        pae (ndarray): Array of Predicted Aligned Error (PAE) scores (optional).
+        Ls (list of int): The lengths of different segments in the sequence (optional).
+        dpi (int): Dots per inch setting for the plot.
+
+    Returns:
+        matplotlib.pyplot: The plot object displaying the confidence metrics.
+    """
     use_ptm = False if pae is None else True
     if use_ptm:
         plt.figure(figsize=(10, 3), dpi=dpi)
@@ -182,18 +237,30 @@ def plot_confidence(plddt, pae=None, Ls=None, dpi=100):
         plt.title('Predicted Aligned Error')
         Ln = pae.shape[0]
         plt.imshow(pae, cmap="bwr", vmin=0, vmax=30, extent=(0, Ln, Ln, 0))
-        if Ls is not None and len(Ls) > 1: plot_ticks(Ls)
+        if Ls is not None and len(Ls) > 1:
+            plot_ticks(Ls)
         plt.colorbar()
         plt.xlabel('Scored residue')
         plt.ylabel('Aligned residue')
     return plt
 
-
 def plot_msas(msas, ori_seq=None, sort_by_seqid=True, deduplicate=True, dpi=100, return_plt=True):
-    '''
-    plot the msas
-    '''
-    if ori_seq is None: ori_seq = msas[0][0]
+    """
+    Plots Multiple Sequence Alignments (MSAs).
+
+    Args:
+        msas (list of lists): A list of MSAs to be plotted.
+        ori_seq (str): The original sequence (optional).
+        sort_by_seqid (bool): Whether to sort sequences by sequence identity (default: True).
+        deduplicate (bool): Whether to remove duplicate sequences (default: True).
+        dpi (int): Dots per inch setting for the plot.
+        return_plt (bool): Whether to return the plot object (default: True).
+
+    Returns:
+        matplotlib.pyplot: The plot object displaying the MSAs, if return_plt is True.
+    """
+    if ori_seq is None:
+        ori_seq = msas[0][0]
     seqs = ori_seq.replace("/", "").split(":")
     seqs_dash = ori_seq.replace(":", "").split("/")
 
@@ -240,4 +307,5 @@ def plot_msas(msas, ori_seq=None, sort_by_seqid=True, deduplicate=True, dpi=100,
     plt.colorbar(label="Sequence identity to query")
     plt.xlabel("Positions")
     plt.ylabel("Sequences")
-    if return_plt: return plt
+    if return_plt:
+        return plt
