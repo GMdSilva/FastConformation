@@ -13,7 +13,7 @@ The `run_2d_tmscore_analysis` function performs a 2D TM-Score analysis on the pr
 
 .. code-block:: bash
 
-   python script_name.py --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
+   poetry run tmscore_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
 
 **Command Line Arguments:**
 
@@ -51,7 +51,7 @@ The `run_tmscore_analysis` function performs a 1D TM-Score analysis. This analys
 
 .. code-block:: bash
 
-   python script_name.py --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
+   poetry run tmscore_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
 
 **Command Line Arguments:**
 
@@ -84,7 +84,7 @@ The `run_2d_rmsd_analysis` function performs a 2D RMSD analysis. This analysis m
 
 .. code-block:: bash
 
-   python script_name.py --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
+   poetry run rmsd_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
 
 **Command Line Arguments:**
 
@@ -122,7 +122,7 @@ The `run_rmsd_analysis` function performs a 1D RMSD analysis. This analysis meas
 
 .. code-block:: bash
 
-   python script_name.py --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
+   poetry run rmsd_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
 
 **Command Line Arguments:**
 
@@ -156,7 +156,7 @@ The `run_rmsf_analysis` function performs RMSF analysis, which measures the flex
 
 .. code-block:: bash
 
-   python script_name.py --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2 --detect_mobile True
+   poetry run rmsf_plddt --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2 --detect_mobile True
 
 **Command Line Arguments:**
 
