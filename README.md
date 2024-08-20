@@ -1,13 +1,10 @@
 # FastEnsemble
 ![FastEnsemble Logo](background_logo.png)
 
-[![GitHub Actions Build Status](https://github.com/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/workflows/CI/badge.svg)](https://github.com/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/actions?query=workflow%3ACI)
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/branch/main/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/decaf_e_dev/branch/main)
-
-FastEnsemble is a Python-based application that integrates MSA generation, structure prediction via AlphaFold 2 (AF2), and interactive analysis, all in one place. This user-friendly tool is designed to help researchers in structural biology, biochemistry, drug discovery, and protein engineering generate and analyze protein conformational ensembles without requiring extensive programming knowledge.
+FastEnsemble is a Python-based application that integrates MSA generation, structure prediction via AlphaFold 2 (AF2), and interactive analysis of protein conformational ensembles, all in one place. Uniquely, this tool enables researchers to leverage ML to generate protein conformations and analyze their populations without running MD simulations.
 
 ## Citation
-If you use FastEnsemble, please cite our paper! 
+FastEnsemble is based off of the research described in the manuscripts below.
 
 Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput prediction of protein conformational distributions with subsampled AlphaFold2. Nat Commun 15, 2464 (2024). https://doi.org/10.1038/s41467-024-46715-9 
 
@@ -21,10 +18,10 @@ Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput predicti
 
 ## Features
 
-- **MSA Generation**: Automatically generate multiple sequence alignments (MSAs) from amino acid sequences using JACKHMMER and MMseqs2.
-- **Structure Prediction**: Predict protein structures using the ColabFold implementation of AlphaFold 2 (AF2).
-- **Conformational Ensembles**: Generate alternative protein conformations through random MSA subsampling.
-- **Interactive Analysis**: Analyze protein conformational ensembles and the effects of mutations on protein dynamics using our suite of analysis tools.
+- **MSA Generation**: Automatically generates multiple sequence alignments (MSAs) from amino acid sequences using JACKHMMER and MMseqs2.
+- **Structure Prediction**: Predicts protein structures using the ColabFold implementation of AlphaFold 2 (AF2).
+- **Conformational Ensembles**: Generates alternative protein conformations through MSA subsampling.
+- **Interactive Analysis**: Analyzes protein conformational ensembles and the effects of mutations on protein dynamics using our suite of analysis tools.
 - **User-Friendly GUI**: Accessible through an intuitive graphical user interface suitable for non-programmers.
 
 ![alt text](image.png)
