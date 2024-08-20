@@ -536,7 +536,7 @@ class RMSDAnalysisWidget(AnalysisWidgetBase):
             config: The configuration options for the RMSD analysis.
         """
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_rmsd_analysis(config, self.plot_widget)
         parent.show_plot("RMSD Analysis", self.plot_widget)
 
@@ -614,7 +614,7 @@ class RMSD2DWidget(AnalysisWidgetBase):
             config: The configuration options for the 2D RMSD analysis.
         """
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_2d_rmsd_analysis(config, self.plot_widget)
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
@@ -681,7 +681,7 @@ class TMSCOREWidget(AnalysisWidgetBase):
             config: The configuration options for the TMScore analysis.
         """
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_tmscore_analysis(config, self.plot_widget)
         parent.show_plot("TMScore Analysis", self.plot_widget)
 
@@ -761,7 +761,7 @@ class TwoTMScoreWidget(AnalysisWidgetBase):
             config: The configuration options for the 2D TMScore analysis.
         """
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_2d_tmscore_analysis(config, self.plot_widget)
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 
@@ -842,7 +842,7 @@ class PCAWidget(AnalysisWidgetBase):
             config: The configuration options for the PCA analysis.
         """
         self.plot_widget = PlotWidget(self)
-        parent=self.parentWidget().parentWidget()
+        parent=self.parentWidget().parentWidget().parentWidget().parentWidget().parentWidget()
         run_pca_analysis(config, self.plot_widget)
         parent.show_plot("TMScore-2D Analysis", self.plot_widget)
 

@@ -12,8 +12,8 @@ from fast_ensemble.gui.analysis_config import AnalysisConfigWidget
 from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
 from dataclasses import dataclass
 from typing import Callable
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QDockWidget, Qt
-
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QDockWidget
+from PyQt5.QtCore import Qt
 @dataclass
 class Category:
     """
