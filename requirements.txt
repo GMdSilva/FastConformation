@@ -10,3 +10,6 @@ scipy
 scikit-learn
 pandas
 numpy
+sphinx
+furo
+m2r
