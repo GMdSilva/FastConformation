@@ -1,5 +1,5 @@
 Ensemble Prediction
-===================
+=====================
 
 ``predict_ensemble`` allows to predict different protein conformations starting from an input MSA by run AlphaFold2 using the ColabFold implementation with different subsampling parameters.
 Below is a detailed description of each argument and how to use them effectively.

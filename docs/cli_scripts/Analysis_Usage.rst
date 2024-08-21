@@ -43,7 +43,7 @@ You can also call the function directly in Python:
    run_2d_tmscore_analysis(config)
 
 Running 1D TM-Score Analysis
-----------------------------
+------------------------------
 
 The `run_tmscore_analysis` function performs a 1D TM-Score analysis. This analysis identifies structural modes in the protein predictions and clusters them.
 
@@ -114,7 +114,7 @@ The `run_2d_rmsd_analysis` function performs a 2D RMSD analysis. This analysis m
    run_2d_rmsd_analysis(config)
 
 Running 1D RMSD Analysis
-------------------------
+---------------------------
 
 The `run_rmsd_analysis` function performs a 1D RMSD analysis. This analysis measures the structural deviation between sequences and a single reference structure.
 
@@ -148,7 +148,7 @@ The `run_rmsd_analysis` function performs a 1D RMSD analysis. This analysis meas
    run_rmsd_analysis(config)
 
 Running RMSF Analysis
----------------------
+------------------------
 
 The `run_rmsf_analysis` function performs RMSF analysis, which measures the flexibility of residues in the protein structure predictions.
 

@@ -1,6 +1,6 @@
-===============================
+====================================
 MSA Generation Tool Documentation
-===============================
+====================================
 
 This documentation provides an overview of two Python scripts designed to automate the process of generating multiple sequence alignments (MSA) using either `jackhmmer` or `mmseqs2`.
 
@@ -8,7 +8,7 @@ This documentation provides an overview of two Python scripts designed to automa
    :local:
    :depth: 2
 
-======================================
+=======================================
 JackHMMeR Multiple Sequence Alignment
 =======================================
 
