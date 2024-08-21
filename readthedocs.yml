@@ -5,6 +5,10 @@ build:
   tools:
     python: "3.10"
 
+pip_install:
+  packages:
+    - m2r
+    - furo
 
 sphinx:
   configuration: docs/conf.py
