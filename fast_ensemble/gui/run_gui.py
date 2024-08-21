@@ -6,8 +6,6 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
-import sys
-sys.path.append('/Users/fmgaleazzi/fast_ensemble')
 from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
