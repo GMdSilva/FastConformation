@@ -19,15 +19,15 @@ Below, you'll find documentation for each tool, including the command-line argum
 Available CLI Tools
 -------------------
 
-- **MSA Generation** (`msa.rst`):
+- **MSA Generation**:
   
   The `msa` script handles Multiple Sequence Alignment (MSA) generation using tools like `jackhmmer` and `mmseqs2`.
 
-- **Ensemble Prediction** (`predict_ensemble.rst`):
+- **Ensemble Prediction**:
   
   The `predict_ensemble` script is used for making ensemble predictions based on the generated MSAs.
 
-- **Analysis** (`analysis.rst`):
+- **Analysis**:
   
   The `analysis` script provides tools for analyzing the predicted structures, including RMSD and TM-score calculations, PCA clustering, and more.
 
