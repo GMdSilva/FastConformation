@@ -85,7 +85,7 @@ Once FastEnsemble is installed, you can access its graphical user interface (GUI
 
 .. code-block:: bash
 
-   poetry run run_gui
+   $run_gui
 
 Alternatively, you can start the GUI using:
 
@@ -106,25 +106,15 @@ FastEnsemble provides several CLI tools for different tasks, including MSA gener
 
   .. code-block:: bash
 
-     poetry run jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
+     $jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
 
-  Or directly:
-
-  .. code-block:: bash
-
-     python -m fast_ensemble.jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
 
 - **mmseqs2_msa**: Generate MSA using `mmseqs2`.
 
   .. code-block:: bash
 
-     poetry run mmseqs2_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
+     $mmseqs2_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
 
-  Or directly:
-
-  .. code-block:: bash
-
-     python -m fast_ensemble.mmseqs2_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
 
 **Prediction:**
 
@@ -132,13 +122,13 @@ FastEnsemble provides several CLI tools for different tasks, including MSA gener
 
   .. code-block:: bash
 
-     poetry run predict_ensemble --config_file <path_to_config>
+     $predict_ensemble --config_file <path_to_config>
 
 - **decaf_init**: Initialize DECAF predictions.
 
   .. code-block:: bash
 
-     poetry run decaf_init --config_file <path_to_config>
+     $decaf_init --config_file <path_to_config>
 
 **Analysis:**
 
@@ -146,43 +136,43 @@ FastEnsemble provides several CLI tools for different tasks, including MSA gener
 
   .. code-block:: bash
 
-     poetry run rmsd_mode1d --config_file <path_to_config>
+     $rmsd_mode1d --config_file <path_to_config>
 
 - **rmsd_mode2d**: Analyze RMSD in 2D mode.
 
   .. code-block:: bash
 
-     poetry run rmsd_mode2d --config_file <path_to_config>
+     $rmsd_mode2d --config_file <path_to_config>
 
 - **tmscore_mode1d**: Analyze TM-score in 1D mode.
 
   .. code-block:: bash
 
-     poetry run tmscore_mode1d --config_file <path_to_config>
+     $tmscore_mode1d --config_file <path_to_config>
 
 - **tmscore_mode2d**: Analyze TM-score in 2D mode.
 
   .. code-block:: bash
 
-     poetry run tmscore_mode2d --config_file <path_to_config>
+     $tmscore_mode2d --config_file <path_to_config>
 
 - **pca_clustering**: Perform PCA clustering on the predicted structures.
 
   .. code-block:: bash
 
-     poetry run pca_clustering --config_file <path_to_config>
+     $pca_clustering --config_file <path_to_config>
 
 - **rmsf_plddt**: Calculate RMSF and pLDDT for the predicted structures.
 
   .. code-block:: bash
 
-     poetry run rmsf_plddt --config_file <path_to_config>
+     $rmsf_plddt --config_file <path_to_config>
 
 - **save_traj**: Save trajectories from the analysis.
 
   .. code-block:: bash
 
-     poetry run save_traj --config_file <path_to_config>
+     $save_traj --config_file <path_to_config>
 
 For more detailed instructions on how to use each tool, refer to the respective CLI documentation sections provided in this guide.
 

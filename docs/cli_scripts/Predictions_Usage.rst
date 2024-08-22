@@ -57,4 +57,4 @@ If you have a configuration file named `config.json`, you can run the script as 
 
 .. code-block:: bash
 
-   python -m fast_ensemble.predict_ensemble --config_file config.json
+  predict_ensemble --config_file config.json

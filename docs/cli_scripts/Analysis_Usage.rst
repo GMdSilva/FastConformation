@@ -7,13 +7,13 @@ This module is used to perform TM-Score, RMSD (Root Mean Square Deviation) and R
 Running 2D TM-Score Analysis
 ----------------------------
 
-The `run_2d_tmscore_analysis` function performs a 2D TM-Score analysis on the provided protein structure predictions. This analysis compares the structural similarity between pairs of sequences and reference structures.
+The `tmscore_mode2d` function performs a 2D TM-Score analysis on the provided protein structure predictions. This analysis compares the structural similarity between pairs of sequences and reference structures.
 
 **Example:**
 
 .. code-block:: bash
 
-   poetry run tmscore_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
+   tmscore_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
 
 **Command Line Arguments:**
 
@@ -45,13 +45,13 @@ You can also call the function directly in Python:
 Running 1D TM-Score Analysis
 ------------------------------
 
-The `run_tmscore_analysis` function performs a 1D TM-Score analysis. This analysis identifies structural modes in the protein predictions and clusters them.
+The `tmscore_mode1d` function performs a 1D TM-Score analysis. This analysis identifies structural modes in the protein predictions and clusters them.
 
 **Example:**
 
 .. code-block:: bash
 
-   poetry run tmscore_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
+   tmscore_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
 
 **Command Line Arguments:**
 
@@ -78,13 +78,13 @@ The `run_tmscore_analysis` function performs a 1D TM-Score analysis. This analys
 Running 2D RMSD Analysis
 ------------------------
 
-The `run_2d_rmsd_analysis` function performs a 2D RMSD analysis. This analysis measures the structural deviation between pairs of sequences and two reference structures in a 2D space.
+The `rmsd_mode2d` function performs a 2D RMSD analysis. This analysis measures the structural deviation between pairs of sequences and two reference structures in a 2D space.
 
 **Example:**
 
 .. code-block:: bash
 
-   poetry run rmsd_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
+   rmsd_mode2d --config_file config.json --output_path /path/to/output --predictions_path /path/to/predictions --jobname my_job
 
 **Command Line Arguments:**
 
@@ -116,13 +116,13 @@ The `run_2d_rmsd_analysis` function performs a 2D RMSD analysis. This analysis m
 Running 1D RMSD Analysis
 ---------------------------
 
-The `run_rmsd_analysis` function performs a 1D RMSD analysis. This analysis measures the structural deviation between sequences and a single reference structure.
+The `rmsd_mode1d` function performs a 1D RMSD analysis. This analysis measures the structural deviation between sequences and a single reference structure.
 
 **Example:**
 
 .. code-block:: bash
 
-   poetry run rmsd_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
+   rmsd_mode1d --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2
 
 **Command Line Arguments:**
 
@@ -150,13 +150,13 @@ The `run_rmsd_analysis` function performs a 1D RMSD analysis. This analysis meas
 Running RMSF Analysis
 ------------------------
 
-The `run_rmsf_analysis` function performs RMSF analysis, which measures the flexibility of residues in the protein structure predictions.
+The `rmsf_plddt` function performs RMSF analysis, which measures the flexibility of residues in the protein structure predictions.
 
 **Example:**
 
 .. code-block:: bash
 
-   poetry run rmsf_plddt --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2 --detect_mobile True
+   rmsf_plddt --config_file config.json --output_path /path/to/output --jobname my_job --engine AlphaFold2 --detect_mobile True
 
 **Command Line Arguments:**
 
