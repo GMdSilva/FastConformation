@@ -44,6 +44,12 @@ This script will set up the necessary environment and dependencies.
 
 Next, close the terminal window and reopen a new one.
 
+Every time you use Fast Ensemble, run 
+```bash
+./fast_ensemble.sh
+```
+before any commands. This script activates the conda environment.
+
 Now, run any of the commands reported in the Usage section.
 
 ## Dependencies
@@ -90,7 +96,10 @@ Documentation can be found on [this] ReadTheDocs page.
 This package has been tested on Linux RedHat7 and Ubuntu 20.0.4.
 
 ## Usage
-
+Before running any commands, run:
+```bash
+./fast_ensemble.sh
+```
 ### Running the GUI
 
 To start the graphical user interface, execute the following command:
