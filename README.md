@@ -36,6 +36,11 @@ To install FastEnsemble, run the installation script provided in the repository:
 
 This script will set up the necessary environment and dependencies.
 
+Next, close the terminal window and reopen a new one. Run
+```bash
+conda activate /path/to/fast_ensemble/fast_ensemble-conda
+```
+Next, 
 ## Dependencies
 
 The installation script sets up the environment and installs all necessary dependencies. 
@@ -76,7 +81,7 @@ Documentation can be found on ReadTheDocs.
 
 ## OS Requirements
 
-This package has been tested on Linux RedHat7.
+This package has been tested on Linux RedHat7 and Ubuntu 20.0.4.
 
 ## Usage
 
@@ -85,7 +90,7 @@ This package has been tested on Linux RedHat7.
 To start the graphical user interface, execute the following command:
 
 ```bash
-python run_gui.py
+run_gui
 ```
 
 This will launch the main application window, where you can access various functionalities such as submitting new jobs, checking job status, and viewing analysis logs.
