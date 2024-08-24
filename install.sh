@@ -20,7 +20,7 @@ conda create -p "$FENSEMBLEDIR/fast_ensemble-conda" -c conda-forge -c bioconda -
 conda activate "$FENSEMBLEDIR/fast_ensemble-conda"
 
 # Install additional Python packages for the GUI
-"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install PyQt5 pyqt pandas matplotlib silence_tensorflow pyqtgraph
+"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install PyQt5 pandas matplotlib silence_tensorflow pyqtgraph
 
 # Install ColabFold and Jaxlib
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install --no-warn-conflicts \
