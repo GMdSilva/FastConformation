@@ -119,74 +119,76 @@ For more detailed instructions on how to use each tool, refer to the ReadTheDocs
 
 - **jackhmmer_msa**: Generate MSA using `jackhmmer`.
 
-  .. code-block:: bash
-
-     jackhmmer_msa --config_file <path_to_config>
+    ```bash
+    jackhmmer_msa --config_file <path_to_config>
+    ```
 
 - **mmseqs2_msa**: Generate MSA using `mmseqs2`.
 
-  .. code-block:: bash
-
-     mmseqs2_msa --config_file <path_to_config>
+    ```bash
+    mmseqs2_msa --config_file <path_to_config>
+    ```
 
 
 **Prediction:**
 
 - **predict_ensemble**: Run ensemble predictions.
 
-  .. code-block:: bash
+    ```bash
+    predict_ensemble --config_file <path_to_config>
+    ```
 
-     predict_ensemble --config_file <path_to_config>
 
 - **decaf_init**: Initialize DECAF predictions.
 
-  .. code-block:: bash
-
-     decaf_init --config_file <path_to_config>
+    ```bash
+    decaf_init --config_file <path_to_config>
+    ```
 
 **Analysis:**
 
 - **rmsd_mode1d**: Analyze RMSD in 1D mode.
 
-  .. code-block:: bash
-
-     rmsd_mode1d --config_file <path_to_config>
+    ```bash
+    rmsd_mode1d --config_file <path_to_config>
+    ```
 
 - **rmsd_mode2d**: Analyze RMSD in 2D mode.
 
-  .. code-block:: bash
-
-     rmsd_mode2d --config_file <path_to_config>
+    ```bash
+    rmsd_mode2d --config_file <path_to_config>
+    ```
 
 - **tmscore_mode1d**: Analyze TM-score in 1D mode.
 
-  .. code-block:: bash
-
-     tmscore_mode1d --config_file <path_to_config>
+    ```bash
+    tmscore_mode1d --config_file <path_to_config>
+    ```
 
 - **tmscore_mode2d**: Analyze TM-score in 2D mode.
 
-  .. code-block:: bash
-
-     tmscore_mode2d --config_file <path_to_config>
+    ```bash
+    tmscore_mode2d --config_file <path_to_config>
+    ```
 
 - **pca_clustering**: Perform PCA clustering on the predicted structures.
 
-  .. code-block:: bash
-
-     pca_clustering --config_file <path_to_config>
+    ```bash
+    pca_clustering --config_file <path_to_config>
+    ```
 
 - **rmsf_plddt**: Calculate RMSF and pLDDT for the predicted structures.
 
-  .. code-block:: bash
-
-     rmsf_plddt --config_file <path_to_config>
+    ```bash
+    rmsf_plddt --config_file <path_to_config>
+    ```
 
 - **save_traj**: Save trajectories from the analysis.
 
-  .. code-block:: bash
-
-     save_traj --config_file <path_to_config>
+    ```bash
+    save_traj --config_file <path_to_config>
+    ```
+    
 
 ## Troubleshooting
 
