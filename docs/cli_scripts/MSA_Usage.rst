@@ -29,7 +29,7 @@ To run the script, use the following command:
 
 .. code-block:: bash
 
-   poetry run jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir> [optional arguments]
+   jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir> [optional arguments]
 
 **Command-Line Arguments:**
 - `--config_file`: Path to the JSON configuration file.
@@ -82,9 +82,9 @@ Example
 
    mmseqs2_msa --config_file config.json --sequence_path input.fasta --output_path ./results
 
-=================
+=====================
 Configuration Files
-=================
+=====================
 
 Both scripts allow configuration through a JSON file. Below is an example configuration file:
 
