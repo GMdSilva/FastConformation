@@ -101,7 +101,7 @@ run_gui
 
 This will launch the main application window, where you can access various functionalities such as submitting new jobs, checking job status, and viewing analysis logs.
 
-### CLI commands
+### Running via Command-line
 
 First, run 
 
