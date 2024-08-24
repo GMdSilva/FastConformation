@@ -28,7 +28,7 @@ Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput predicti
 
 ## Installation
 
-To install FastEnsemble, run the installation script provided in the repository:
+To install FastEnsemble, download and run the installation script provided in the repository:
 
 ```bash
 ./install.sh
