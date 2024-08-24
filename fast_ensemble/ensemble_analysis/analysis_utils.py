@@ -93,7 +93,7 @@ def load_pdb_files_as_universe(folder_path, reindex):
     pdb_files = sorted(glob(os.path.join(folder_path, '*.pdb')))
 
     if not pdb_files:
-        raise FileNotFoundError("No PDB files found in the specified folder.")
+        raise FileNotFoundError("No PDB files found in the specified folder")
 
     topology = pdb_files[0]
 
@@ -129,7 +129,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
     for seq_pair in seq_pairs:
         max_seq = seq_pair[0]
         extra_seq = seq_pair[1]
-        folder_path = f"{predictions_path}/{jobname}_{max_seq}_{extra_seq}"
+        folder_path = f"{predictions_path}/{max_seq}_{extra_seq}"
 
         universe = load_pdb_files_as_universe(folder_path, starting_residue)
 
