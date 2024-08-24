@@ -4,7 +4,7 @@ import json
 import pickle
 from fast_ensemble.msa_generation import get_msa_jackhmmer
 from fast_ensemble.msa_generation.msa_utils import create_ram_disk, read_fasta, create_directory, save_dict_to_fasta
-
+import time
 
 def load_config(file_path):
     """
@@ -183,6 +183,7 @@ def build_jackhmmer_msa(config):
         prepare_os()
     # sets output directory for MSA
     complete_output_dir = f"{config['output_path']}/{config['jobname']}/msas/jackhmmer/"
+    time.sleep(3)
     # builds jackhmmer MSA from target sequence
     build_msa(config["sequence_string"], config["jobname"], complete_output_dir, config["homooligomers"], tmp_dir=config["tmp_dir"], use_ramdisk=config["use_ramdisk"])
 
