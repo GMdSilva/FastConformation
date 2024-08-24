@@ -51,7 +51,7 @@ fast_ensemble = ["fast_ensemble"]
 addopts = "--tb=short"
 
 [tool.poetry.scripts]
-decaf_init = 'fast_ensemble.decaf_init:main'
+fast_ensemble_init = 'fast_ensemble.decaf_init:main'
 mmseqs2_msa = 'fast_ensemble.mmseqs2_msa:main'
 jackhmmer_msa = 'fast_ensemble.jackhmmer_msa:main'
 predict_ensemble = 'fast_ensemble.predict_ensemble:main'

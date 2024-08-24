@@ -57,4 +57,7 @@ echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
 # Run the GUI
-"$FENSEMBLEDIR/fast_ensemble-conda/bin/python" -m fast_ensemble.gui.run_gui
+# Initialize conda
+conda init
+echo "Please close this terminal window and run conda activate ${FENSEMBLEDIR}/fast_ensemble-conda"
+echo "Next, type run_gui to run the gui"

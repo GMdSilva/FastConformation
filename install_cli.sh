@@ -53,6 +53,7 @@ echo -e "i.e. for Bash:\n\texport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin
 echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
-"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install poetry
-poetry install
-poetry shell
+
+# Initialize conda
+conda init
+echo "Please close this terminal window and run conda activate ${FENSEMBLEDIR}/fast_ensemble-conda"
