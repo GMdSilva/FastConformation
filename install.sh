@@ -56,6 +56,8 @@ echo -e "i.e. for Bash:\n\texport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin
 echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
+# Ensure scripts directory is executable
+chmod +x ./scripts/*.sh
 # Run the GUI
 # Initialize conda
 conda init

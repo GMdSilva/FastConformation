@@ -54,6 +54,9 @@ echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
 
+# Ensure scripts directory is executable
+chmod +x ./scripts/*.sh
+
 # Initialize conda
 conda init
 echo "Please close this terminal window and run conda activate ${FENSEMBLEDIR}/fast_ensemble-conda"
