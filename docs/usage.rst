@@ -85,7 +85,7 @@ Once FastEnsemble is installed, you can access its graphical user interface (GUI
 
 .. code-block:: bash
 
-   $run_gui
+   run_gui
 
 Alternatively, you can start the GUI using:
 
@@ -100,20 +100,28 @@ Using the Command-Line Interface (CLI)
 
 FastEnsemble provides several CLI tools for different tasks, including MSA generation, prediction, and analysis. Below is a list of available commands with brief descriptions.
 
+First, run 
+
+```bash
+fast_ensemble_init
+```
+
+The parameters for each command can either be included in the config file or via the command line. Visit the CLI guide page of the documentation for more information.
+Sample config files and sample results are available via this link [Download Sample Files](https://drive.google.com/drive/folders/1ev5HfWVyMTBw3FRtKWxYaswuaIXvC1FS?usp=drive_link).
+
 **MSA Generation:**
 
 - **jackhmmer_msa**: Generate MSA using `jackhmmer`.
 
   .. code-block:: bash
 
-     $jackhmmer_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
-
+     jackhmmer_msa --config_file <path_to_config>
 
 - **mmseqs2_msa**: Generate MSA using `mmseqs2`.
 
   .. code-block:: bash
 
-     $mmseqs2_msa --config_file <path_to_config> --sequence_path <path_to_fasta> --output_path <output_dir>
+     mmseqs2_msa --config_file <path_to_config>
 
 
 **Prediction:**
@@ -122,13 +130,13 @@ FastEnsemble provides several CLI tools for different tasks, including MSA gener
 
   .. code-block:: bash
 
-     $predict_ensemble --config_file <path_to_config>
+     predict_ensemble --config_file <path_to_config>
 
 - **decaf_init**: Initialize DECAF predictions.
 
   .. code-block:: bash
 
-     $decaf_init --config_file <path_to_config>
+     decaf_init --config_file <path_to_config>
 
 **Analysis:**
 
@@ -136,43 +144,43 @@ FastEnsemble provides several CLI tools for different tasks, including MSA gener
 
   .. code-block:: bash
 
-     $rmsd_mode1d --config_file <path_to_config>
+     rmsd_mode1d --config_file <path_to_config>
 
 - **rmsd_mode2d**: Analyze RMSD in 2D mode.
 
   .. code-block:: bash
 
-     $rmsd_mode2d --config_file <path_to_config>
+     rmsd_mode2d --config_file <path_to_config>
 
 - **tmscore_mode1d**: Analyze TM-score in 1D mode.
 
   .. code-block:: bash
 
-     $tmscore_mode1d --config_file <path_to_config>
+     tmscore_mode1d --config_file <path_to_config>
 
 - **tmscore_mode2d**: Analyze TM-score in 2D mode.
 
   .. code-block:: bash
 
-     $tmscore_mode2d --config_file <path_to_config>
+     tmscore_mode2d --config_file <path_to_config>
 
 - **pca_clustering**: Perform PCA clustering on the predicted structures.
 
   .. code-block:: bash
 
-     $pca_clustering --config_file <path_to_config>
+     pca_clustering --config_file <path_to_config>
 
 - **rmsf_plddt**: Calculate RMSF and pLDDT for the predicted structures.
 
   .. code-block:: bash
 
-     $rmsf_plddt --config_file <path_to_config>
+     rmsf_plddt --config_file <path_to_config>
 
 - **save_traj**: Save trajectories from the analysis.
 
   .. code-block:: bash
 
-     $save_traj --config_file <path_to_config>
+     save_traj --config_file <path_to_config>
 
 For more detailed instructions on how to use each tool, refer to the respective CLI documentation sections provided in this guide.
 

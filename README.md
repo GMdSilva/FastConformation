@@ -34,13 +34,18 @@ To install FastEnsemble, run the installation script provided in the repository:
 ./install.sh
 ```
 
+If you wish to install only the CLI version without the gui, run this script instead:
+
+```bash
+./install_cli.sh
+```
+
 This script will set up the necessary environment and dependencies.
 
-Next, close the terminal window and reopen a new one. Run
-```bash
-conda activate /path/to/fast_ensemble/fast_ensemble-conda
-```
-Next, 
+Next, close the terminal window and reopen a new one.
+
+Now, run any of the commands reported in the Usage section.
+
 ## Dependencies
 
 The installation script sets up the environment and installs all necessary dependencies. 
@@ -77,7 +82,8 @@ FastEnsemble relies on the following dependencies:
 
 ## Documentation
 
-Documentation can be found on ReadTheDocs.
+Documentation can be found on [this] ReadTheDocs page.
+(https://fastensemble.readthedocs.io/en/main/index.html).
 
 ## OS Requirements
 
@@ -94,6 +100,106 @@ run_gui
 ```
 
 This will launch the main application window, where you can access various functionalities such as submitting new jobs, checking job status, and viewing analysis logs.
+
+### CLI commands
+
+First, run 
+
+```bash
+fast_ensemble_init
+```
+
+Next, run any of the following, either specifying a config file path, or by specifying the parameters via command-line arguments. 
+
+Sample config files and sample results are available via this link [Download Sample Files](https://drive.google.com/drive/folders/1ev5HfWVyMTBw3FRtKWxYaswuaIXvC1FS?usp=drive_link).
+
+For more detailed instructions on how to use each tool, refer to the ReadTheDocs documentation.
+
+**MSA Generation:**
+
+- **jackhmmer_msa**: Generate MSA using `jackhmmer`.
+
+  .. code-block:: bash
+
+     jackhmmer_msa --config_file <path_to_config>
+
+- **mmseqs2_msa**: Generate MSA using `mmseqs2`.
+
+  .. code-block:: bash
+
+     mmseqs2_msa --config_file <path_to_config>
+
+
+**Prediction:**
+
+- **predict_ensemble**: Run ensemble predictions.
+
+  .. code-block:: bash
+
+     predict_ensemble --config_file <path_to_config>
+
+- **decaf_init**: Initialize DECAF predictions.
+
+  .. code-block:: bash
+
+     decaf_init --config_file <path_to_config>
+
+**Analysis:**
+
+- **rmsd_mode1d**: Analyze RMSD in 1D mode.
+
+  .. code-block:: bash
+
+     rmsd_mode1d --config_file <path_to_config>
+
+- **rmsd_mode2d**: Analyze RMSD in 2D mode.
+
+  .. code-block:: bash
+
+     rmsd_mode2d --config_file <path_to_config>
+
+- **tmscore_mode1d**: Analyze TM-score in 1D mode.
+
+  .. code-block:: bash
+
+     tmscore_mode1d --config_file <path_to_config>
+
+- **tmscore_mode2d**: Analyze TM-score in 2D mode.
+
+  .. code-block:: bash
+
+     tmscore_mode2d --config_file <path_to_config>
+
+- **pca_clustering**: Perform PCA clustering on the predicted structures.
+
+  .. code-block:: bash
+
+     pca_clustering --config_file <path_to_config>
+
+- **rmsf_plddt**: Calculate RMSF and pLDDT for the predicted structures.
+
+  .. code-block:: bash
+
+     rmsf_plddt --config_file <path_to_config>
+
+- **save_traj**: Save trajectories from the analysis.
+
+  .. code-block:: bash
+
+     save_traj --config_file <path_to_config>
+
+## Troubleshooting
+
+- When running MSA generation or predictions, if you are getting a no such file or directory error, it is likely an issue with the AlphaFold2 Installation. Try reinstalling the package and ensure that the AF2 installation is on path.
+
+- For issues with the qt platform, if the 'xcb' platform is found but cannot be initialized, try this command, or refer to [this](https://github.com/NVlabs/instant-ngp/discussions/300) github issue
+
+```bash
+sudo apt-get install libx11-xcb1 libxcb1 libxcb-glx0 \
+libxcb-keysyms1 libxcb-image0 libxcb-shm0 libxcb-icccm4 \
+libxcb-sync1 libxcb-xfixes0 libxcb-shape0 libxcb-randr0 \
+libxcb-render-util0 libxcb-render0 libxcb-xinerama0 libxcb-xkb1 libxkbcommon-x11-0
+```
 
 ## Download Sample Files
 
