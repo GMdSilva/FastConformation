@@ -51,18 +51,18 @@ fast_ensemble = ["fast_ensemble"]
 addopts = "--tb=short"
 
 [tool.poetry.scripts]
-fast_ensemble_init = 'sh ./scripts/fast_ensemble_init.sh'
-mmseqs2_msa = 'sh ./scripts/mmseqs2_msa.sh'
-jackhmmer_msa = 'sh ./scripts/jackhmmer_msa.sh'
-predict_ensemble = 'sh ./scripts/predict_ensemble.sh'
-rmsd_mode1d = 'sh ./scripts/rmsd_mode1d.sh'
-rmsd_mode2d = 'sh ./scripts/rmsd_mode2d.sh'
-tmscore_mode2d = 'sh ./scripts/tmscore_mode2d.sh'
-tmscore_mode1d = 'sh ./scripts/tmscore_mode1d.sh'
-pca_clustering = 'sh ./scripts/pca_clustering.sh'
-rmsf_plddt = 'sh ./scripts/rmsf_plddt.sh'
-save_traj = 'sh ./scripts/save_traj.sh'
-run_gui = 'sh ./scripts/run_gui.sh'
+fast_ensemble_init = 'fast_ensemble.fast_ensemble_init:main'
+mmseqs2_msa = 'fast_ensemble.mmseqs2_msa:main'
+jackhmmer_msa = 'fast_ensemble.jackhmmer_msa:main'
+predict_ensemble = 'fast_ensemble.predict_ensemble:main'
+rmsd_mode1d = 'fast_ensemble.rmsd_mode1d:main'
+rmsd_mode2d = 'fast_ensemble.rmsd_mode2d:main'
+tmscore_mode2d = 'fast_ensemble.tmscore_mode2d:main'
+tmscore_mode1d = 'fast_ensemble.tmscore_mode1d:main'
+pca_clustering = 'fast_ensemble.pca_clustering:main'
+rmsf_plddt = 'fast_ensemble.rmsf_plddt:main'
+save_traj = 'fast_ensemble.save_traj:main'
+run_gui = "fast_ensemble.gui.run_gui:main"
 
 [tool.black]
 # Format only the new package, don't touch the existing stuff
