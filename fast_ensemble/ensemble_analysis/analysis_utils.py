@@ -138,7 +138,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
                   'jobname': jobname,
                   'mda_universe': universe}
 
-        predictions_dict[f'{max_seq}_{extra_seq}'] = params
+        predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
     return predictions_dict
 
 
@@ -159,7 +159,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
     for seq_pair in seq_pairs:
         max_seq = seq_pair[0]
         extra_seq = seq_pair[1]
-        folder_path = f"{predictions_path}/{jobname}_{max_seq}_{extra_seq}"
+        folder_path = f"{predictions_path}/{max_seq}_{extra_seq}"
         json_files = glob(f"{folder_path}/*.json")
         all_plddts = []
 
