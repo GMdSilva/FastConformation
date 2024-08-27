@@ -343,7 +343,7 @@ class TwoTMScore:
             'close_points_2d': close_points_2d
         }
 
-    def plot_and_save_2d_data(self, output_path):
+    def plot_and_save_2d_data(self, output_path, widget):
         """
         Plot the clustered 2D TM-Score data, save the plot, and return a DataFrame with the clustering information.
 
@@ -364,13 +364,14 @@ class TwoTMScore:
         centroids = self.clustering_dict['centroids']
         outliers = self.clustering_dict['outliers']
 
-        plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='TM-Score vs. Ref1 (Å)', y_label='TM-Score vs. Ref2 (Å)', label='Centroids', scatter=True)
-        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        if widget:
+            plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='TM-Score vs. Ref1 (Å)', y_label='TM-Score vs. Ref2 (Å)', label='Centroids', scatter=True)
+            self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        
+            for i in unique_labels:
+                cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
+                self.widget.add_scatter(plotter, cluster_points[:, 0], cluster_points[:, 1], color=colors[i], label=f'Cluster {i} pop: {cluster_counts[i]}')
     
-        for i in unique_labels:
-            cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
-            self.widget.add_scatter(plotter, cluster_points[:, 0], cluster_points[:, 1], color=colors[i], label=f'Cluster {i} pop: {cluster_counts[i]}')
-  
         if output_path:
             plt.figure(figsize=(5, 4))
             for i in unique_labels:
@@ -455,7 +456,7 @@ class TwoTMScore:
                     self.plot_filtering_data(tmscore_2d_data)
                     self.show_filt_data(self, tmscore_2d_data)
                     self.cluster_2d_data(tmscore_2d_data, n_clusters_trial)
-                    df_to_save = self.plot_and_save_2d_data(output_path)
+                    df_to_save = self.plot_and_save_2d_data(output_path, self.widget)
                     df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
 
                 pbar.update(n=1)

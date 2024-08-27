@@ -141,13 +141,14 @@ def tmscore_kde(tmscore_data: list, input_dict: dict, slice_predictions, widget)
         modes_dict[f'mode_{mode_n}'] = mode_results
     
     # Plot KDE and mark modes
-    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', label='KDE')
-    widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
-    
-    for mode in most_distant_modes:
-        lines = pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
-        plot_item.addItem(lines)
-    
+    if widget:
+        plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD ($\AA$)', y_label='Density', label='KDE')
+        widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
+        
+        for mode in most_distant_modes:
+            lines = pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
+            plot_item.addItem(lines)
+        
     if output_path:    
         plt.figure(figsize=(6, 3))
         plt.plot(x_vals, kde_vals, label='KDE')

@@ -96,14 +96,15 @@ def pca_from_ensemble(jobname,
             # Create a scatter plot for PC1 and PC2 with clusters
             colors = ['blue', 'green', 'magenta', 'orange', 'grey', 'brown', 'cyan', 'purple']
             print("plotting")
-
-            for i in unique_labels:
-                cluster_points = df[df['Cluster'] == i]
-                if not plotter:
-                    plotter=widget.add_plot(cluster_points['PC1'], cluster_points['PC2'], color=colors[i], x_label='PC1', y_label='PC2',
-                            label=f'Cluster {i} pop: {cluster_counts[i]}', title=f"{jobname} {max_seq} {extra_seq} Fit R²: {r2:.2f}", scatter=True)
-            widget.add_scatter(plotter, centroids[:, 0], centroids[:, 1], color='black', label='Centroids')
-            widget.add_line(plotter, df['PC1'], df['PC2_fit'], label='Fitted Curve', color='red')
+            
+            if widget:
+                for i in unique_labels:
+                    cluster_points = df[df['Cluster'] == i]
+                    if not plotter:
+                        plotter=widget.add_plot(cluster_points['PC1'], cluster_points['PC2'], color=colors[i], x_label='PC1', y_label='PC2',
+                                label=f'Cluster {i} pop: {cluster_counts[i]}', title=f"{jobname} {max_seq} {extra_seq} Fit R²: {r2:.2f}", scatter=True)
+                widget.add_scatter(plotter, centroids[:, 0], centroids[:, 1], color='black', label='Centroids')
+                widget.add_line(plotter, df['PC1'], df['PC2_fit'], label='Fitted Curve', color='red')
 
             if output_path:
                 

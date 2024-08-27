@@ -99,10 +99,11 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
         mode_n += 1
 
         modes_dict[f'mode_{mode_n}'] = mode_results
-        
-    plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD (Å)', y_label='Density', label='KDE')
-    widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
     
+    if widget:
+        plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD (Å)', y_label='Density', label='KDE')
+        widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
+        
     for mode in most_distant_modes:
         lines=pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
         plot_item.addItem(lines)

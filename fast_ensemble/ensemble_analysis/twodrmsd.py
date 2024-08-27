@@ -170,6 +170,7 @@ class TwodRMSD:
         title = (f"{self.input_dict['jobname']} "
                  f"{self.input_dict['max_seq']} "
                  f"{self.input_dict['extra_seq']}")
+                 
         plotter = self.widget.add_plot(rmsd_2d_data[:, 0], rmsd_2d_data[:, 1], title=title,
                                        x_label='RMSD vs. Ref1 (Å)', y_label='RMSD vs. Ref2 (Å)', scatter=True)
         self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'],
@@ -300,14 +301,14 @@ class TwodRMSD:
                  f"{self.input_dict['extra_seq']} "
                  f"Score: {self.filtering_dict['ratio']:.2f}")
         colors = np.array([[68, 1, 84, 255], [58, 82, 139, 255], [32, 144, 140, 255], [94, 201, 97, 255], [253, 231, 37, 255]])
-            
-        plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='RMSD vs. Ref1 (Å)', y_label='RMSD vs. Ref2 (Å)', label='Centroids', scatter=True)
-        self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        if self.widget:
+            plotter = self.widget.add_plot(centroids[:, 0], centroids[:, 1], title=title, x_label='RMSD vs. Ref1 (Å)', y_label='RMSD vs. Ref2 (Å)', label='Centroids', scatter=True)
+            self.widget.add_line(plotter, self.filtering_dict['fit_x'], self.filtering_dict['fit_y'], label='Fitted Curve', color='r')
+        
+            for i in unique_labels:
+                cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
+                self.widget.add_scatter(plotter, cluster_points[:, 0], cluster_points[:, 1], color=colors[i], label=f'Cluster {i} pop: {cluster_counts[i]}')
     
-        for i in unique_labels:
-            cluster_points = self.clustering_dict['close_points_2d'][correct_labels == i]
-            self.widget.add_scatter(plotter, cluster_points[:, 0], cluster_points[:, 1], color=colors[i], label=f'Cluster {i} pop: {cluster_counts[i]}')
-  
         if output_path:
             plt.figure(figsize=(5, 4))
 
@@ -392,7 +393,8 @@ class TwodRMSD:
                     self.fit_and_filter_data(rmsd_2d_data, n_stdevs)
                     if output_path:
                         self.plot_filtering_data(rmsd_2d_data)
-                    self.show_filt_data(rmsd_2d_data)
+                    if self.widget:
+                        self.show_filt_data(rmsd_2d_data)
                     self.cluster_2d_data(rmsd_2d_data, n_clusters_trial)
                     df_to_save = self.plot_and_save_2d_data(output_path)
                     df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)

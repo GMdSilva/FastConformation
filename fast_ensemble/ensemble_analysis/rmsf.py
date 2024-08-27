@@ -154,11 +154,11 @@ def calculate_rmsf_multiple(jobname, prediction_dicts, align_range, output_path,
 
             if output_path:
                 plt.plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
-            if plotter is None:
-                plotter = widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
-            else:
-                widget.add_line(plotter, resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
-    
+            if widget:
+                if plotter is None:
+                    plotter = widget.add_plot(resids, r.results.rmsf, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
+                else:
+                    widget.add_line(plotter, resids, r.results.rmsf, color=colors[idx % len(colors)], label=result)
             labels.append(result)
             pbar.update(n=1)
     
@@ -219,7 +219,8 @@ def plot_plddt_rmsf_corr(jobname, prediction_dicts, plddt_dict, output_path, wid
             title = f'{jobname} {max_seq} {extra_seq}'
             x_label = 'C-Alpha RMSF (A)'
             y_label = 'Average pLDDT'
-            plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True, colorbar=True)
+            if widget:
+                plot_item = widget.add_plot(rmsf_values, plddt_avg, title=title, x_label=x_label, y_label=y_label, resids=resids, scatter=True, colorbar=True)
 
             if output_path:
                 plt.scatter(rmsf_values, plddt_avg, c=[cmap(norm(resid)) for resid in resids])
@@ -284,9 +285,9 @@ def plot_plddt_line(jobname, plddt_dict, output_path, custom_start_residue, widg
             residue_numbers += custom_start_residue
         if output_path:
             plt.plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
-        if plotter is None:
+        if plotter is None and widget:
             plotter = widget.add_plot(residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result, title=title, x_label=x_label, y_label=y_label)
-        else:
+        elif widget:
             widget.add_line(plotter, residue_numbers, plddt_avg, color=colors[idx % len(colors)], label=result)
 
     if output_path:
