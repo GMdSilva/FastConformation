@@ -138,7 +138,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
                   'jobname': jobname,
                   'mda_universe': universe}
 
-        predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
+        predictions_dict[f'{max_seq}_{extra_seq}'] = params
     return predictions_dict
 
 
