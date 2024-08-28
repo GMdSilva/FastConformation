@@ -132,7 +132,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
         folder_pattern = os.path.join(predictions_path, f"*{max_seq}_{extra_seq}*")
 
         # Find all folders that match the pattern
-        matching_folders = [f for f in glob.glob(folder_pattern) if os.path.isdir(f)]
+        matching_folders = [f for f in glob(folder_pattern) if os.path.isdir(f)]
         
         # Check if any matching folders are found
         if not matching_folders:
@@ -142,7 +142,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
         for folder_path in matching_folders:
             # Search for files containing max_seq_extra_seq within the matching folder
             file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.pdb")
-            pdb_files = glob.glob(file_pattern)
+            pdb_files = glob(file_pattern)
 
             # Check if any matching files are found
             if not pdb_files:
@@ -180,7 +180,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
         folder_pattern = os.path.join(predictions_path, f"*{max_seq}_{extra_seq}*")
 
         # Find all folders that match the pattern
-        matching_folders = [f for f in glob.glob(folder_pattern) if os.path.isdir(f)]
+        matching_folders = [f for f in glob(folder_pattern) if os.path.isdir(f)]
 
         # Check if any matching folders are found
         if not matching_folders:
@@ -192,7 +192,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
         for folder_path in matching_folders:
             # Search for JSON files containing max_seq_extra_seq within the matching folder
             json_file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.json")
-            json_files = glob.glob(json_file_pattern)
+            json_files = glob(json_file_pattern)
 
             # Check if any matching files are found
             if not json_files:
