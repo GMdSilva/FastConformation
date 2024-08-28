@@ -41,7 +41,8 @@ sed -i -e "s#from io import StringIO#from io import StringIO\nfrom silence_tenso
 # remove cache directory
 rm -rf __pycache__
 
-# sudo apt install tm-align
+# install tm-score
+sudo apt install tm-align
 
 # Download weights
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/python3" -m colabfold.download
