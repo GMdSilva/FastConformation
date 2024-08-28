@@ -454,7 +454,6 @@ class TwoTMScore:
                 if len(tmscore_2d_data) > 0:
                     self.fit_and_filter_data(tmscore_2d_data, n_stdevs)
                     self.plot_filtering_data(tmscore_2d_data)
-                    self.show_filt_data(self, tmscore_2d_data)
                     self.cluster_2d_data(tmscore_2d_data, n_clusters_trial)
                     df_to_save = self.plot_and_save_2d_data(output_path, self.widget)
                     df_all_trials = pd.concat([df_all_trials, df_to_save], ignore_index=True)
