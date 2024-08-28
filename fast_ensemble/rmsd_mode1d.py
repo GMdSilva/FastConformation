@@ -75,7 +75,7 @@ def run_rmsd_analysis(config, plot_widget=None):
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
     # Run 1D RMSD analysis
-    rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d, plot_widget)
+    rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d, widget=plot_widget)
 
     # Build and save results dataset
     build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)

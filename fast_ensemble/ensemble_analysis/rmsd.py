@@ -143,7 +143,7 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
     return modes_dict
 
 
-def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget):
+def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
     """
     Perform 1D RMSD mode analysis for each prediction in the provided dictionary.
 

@@ -148,10 +148,10 @@ For more detailed instructions on how to use each tool, refer to the ReadTheDocs
     ```
 
 
-- **decaf_init**: Initialize DECAF predictions.
+- **fast_ensemble_init**: Initialize sample config file.
 
     ```bash
-    decaf_init --config_file <path_to_config>
+    fast_ensemble_init
     ```
 
 **Analysis:**
