@@ -47,7 +47,7 @@ def calculate_rmsd(u: mda.Universe,
     return rmsd_dict
 
 
-def rmsd_kde(rmsd_data: list, input_dict: dict, widget=None) -> dict:
+def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
     """
     Perform Kernel Density Estimation (KDE) on RMSD data and identify the most distant modes.
 
@@ -99,14 +99,13 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget=None) -> dict:
         mode_n += 1
 
         modes_dict[f'mode_{mode_n}'] = mode_results
-    
     if widget:
         plot_item = widget.add_plot(x_vals, kde_vals, title=f'{jobname} {max_seq} {extra_seq}', x_label='RMSD (Å)', y_label='Density', label='KDE')
         widget.add_scatter(plot_item, modes, kde_vals[peaks], label='Modes')
         
-    for mode in most_distant_modes:
-        lines=pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
-        plot_item.addItem(lines)
+        for mode in most_distant_modes:
+            lines=pg.InfiniteLine(pos=mode, angle=90, pen=pg.mkPen('b', style=QtCore.Qt.DashLine), label='Most Distant Mode')
+            plot_item.addItem(lines)
         
     if output_path:
         # Plot KDE and mark modes
@@ -143,7 +142,7 @@ def rmsd_kde(rmsd_data: list, input_dict: dict, widget=None) -> dict:
     return modes_dict
 
 
-def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
+def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget):
     """
     Perform 1D RMSD mode analysis for each prediction in the provided dictionary.
 
@@ -177,7 +176,6 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
                                                                        align_range=align_range,
                                                                        analysis_range=rmsd_range)
 
-            print("calculated rmsd...")
             rmsd_df = pd.DataFrame.from_dict(prediction_dicts[prediction]['rmsd_data'], orient='columns')
 
             full_output_path = (f"{output_path}/"
@@ -192,8 +190,7 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
             rmsd_df.to_csv(full_output_path, index=False)
 
             all_rmsd_modes = {}
-            print("rmsd_kde")
-            rmsd_modes = rmsd_kde(prediction_dicts[prediction]['rmsd_data'][rmsd_range], input_dict, widget=widget)
+            rmsd_modes = rmsd_kde(prediction_dicts[prediction]['rmsd_data'][rmsd_range], input_dict, widget)
 
             for mode in rmsd_modes:
                 mode_index = rmsd_modes[mode]['mode_index']
