@@ -88,15 +88,15 @@ FastEnsemble relies on the following dependencies:
 
 ## Documentation
 
-Documentation can be found on [this] ReadTheDocs page.
-(https://fastensemble.readthedocs.io/en/main/index.html).
+Documentation can be found on [this ReadTheDocs page](https://fastensemble.readthedocs.io/en/main/index.html).
+
 
 ## OS Requirements
 
 This package has been tested on Linux RedHat7 and Ubuntu 20.0.4.
 
 ## Usage
-Before running any commands, run:
+Before running any commands, download this file and run it:
 ```bash
 ./fast_ensemble.sh
 ```
