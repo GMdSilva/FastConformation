@@ -139,15 +139,16 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
             print(f"Warning: No folders found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
             continue
 
-        # Load the found PDB files as MDAnalysis Universes
-        universe = load_pdb_files_as_universe(matching_folders, starting_residue)
+        for matching_folder in matching_folders:
+            # Load the found PDB files as MDAnalysis Universes
+            universe = load_pdb_files_as_universe(matching_folder, starting_residue)
 
-        params = {'max_seq': max_seq,
-                    'extra_seq': extra_seq,
-                    'jobname': jobname,
-                    'mda_universe': universe}
+            params = {'max_seq': max_seq,
+                        'extra_seq': extra_seq,
+                        'jobname': jobname,
+                        'mda_universe': universe}
 
-        predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
+            predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
     
     return predictions_dict
 
