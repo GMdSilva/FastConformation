@@ -35,6 +35,7 @@ config = {
     "ref1d": None,
     "ref2d1": None,
     "ref2d2": None,
+    "predictions_path": "sample_preds/alphafold2",
 
     "_comment5": "RMSF ANALYSIS CONFIGURATIONS",
     "detect_mobile": True,

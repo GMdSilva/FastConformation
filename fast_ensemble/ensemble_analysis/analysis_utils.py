@@ -126,21 +126,40 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
     dict: A dictionary of Universes and associated metadata.
     """
     predictions_dict = {}
+    
     for seq_pair in seq_pairs:
-        max_seq = seq_pair[0]
-        extra_seq = seq_pair[1]
-        folder_path = f"{predictions_path}/{max_seq}_{extra_seq}"
+        max_seq, extra_seq = seq_pair
+        folder_pattern = os.path.join(predictions_path, f"*{max_seq}_{extra_seq}*")
 
-        universe = load_pdb_files_as_universe(folder_path, starting_residue)
+        # Find all folders that match the pattern
+        matching_folders = [f for f in glob.glob(folder_pattern) if os.path.isdir(f)]
+        
+        # Check if any matching folders are found
+        if not matching_folders:
+            print(f"Warning: No folders found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
+            continue
 
-        params = {'max_seq': max_seq,
-                  'extra_seq': extra_seq,
-                  'jobname': jobname,
-                  'mda_universe': universe}
+        for folder_path in matching_folders:
+            # Search for files containing max_seq_extra_seq within the matching folder
+            file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.pdb")
+            pdb_files = glob.glob(file_pattern)
 
-        predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
+            # Check if any matching files are found
+            if not pdb_files:
+                print(f"Warning: No files containing '{max_seq}_{extra_seq}' found in folder '{folder_path}'. Skipping...")
+                continue
+
+            # Load the found PDB files as MDAnalysis Universes
+            universe = load_pdb_files_as_universe(pdb_files, starting_residue)
+
+            params = {'max_seq': max_seq,
+                      'extra_seq': extra_seq,
+                      'jobname': jobname,
+                      'mda_universe': universe}
+
+            predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
+    
     return predictions_dict
-
 
 def load_predictions_json(predictions_path, seq_pairs, jobname):
     """
@@ -157,24 +176,48 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
     plddt_dict = {}
 
     for seq_pair in seq_pairs:
-        max_seq = seq_pair[0]
-        extra_seq = seq_pair[1]
-        folder_path = f"{predictions_path}/{max_seq}_{extra_seq}"
-        json_files = glob(f"{folder_path}/*.json")
+        max_seq, extra_seq = seq_pair
+        folder_pattern = os.path.join(predictions_path, f"*{max_seq}_{extra_seq}*")
+
+        # Find all folders that match the pattern
+        matching_folders = [f for f in glob.glob(folder_pattern) if os.path.isdir(f)]
+
+        # Check if any matching folders are found
+        if not matching_folders:
+            print(f"Warning: No folders found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
+            continue
+
         all_plddts = []
 
-        for json_file in json_files:
-            plddt_data = load_config(json_file)
-            per_residue_plddt = plddt_data.get('plddt')
-            if per_residue_plddt:
-                all_plddts.append(per_residue_plddt)
+        for folder_path in matching_folders:
+            # Search for JSON files containing max_seq_extra_seq within the matching folder
+            json_file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.json")
+            json_files = glob.glob(json_file_pattern)
 
-        partial_plddt_dict = {'max_seq': max_seq,
-                              'extra_seq': extra_seq,
-                              'jobname': jobname,
-                              'all_plddts': all_plddts}
+            # Check if any matching files are found
+            if not json_files:
+                print(f"Warning: No JSON files containing '{max_seq}_{extra_seq}' found in folder '{folder_path}'. Skipping...")
+                continue
 
-        plddt_dict[f'{jobname}_{max_seq}_{extra_seq}'] = partial_plddt_dict
+            for json_file in json_files:
+                # Load pLDDT data from the JSON file
+                plddt_data = load_config(json_file)
+                per_residue_plddt = plddt_data.get('plddt')
+
+                if per_residue_plddt:
+                    all_plddts.append(per_residue_plddt)
+
+        if all_plddts:  # Only add to dictionary if there are valid pLDDT values
+            partial_plddt_dict = {
+                'max_seq': max_seq,
+                'extra_seq': extra_seq,
+                'jobname': jobname,
+                'all_plddts': all_plddts
+            }
+
+            plddt_dict[f'{jobname}_{max_seq}_{extra_seq}'] = partial_plddt_dict
+        else:
+            print(f"Warning: No valid pLDDT data found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
 
     return plddt_dict
 
