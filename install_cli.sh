@@ -48,12 +48,13 @@ rm -rf __pycache__
 echo "Download of alphafold2 weights finished."
 echo "-----------------------------------------"
 echo "Installation of fast_ensemble finished."
-echo "Add ${FENSEMBLEDIR}/fast_ensemble-conda/bin to your PATH environment variable to run 'fast_ensemble'."
-echo -e "i.e. for Bash:\n\texport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin:\$PATH\""
-echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
 
-# Initialize conda
-conda init
-echo "Please close this terminal window and run conda activate ${FENSEMBLEDIR}/fast_ensemble-conda"
+# Add environment to PATH in the user's .bashrc
+echo "Adding ${FENSEMBLEDIR}/fast_ensemble-conda/bin to PATH in ~/.bashrc"
+echo -e "\n# Added by fast_ensemble installation script\nexport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin:\$PATH\"" >> ~/.bashrc
+
+echo "Open a new terminal window."
+echo "To initialize a sample config file run 'fast_ensemble_init'."
+echo "Next, run any command of your choosing listed in our ReadTheDocs page and on the README."

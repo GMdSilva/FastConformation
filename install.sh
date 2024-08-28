@@ -57,8 +57,11 @@ echo "For more details, please run 'fast_ensemble --help'."
 
 cd $FENSEMBLEDIR
 
-# Run the GUI
-# Initialize conda
-conda init
-echo "Please close this terminal window and run conda activate ${FENSEMBLEDIR}/fast_ensemble-conda"
-echo "Next, type run_gui to run the gui"
+# Add environment to PATH in the user's .bashrc
+echo "Adding ${FENSEMBLEDIR}/fast_ensemble-conda/bin to PATH in ~/.bashrc"
+echo -e "\n# Added by fast_ensemble installation script\nexport PATH=\"${FENSEMBLEDIR}/fast_ensemble-conda/bin:\$PATH\"" >> ~/.bashrc
+
+echo "Open a new terminal window."
+echo "You can now run 'run_gui' directly from the command line to show the gui."
+echo "If you prefer running via command-line, to initialize a sample config file run 'fast_ensemble_init'."
+echo "Next, run any command of your choosing listed in our ReadTheDocs page and on the README."
