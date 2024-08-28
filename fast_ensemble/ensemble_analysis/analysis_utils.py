@@ -148,7 +148,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
                         'jobname': jobname,
                         'mda_universe': universe}
 
-            predictions_dict[f'{max_seq}_{extra_seq}'] = params
+            predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
     
     return predictions_dict
 
@@ -205,7 +205,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
                 'all_plddts': all_plddts
             }
 
-            plddt_dict[f'{max_seq}_{extra_seq}'] = partial_plddt_dict
+            plddt_dict[f'{jobname}_{max_seq}_{extra_seq}'] = partial_plddt_dict
         else:
             print(f"Warning: No valid pLDDT data found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
 

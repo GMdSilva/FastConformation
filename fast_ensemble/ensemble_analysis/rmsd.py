@@ -47,7 +47,7 @@ def calculate_rmsd(u: mda.Universe,
     return rmsd_dict
 
 
-def rmsd_kde(rmsd_data: list, input_dict: dict, widget) -> dict:
+def rmsd_kde(rmsd_data: list, input_dict: dict, widget=None) -> dict:
     """
     Perform Kernel Density Estimation (KDE) on RMSD data and identify the most distant modes.
 
@@ -177,6 +177,7 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
                                                                        align_range=align_range,
                                                                        analysis_range=rmsd_range)
 
+            print("calculated rmsd...")
             rmsd_df = pd.DataFrame.from_dict(prediction_dicts[prediction]['rmsd_data'], orient='columns')
 
             full_output_path = (f"{output_path}/"
@@ -191,7 +192,8 @@ def rmsd_mode_analysis(prediction_dicts, input_dict, ref1d, widget=None):
             rmsd_df.to_csv(full_output_path, index=False)
 
             all_rmsd_modes = {}
-            rmsd_modes = rmsd_kde(prediction_dicts[prediction]['rmsd_data'][rmsd_range], input_dict, widget)
+            print("rmsd_kde")
+            rmsd_modes = rmsd_kde(prediction_dicts[prediction]['rmsd_data'][rmsd_range], input_dict, widget=widget)
 
             for mode in rmsd_modes:
                 mode_index = rmsd_modes[mode]['mode_index']
