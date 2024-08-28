@@ -33,11 +33,9 @@ To learn how to use FastEnsemble, including running the GUI and CLI tools, visit
 Command-Line Interface (CLI)
 ============================
 
-FastEnsemble includes several CLI scripts for various tasks. Each script is documented in detail:
+FastEnsemble includes several CLI scripts for various tasks. Each script is documented in detail on this page:
 
-- :doc:`cli_scripts/MSA_Usage`
-- :doc:`cli_scripts/Predictions_Usage`
-- :doc:`cli_scripts/Analysis_Usage`
+- :doc:`cli_scripts/index`
 
 API Reference
 =============

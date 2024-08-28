@@ -41,14 +41,9 @@ If you wish to install only the CLI version without the gui, run this script ins
 ```
 
 This script will set up the necessary environment and dependencies.
+At the end of the script we add the source path to the bashrc file so that you can use any of the commands without the need to activate the conda environment.
 
 Next, close the terminal window and reopen a new one.
-
-Every time you use Fast Ensemble, run 
-```bash
-./fast_ensemble.sh
-```
-before any commands. This script activates the conda environment.
 
 Now, run any of the commands reported in the Usage section.
 

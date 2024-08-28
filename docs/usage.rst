@@ -132,11 +132,11 @@ Sample config files and sample results are available via this link [Download Sam
 
      predict_ensemble --config_file <path_to_config>
 
-- **decaf_init**: Initialize DECAF predictions.
+- **fast_ensemble_init**: Create a sample config file.
 
   .. code-block:: bash
 
-     decaf_init --config_file <path_to_config>
+     fast_ensemble_init
 
 **Analysis:**
 
