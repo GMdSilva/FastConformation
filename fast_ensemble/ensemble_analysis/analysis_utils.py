@@ -141,7 +141,7 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
 
         for folder_path in matching_folders:
             # Search for files containing max_seq_extra_seq within the matching folder
-            file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.pdb")
+            file_pattern = os.path.join(folder_path, f"*.pdb")
             pdb_files = glob(file_pattern)
 
             # Check if any matching files are found
@@ -191,7 +191,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
 
         for folder_path in matching_folders:
             # Search for JSON files containing max_seq_extra_seq within the matching folder
-            json_file_pattern = os.path.join(folder_path, f"*{max_seq}_{extra_seq}*.json")
+            json_file_pattern = os.path.join(folder_path, f"*.json")
             json_files = glob(json_file_pattern)
 
             # Check if any matching files are found
