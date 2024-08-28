@@ -139,25 +139,15 @@ def load_predictions(predictions_path, seq_pairs, jobname, starting_residue):
             print(f"Warning: No folders found for sequence pair '{max_seq}_{extra_seq}'. Skipping...")
             continue
 
-        for folder_path in matching_folders:
-            # Search for files containing max_seq_extra_seq within the matching folder
-            file_pattern = os.path.join(folder_path, f"*.pdb")
-            pdb_files = glob(file_pattern)
+        # Load the found PDB files as MDAnalysis Universes
+        universe = load_pdb_files_as_universe(matching_folders, starting_residue)
 
-            # Check if any matching files are found
-            if not pdb_files:
-                print(f"Warning: No files containing '{max_seq}_{extra_seq}' found in folder '{folder_path}'. Skipping...")
-                continue
+        params = {'max_seq': max_seq,
+                    'extra_seq': extra_seq,
+                    'jobname': jobname,
+                    'mda_universe': universe}
 
-            # Load the found PDB files as MDAnalysis Universes
-            universe = load_pdb_files_as_universe(pdb_files, starting_residue)
-
-            params = {'max_seq': max_seq,
-                      'extra_seq': extra_seq,
-                      'jobname': jobname,
-                      'mda_universe': universe}
-
-            predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
+        predictions_dict[f'{jobname}_{max_seq}_{extra_seq}'] = params
     
     return predictions_dict
 
@@ -191,8 +181,7 @@ def load_predictions_json(predictions_path, seq_pairs, jobname):
 
         for folder_path in matching_folders:
             # Search for JSON files containing max_seq_extra_seq within the matching folder
-            json_file_pattern = os.path.join(folder_path, f"*.json")
-            json_files = glob(json_file_pattern)
+            json_files = glob(f"{folder_path}/*.json")
 
             # Check if any matching files are found
             if not json_files:
