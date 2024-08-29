@@ -101,7 +101,8 @@ def run_ensemble_prediction(config):
     create_directory(f'{output_path}/{jobname}/predictions/alphafold2')
 
     if subset_msa_to:
-        subset_msa(msa_path, output_path, subset_msa_to)
+        out_path = f"{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m"
+        subset_msa(msa_path, out_path, subset_msa_to)
 
     if platform == 'cpu':
         os.environ['JAX_PLATFORMS'] = platform
@@ -170,7 +171,7 @@ def subset_msa(input_file, output_path, X):
 
     subset_seqs = seqs[:X]
 
-    with open(f'{output_path}/temp_msa.a3m', 'w') as outfile:
+    with open(output_path, 'w') as outfile:
         for name, seq in subset_seqs:
             outfile.write(name + '\n')
             outfile.write(seq + '\n')
