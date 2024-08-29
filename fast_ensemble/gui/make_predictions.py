@@ -68,6 +68,9 @@ class MakePredictionsWidget(AnalysisWidgetBase):
             }
         """)
         
+        self.job_name_label = QLabel("MSA Path:")
+        self.job_name_input = QLineEdit()
+
         # MSA Path
         self.msa_path_label = QLabel("MSA Path:")
         self.msa_path_input = QLineEdit()
@@ -130,6 +133,8 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         layout.addWidget(self.output_path_label, 11, 0)
         layout.addWidget(self.output_path_input, 11, 1)
         layout.addWidget(self.output_path_button, 11, 2)
+        layout.addWidget(self.job_name_label, 12, 0)
+        layout.addWidget(self.job_name_input, 12, 1)        
 
         self.setLayout(layout)
         self.setWindowTitle("Advanced MSA Options")
@@ -223,7 +228,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         return {
             'msa_path': self.msa_path_input.text(),
             'output_path': self.output_path_input.text(),
-            'jobname': 'jobname',  # Set this as needed
+            'jobname': self.job_name_input.text(),
             'seq_pairs': self.get_seq_pairs(),
             'seeds': int(self.seeds_input.text()),
             'save_all': self.save_all_checkbox.isChecked(),

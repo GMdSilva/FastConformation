@@ -128,7 +128,7 @@ def run_ensemble_prediction(config):
     # Subset MSA to X sequences
     if subset_msa_to:
         print(f"Subsetting MSA to: {subset_msa_to} sequences\n")
-        msa_path = f'{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m'
+        msa_path = f"{output_path}/{jobname}/predictions/alphafold2/temp_msa.a3m"
 
     # Run predictions
     for max_seq_v, extra_seq_v in seq_pairs:
