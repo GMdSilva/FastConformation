@@ -33,7 +33,7 @@ Command-Line Arguments
 
 - **--save_all** (bool):
   
-  A flag to save all results. If not set, only the most relevant results will be saved.
+  Outputs a pickled files of all the output.
 
 - **--platform** (str):
   
@@ -41,7 +41,7 @@ Command-Line Arguments
 
 - **--subset_msa_to** (int):
   
-  Subset the input MSA to the specified number of sequences. This is useful when memory constraints occur due to large MSAs.
+  Subset the input MSA to the specified number of sequences.
 
 - **--msa_from** (str):
   

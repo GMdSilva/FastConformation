@@ -57,7 +57,6 @@ This script is designed to generate a Multiple Sequence Alignment (MSA) using `m
 
 **Key Features:**
 - Configurable via command-line arguments or a JSON configuration file.
-- Automatically validates inputs to ensure correctness.
 - Saves the resulting MSA and associated files in the specified output directory.
 
 Usage
