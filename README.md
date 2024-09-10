@@ -88,7 +88,7 @@ Documentation can be found on [this ReadTheDocs page](https://fastensemble.readt
 
 ## OS Requirements
 
-This package has been tested on Linux RedHat7 and Ubuntu 20.0.4.
+This package has been tested on Linux RedHat7. NOTE: To use ColabFold-dependent features (mmseqs2 msa and AlphaFold2 predictions) use Ubuntu versions older than 20.04.
 
 ## Usage
 Before running any commands, download this file and run it:
