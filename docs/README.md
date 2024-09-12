@@ -41,6 +41,7 @@ If you wish to install only the CLI version without the gui, run this script ins
 ```
 
 This script will set up the necessary environment and dependencies.
+At the end of the script we add the source path to the bashrc file so that you can use any of the commands without the need to activate the conda environment.
 
 Next, close the terminal window and reopen a new one.
 
@@ -82,15 +83,18 @@ FastEnsemble relies on the following dependencies:
 
 ## Documentation
 
-Documentation can be found on [this] ReadTheDocs page.
-(https://fastensemble.readthedocs.io/en/main/index.html).
+Documentation can be found on [this ReadTheDocs page](https://fastensemble.readthedocs.io/en/main/index.html).
+
 
 ## OS Requirements
 
-This package has been tested on Linux RedHat7 and Ubuntu 20.0.4.
+This package has been tested on Linux RedHat7. NOTE: To use ColabFold-dependent features (mmseqs2 msa and AlphaFold2 predictions) use Ubuntu versions older than 20.04.
 
 ## Usage
-
+Before running any commands, download this file and run it:
+```bash
+./fast_ensemble.sh
+```
 ### Running the GUI
 
 To start the graphical user interface, execute the following command:
@@ -139,10 +143,10 @@ For more detailed instructions on how to use each tool, refer to the ReadTheDocs
     ```
 
 
-- **decaf_init**: Initialize DECAF predictions.
+- **fast_ensemble_init**: Initialize sample config file.
 
     ```bash
-    decaf_init --config_file <path_to_config>
+    fast_ensemble_init
     ```
 
 **Analysis:**
