@@ -16,9 +16,11 @@ export PATH="${FENSEMBLEDIR}/conda/condabin:${PATH}"
 conda update -n base conda -y
 conda create -p "$FENSEMBLEDIR/fast_ensemble-conda" -c conda-forge -c bioconda -c biocore \
     git python=3.10 openmm==7.7.0 pdbfixer \
-    PyQt5 pandas silence_tensorflow pyqtgraph \
     kalign2=2.04 hhsuite=3.3.0 mmseqs2=15.6f452 hmmer scikit-learn mdanalysis seaborn scipy -y
 conda activate "$FENSEMBLEDIR/fast_ensemble-conda"
+
+# Install additional Python packages for the GUI
+"$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install PyQt5 pandas matplotlib silence_tensorflow pyqtgraph
 
 # Install ColabFold and Jaxlib
 "$FENSEMBLEDIR/fast_ensemble-conda/bin/pip" install --no-warn-conflicts \
