@@ -1,12 +1,12 @@
 Usage
 =====
 
-This section provides detailed instructions on how to use FastEnsemble, including how to run the GUI and various CLI tools provided by the package.
+This section provides detailed instructions on how to use FastConformation, including how to run the GUI and various CLI tools provided by the package.
 
 Installing on Linux
 ===================
 
-To install FastEnsemble on a Linux system, follow these steps:
+To install FastConformation on a Linux system, follow these steps:
 
 1. Open a terminal.
 2. Run the installation script by typing:
@@ -27,12 +27,12 @@ To install FastEnsemble on a Linux system, follow these steps:
 
    .. code-block:: bash
 
-      fast_ensemble/fast_ensemble-conda/bin/python -m fast_ensemble.gui.run_gui
+      fast_conformation/fast_conf-conda/bin/python -m fast_conformation.gui.run_gui
 
 Installing on Windows (WSL)
 ===========================
 
-To run FastEnsemble on Windows using WSL, ensure that WSL and Miniconda are installed. You can install WSL by following these steps:
+To run FastConformation on Windows using WSL, ensure that WSL and Miniconda are installed. You can install WSL by following these steps:
 
 1. Open PowerShell, Windows Command Prompt, or Terminal in administrator mode (Right-click > Run as administrator).
 2. Type the following command to install WSL:
@@ -43,7 +43,7 @@ To run FastEnsemble on Windows using WSL, ensure that WSL and Miniconda are inst
 
 3. Restart your machine.
 
-Running FastEnsemble on Windows
+Running FastConformation on Windows
 ===============================
 
 1. Download the `install.sh` file from the GitHub repository.
@@ -74,14 +74,14 @@ Running FastEnsemble on Windows
 
    .. code-block:: bash
 
-      fast_ensemble/fast_ensemble-conda/bin/python -m fast_ensemble.gui.run_gui
+      fast_conformation/fast_conf-conda/bin/python -m fast_conformation.gui.run_gui
 
    Note that you must be in the WSL file system (`~/`) to run this command successfully.
 
 Running the GUI
 ===============
 
-Once FastEnsemble is installed, you can access its graphical user interface (GUI) by running the following command:
+Once FastConformation is installed, you can access its graphical user interface (GUI) by running the following command:
 
 .. code-block:: bash
 
@@ -91,19 +91,19 @@ Alternatively, you can start the GUI using:
 
 .. code-block:: bash
 
-   fast_ensemble/fast_ensemble-conda/bin/python -m fast_ensemble.gui.run_gui
+   fast_conformation/fast_conf-conda/bin/python -m fast_conformation.gui.run_gui
 
 This GUI allows you to perform MSA generation, AF2 prediction, and analysis to predict different protein conformations using MSA subsampling.
 
 Using the Command-Line Interface (CLI)
 ======================================
 
-FastEnsemble provides several CLI tools for different tasks, including MSA generation, prediction, and analysis. Below is a list of available commands with brief descriptions.
+FastConformation provides several CLI tools for different tasks, including MSA generation, prediction, and analysis. Below is a list of available commands with brief descriptions.
 
 First, run 
 
 ```bash
-fast_ensemble_init
+fast_conf_init
 ```
 
 The parameters for each command can either be included in the config file or via the command line. Visit the CLI guide page of the documentation for more information.
@@ -132,11 +132,11 @@ Sample config files and sample results are available via this link [Download Sam
 
      predict_ensemble --config_file <path_to_config>
 
-- **fast_ensemble_init**: Create a sample config file.
+- **fast_conf_init**: Create a sample config file.
 
   .. code-block:: bash
 
-     fast_ensemble_init
+     fast_conf_init
 
 **Analysis:**
 
