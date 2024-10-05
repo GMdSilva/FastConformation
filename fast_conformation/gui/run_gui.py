@@ -6,21 +6,23 @@ from pathlib import Path
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QMainWindow, QVBoxLayout, QWidget, QPlainTextEdit, QScrollArea, QHBoxLayout, QSizePolicy, QPushButton, QToolBar, QDockWidget, QLabel
 )
-from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
+import sys
+sys.path.append('/Users/fmgaleazzi/fast_ensemble/')
+
+from fast_conformation.gui.job_manager import JobStatusPage, JobManager
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QIcon
 from PyQt5.QtCore import Qt
-from fast_ensemble.gui.dock_widget import MainWidget
-from fast_ensemble.gui.icons import Icons
-from fast_ensemble.gui.build_msa import MSAOptionsWidget
-from fast_ensemble.gui.make_predictions import MakePredictionsWidget
-from fast_ensemble.gui.analysis_config import AnalysisConfigWidget
+from fast_conformation.gui.dock_widget import MainWidget
+from fast_conformation.gui.icons import Icons
+from fast_conformation.gui.build_msa import MSAOptionsWidget
+from fast_conformation.gui.make_predictions import MakePredictionsWidget
+from fast_conformation.gui.analysis_config import AnalysisConfigWidget
 import signal
 import warnings
-
 class MainFrame(QMainWindow):
     """
-    MainFrame is the main application window for the FastEnsemble application. 
+    MainFrame is the main application window for the FastConformation application. 
     It contains the central widget, toolbar, and dock widgets for managing different tasks.
 
     Methods:
@@ -96,7 +98,7 @@ class MainFrame(QMainWindow):
         self.toolbar.addWidget(self.terminal_button)
         self.toolbar.setVisible(True)
         
-        self.setWindowTitle('FastEnsemble')
+        self.setWindowTitle('FastConformation')
         self.set_initial_window_size()
 
         self.apply_styles()

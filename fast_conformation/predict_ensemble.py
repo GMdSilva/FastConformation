@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 
-from fast_ensemble.msa_generation.msa_utils import create_directory
+from fast_conformation.msa_generation.msa_utils import create_directory
 
 
 def validate_inputs(config):

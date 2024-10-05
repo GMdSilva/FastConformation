@@ -1,8 +1,8 @@
 import os
 import warnings
 import argparse
-from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
-from fast_ensemble.ensemble_analysis.pca import pca_from_ensemble
+from fast_conformation.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
+from fast_conformation.ensemble_analysis.pca import pca_from_ensemble
 
 warnings.filterwarnings("ignore")
 

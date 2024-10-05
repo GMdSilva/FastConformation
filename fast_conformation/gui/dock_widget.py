@@ -5,11 +5,11 @@ from qtpy.QtWidgets import (
     QLabel, QVBoxLayout, QWidget, QDockWidget, QPushButton, QHBoxLayout, QSizePolicy
 )
 from qtpy.QtGui import QFont
-from fast_ensemble.gui.icons import Icons
-from fast_ensemble.gui.build_msa import MSAOptionsWidget
-from fast_ensemble.gui.make_predictions import MakePredictionsWidget
-from fast_ensemble.gui.analysis_config import AnalysisConfigWidget
-from fast_ensemble.gui.job_manager import JobStatusPage, JobManager
+from fast_conformation.gui.icons import Icons
+from fast_conformation.gui.build_msa import MSAOptionsWidget
+from fast_conformation.gui.make_predictions import MakePredictionsWidget
+from fast_conformation.gui.analysis_config import AnalysisConfigWidget
+from fast_conformation.gui.job_manager import JobStatusPage, JobManager
 from dataclasses import dataclass
 from typing import Callable
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QDockWidget

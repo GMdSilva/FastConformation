@@ -1,10 +1,10 @@
-.. FastEnsemble documentation master file, created by
+.. FastConformation documentation master file, created by
    sphinx-quickstart on Tue Aug 24 2024.
 
-Welcome to FastEnsemble's Documentation!
+Welcome to FastConformation's Documentation!
 =========================================
 
-This documentation provides an overview of how to use FastEnsemble, a tool for MSA generation, AF2 prediction, and protein conformation analysis. Below, you will find documentation on installation, usage, and the API reference.
+This documentation provides an overview of how to use FastConformation, a tool for MSA generation, AF2 prediction, and protein conformation analysis. Below, you will find documentation on installation, usage, and the API reference.
 
 .. toctree::
    :maxdepth: 2
@@ -26,21 +26,21 @@ For installation instructions, please refer to the `requirements.txt` and `READM
 Usage Guide
 ===========
 
-To learn how to use FastEnsemble, including running the GUI and CLI tools, visit the `usage` guide:
+To learn how to use FastConformation, including running the GUI and CLI tools, visit the `usage` guide:
 
 - :doc:`usage`
 
 Command-Line Interface (CLI)
 ============================
 
-FastEnsemble includes several CLI scripts for various tasks. Each script is documented in detail on this page:
+FastConformation includes several CLI scripts for various tasks. Each script is documented in detail on this page:
 
 - :doc:`cli_scripts/index`
 
 API Reference
 =============
 
-For developers and advanced users, the API reference provides detailed documentation on the internal workings of FastEnsemble:
+For developers and advanced users, the API reference provides detailed documentation on the internal workings of FastConformation:
 
 - :doc:`api/modules`
 

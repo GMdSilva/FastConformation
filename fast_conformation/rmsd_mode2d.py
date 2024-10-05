@@ -1,7 +1,7 @@
 import os
 import warnings
-from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config, auto_select_2d_references
-from fast_ensemble.ensemble_analysis.twodrmsd import TwodRMSD
+from fast_conformation.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config, auto_select_2d_references
+from fast_conformation.ensemble_analysis.twodrmsd import TwodRMSD
 import argparse
 
 warnings.filterwarnings("ignore")

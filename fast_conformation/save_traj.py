@@ -1,7 +1,7 @@
 import os
 import warnings
-from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
-from fast_ensemble.ensemble_analysis.traj import save_trajs
+from fast_conformation.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
+from fast_conformation.ensemble_analysis.traj import save_trajs
 
 warnings.filterwarnings("ignore")
 

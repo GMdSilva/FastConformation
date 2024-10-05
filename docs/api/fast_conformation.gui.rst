@@ -1,77 +1,77 @@
-fast\_ensemble.gui package
+fast\_conformation.gui package
 ==========================
 
 Submodules
 ----------
 
-fast\_ensemble.gui.analysis\_config module
+fast\_conformation.gui.analysis\_config module
 ------------------------------------------
 
-.. automodule:: fast_ensemble.gui.analysis_config
+.. automodule:: fast_conformation.gui.analysis_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.build\_msa module
+fast\_conformation.gui.build\_msa module
 ------------------------------------
 
-.. automodule:: fast_ensemble.gui.build_msa
+.. automodule:: fast_conformation.gui.build_msa
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.dock\_widget module
+fast\_conformation.gui.dock\_widget module
 --------------------------------------
 
-.. automodule:: fast_ensemble.gui.dock_widget
+.. automodule:: fast_conformation.gui.dock_widget
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.icons module
+fast\_conformation.gui.icons module
 -------------------------------
 
-.. automodule:: fast_ensemble.gui.icons
+.. automodule:: fast_conformation.gui.icons
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.job\_manager module
+fast\_conformation.gui.job\_manager module
 --------------------------------------
 
-.. automodule:: fast_ensemble.gui.job_manager
+.. automodule:: fast_conformation.gui.job_manager
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.make\_predictions module
+fast\_conformation.gui.make\_predictions module
 -------------------------------------------
 
-.. automodule:: fast_ensemble.gui.make_predictions
+.. automodule:: fast_conformation.gui.make_predictions
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.plot\_widget module
+fast\_conformation.gui.plot\_widget module
 --------------------------------------
 
-.. automodule:: fast_ensemble.gui.plot_widget
+.. automodule:: fast_conformation.gui.plot_widget
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.run\_gui module
+fast\_conformation.gui.run\_gui module
 ----------------------------------
 
-.. automodule:: fast_ensemble.gui.run_gui
+.. automodule:: fast_conformation.gui.run_gui
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.gui.widget\_base module
+fast\_conformation.gui.widget\_base module
 --------------------------------------
 
-.. automodule:: fast_ensemble.gui.widget_base
+.. automodule:: fast_conformation.gui.widget_base
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,7 @@ fast\_ensemble.gui.widget\_base module
 Module contents
 ---------------
 
-.. automodule:: fast_ensemble.gui
+.. automodule:: fast_conformation.gui
    :members:
    :undoc-members:
    :show-inheritance:

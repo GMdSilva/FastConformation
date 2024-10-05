@@ -8,16 +8,16 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
-from fast_ensemble.gui.icons import Icons
-from fast_ensemble.rmsf_plddt import run_rmsf_analysis
-from fast_ensemble.rmsd_mode1d import run_rmsd_analysis
-from fast_ensemble.rmsd_mode2d import run_2d_rmsd_analysis
-from fast_ensemble.pca_clustering import run_pca_analysis
-from fast_ensemble.save_traj import run_trajectory_saving
-from fast_ensemble.tmscore_mode1d import run_tmscore_analysis
-from fast_ensemble.tmscore_mode2d import run_2d_tmscore_analysis
-from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
-from fast_ensemble.gui.plot_widget import PlotWidget
+from fast_conformation.gui.icons import Icons
+from fast_conformation.rmsf_plddt import run_rmsf_analysis
+from fast_conformation.rmsd_mode1d import run_rmsd_analysis
+from fast_conformation.rmsd_mode2d import run_2d_rmsd_analysis
+from fast_conformation.pca_clustering import run_pca_analysis
+from fast_conformation.save_traj import run_trajectory_saving
+from fast_conformation.tmscore_mode1d import run_tmscore_analysis
+from fast_conformation.tmscore_mode2d import run_2d_tmscore_analysis
+from fast_conformation.gui.widget_base import AnalysisWidgetBase, merge_configs
+from fast_conformation.gui.plot_widget import PlotWidget
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit, QPushButton, QFileDialog, QListWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 from dataclasses import dataclass

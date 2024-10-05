@@ -1,4 +1,4 @@
-fast\_ensemble package
+fast\_conformation package
 ======================
 
 Subpackages
@@ -7,105 +7,105 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   fast_ensemble.ensemble_analysis
-   fast_ensemble.gui
-   fast_ensemble.msa_generation
+   fast_conformation.ensemble_analysis
+   fast_conformation.gui
+   fast_conformation.msa_generation
 
 Submodules
 ----------
 
-fast\_ensemble.fast\_ensemble module
+fast\_conformation.fast\_conformation module
 ------------------------------------
 
-.. automodule:: fast_ensemble.fast_ensemble
+.. automodule:: fast_conformation.fast_conformation
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.fast\_ensemble\_init module
+fast\_conformation.fast\_conf\_init module
 ------------------------------------------
 
-.. automodule:: fast_ensemble.fast_ensemble_init
+.. automodule:: fast_conformation.fast_conformation_init
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.jackhmmer\_msa module
+fast\_conformation.jackhmmer\_msa module
 ------------------------------------
 
-.. automodule:: fast_ensemble.jackhmmer_msa
+.. automodule:: fast_conformation.jackhmmer_msa
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.mmseqs2\_msa module
+fast\_conformation.mmseqs2\_msa module
 ----------------------------------
 
-.. automodule:: fast_ensemble.mmseqs2_msa
+.. automodule:: fast_conformation.mmseqs2_msa
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.pca\_clustering module
+fast\_conformation.pca\_clustering module
 -------------------------------------
 
-.. automodule:: fast_ensemble.pca_clustering
+.. automodule:: fast_conformation.pca_clustering
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.predict\_ensemble module
+fast\_conformation.predict\_conformation module
 ---------------------------------------
 
-.. automodule:: fast_ensemble.predict_ensemble
+.. automodule:: fast_conformation.predict_conformation
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.rmsd\_mode1d module
+fast\_conformation.rmsd\_mode1d module
 ----------------------------------
 
-.. automodule:: fast_ensemble.rmsd_mode1d
+.. automodule:: fast_conformation.rmsd_mode1d
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.rmsd\_mode2d module
+fast\_conformation.rmsd\_mode2d module
 ----------------------------------
 
-.. automodule:: fast_ensemble.rmsd_mode2d
+.. automodule:: fast_conformation.rmsd_mode2d
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.rmsf\_plddt module
+fast\_conformation.rmsf\_plddt module
 ---------------------------------
 
-.. automodule:: fast_ensemble.rmsf_plddt
+.. automodule:: fast_conformation.rmsf_plddt
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.save\_traj module
+fast\_conformation.save\_traj module
 --------------------------------
 
-.. automodule:: fast_ensemble.save_traj
+.. automodule:: fast_conformation.save_traj
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.tmscore\_mode1d module
+fast\_conformation.tmscore\_mode1d module
 -------------------------------------
 
-.. automodule:: fast_ensemble.tmscore_mode1d
+.. automodule:: fast_conformation.tmscore_mode1d
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.tmscore\_mode2d module
+fast\_conformation.tmscore\_mode2d module
 -------------------------------------
 
-.. automodule:: fast_ensemble.tmscore_mode2d
+.. automodule:: fast_conformation.tmscore_mode2d
    :members:
    :undoc-members:
    :show-inheritance:
@@ -113,7 +113,7 @@ fast\_ensemble.tmscore\_mode2d module
 Module contents
 ---------------
 
-.. automodule:: fast_ensemble
+.. automodule:: fast_conformation
    :members:
    :undoc-members:
    :show-inheritance:

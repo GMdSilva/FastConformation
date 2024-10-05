@@ -1,6 +1,6 @@
-from fast_ensemble.jackhmmer_msa import build_jackhmmer_msa
-from fast_ensemble.mmseqs2_msa import run_mmseqs2_msa
-from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
+from fast_conformation.jackhmmer_msa import build_jackhmmer_msa
+from fast_conformation.mmseqs2_msa import run_mmseqs2_msa
+from fast_conformation.gui.widget_base import AnalysisWidgetBase, merge_configs
 from PyQt5.QtWidgets import QFileDialog, QLabel, QVBoxLayout, QComboBox, QLineEdit, QPushButton, QCheckBox, QHBoxLayout
 from PyQt5.QtCore import Qt
 

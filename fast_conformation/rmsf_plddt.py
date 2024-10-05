@@ -1,19 +1,22 @@
 import os
 import warnings
+from fast_conformation.ensemble_analysis.analysis_utils import (
+    load_config, create_directory, load_predictions, load_predictions_json
+)
+from fast_conformation.ensemble_analysis.rmsf import (
+    calculate_rmsf_multiple, calculate_rmsf_and_call_peaks, build_dataset_rmsf_peaks, plot_plddt_line, plot_plddt_rmsf_corr
+)
 import argparse
-from fast_ensemble.ensemble_analysis.analysis_utils import create_directory, load_predictions, load_config
-from fast_ensemble.ensemble_analysis.rmsd import rmsd_mode_analysis, build_dataset_rmsd_modes
-
 warnings.filterwarnings("ignore")
 
 
-def run_rmsd_analysis(config, plot_widget=None):
+def run_rmsf_analysis(config, widget=None):
     """
-    Run RMSD analysis based on the provided configuration.
+    Run RMSF analysis based on the provided configuration.
 
     Parameters:
     config (dict): Configuration dictionary containing parameters for the analysis.
-    plot_widget (object, optional): Plot widget for displaying results (default is None).
+    widget (object, optional): Widget for displaying results (default is None).
 
     Raises:
     NotADirectoryError: If the specified output path is not a directory.
@@ -26,68 +29,73 @@ def run_rmsd_analysis(config, plot_widget=None):
     predictions_path = config.get('predictions_path')
     engine = config.get('engine')
     align_range = config.get('align_range')
-    analysis_range = config.get('analysis_range')
-    analysis_range_name = config.get('analysis_range_name')
-    ref1d = config.get('ref1d') if config.get('ref1d') else None
+    detect_mobile = config.get('detect_mobile')
+    peak_width = config.get('peak_width')
+    peak_prominence = config.get('peak_prominence')
+    peak_height = config.get('peak_height')
     starting_residue = config.get('starting_residue')
 
     # Check if the output path is a valid directory
     if not os.path.isdir(output_path):
         raise NotADirectoryError(f"Output path {output_path} is not a directory")
 
+    # Create necessary directories
+    create_directory(f'{output_path}/{jobname}/analysis/rmsf_plddt')
+    if detect_mobile:
+        create_directory(f'{output_path}/{jobname}/analysis/mobile_detection')
+
     # Set default predictions path if not provided
     if not predictions_path:
         predictions_path = f'{output_path}/{jobname}/predictions/{engine}'
 
-    # Create necessary directories
-    create_directory(f'{output_path}/{jobname}/analysis/rmsd_1d')
-    create_directory(f'{output_path}/{jobname}/analysis/representative_structures/rmsd_1d')
-
     # Display configurations
     print("\nConfigurations:")
     print("***************************************************************")
+    print(f"Job Name: {jobname}")
     print(f"Output Path: {output_path}")
     print(f"max_seq:extra_seq Pairs: {seq_pairs}")
     print(f"Predictions Path: {predictions_path}")
     print(f"Engine: {engine}")
-    print(f"Job Name: {jobname}")
     print(f"Align Range: {align_range}")
-    print(f"Analysis Range: {analysis_range_name} = {analysis_range}")
-    if ref1d:
-        print(f"Reference Structure: {ref1d}")
-    else:
-        print(f"Reference Structure: Top Ranked Prediction")
+    print(f"Detect Mobile Segments? {detect_mobile}")
+    if detect_mobile:
+        print(f"Peak Width: {peak_width}")
+        print(f"Peak Prominence: {peak_prominence}")
     if starting_residue:
         print(f"Starting Residue: {starting_residue}")
     print("***************************************************************\n")
 
-    # Prepare input dictionary
-    input_dict = {
-        'jobname': jobname,
-        'output_path': output_path,
-        'seq_pairs': seq_pairs,
-        'analysis_range': analysis_range,
-        'analysis_range_name': analysis_range_name,
-        'align_range': align_range
-    }
-
     # Load predictions to RAM
     pre_analysis_dict = load_predictions(predictions_path, seq_pairs, jobname, starting_residue)
 
-    # Run 1D RMSD analysis
-    rmsd_mode_analysis_dict = rmsd_mode_analysis(pre_analysis_dict, input_dict, ref1d, plot_widget)
+    # Run RMSF analysis for all predictions
+    calculate_rmsf_multiple(jobname, pre_analysis_dict, align_range, output_path, widget)
 
-    # Build and save results dataset
-    build_dataset_rmsd_modes(rmsd_mode_analysis_dict, input_dict)
+    # Load pLDDT data
+    plddt_dict = load_predictions_json(predictions_path, seq_pairs, jobname)
+
+    # Plot pLDDT line
+    plot_plddt_line(jobname, plddt_dict, output_path, starting_residue, widget)
+
+    # Plot pLDDT/RMSF correlation
+    plot_plddt_rmsf_corr(jobname, pre_analysis_dict, plddt_dict, output_path, widget)
+
+    # Detect mobile segments if specified
+    if detect_mobile:
+        print(f'\nAutomatically detecting mobile segments')
+        rmsf_peak_calling_dict = calculate_rmsf_and_call_peaks(jobname, pre_analysis_dict, align_range, output_path, peak_width, peak_prominence, peak_height, widget)
+
+        # Build and save the dataset
+        build_dataset_rmsf_peaks(jobname, rmsf_peak_calling_dict, output_path, engine)
 
 
 def main():
     """
-    Main function to parse arguments and run RMSD analysis.
+    Main function to parse arguments and run RMSF analysis.
     """
 
     # Argument parser setup
-    parser = argparse.ArgumentParser(description="Runs state detection analysis using RMSD vs. a single reference (1D)")
+    parser = argparse.ArgumentParser(description="Runs RMSF/pLDDT Analysis for a set of predictions")
 
     parser.add_argument('--config_file', type=str, help="Path to the configuration file")
     parser.add_argument('--jobname', type=str, help="The job name")
@@ -97,11 +105,11 @@ def main():
     parser.add_argument('--engine', type=str, choices=['alphafold2', 'openfold'], help="The engine previously used to generate predictions (AlphaFold2 or OpenFold), used to find predictions if predictions_path is not supplied")
     parser.add_argument('--starting_residue', type=int, help="Sets the starting residue for reindexing (predictions are usually 1-indexed)")
     parser.add_argument('--align_range', type=str, help="The atom alignment range for RMSF calculations (MDAnalysis Syntax)")
-    parser.add_argument('--analysis_range', type=str, help="The atom range for RMSD calculations after alignment to --align_range")
-    parser.add_argument('--analysis_range_name', type=str, help="The name of the atom range (e.g. kinase core, helix 1, etc.)")
-    parser.add_argument('--ref1d', type=str, help="Path to the .pdb file defining the reference structure for RMSD calculations (if not provided, picks top ranked prediction)")
+    parser.add_argument('--detect_mobile', type=bool, help="Pass True to detect mobile residue ranges")
+    parser.add_argument('--peak_width', type=int, help="Sets the RMSF peak width threshold for mobile residue range detection")
+    parser.add_argument('--peak_prominence', type=int, help="Sets the RMSF peak prominence threshold for mobile residue range detection")
+    parser.add_argument('--peak_height', type=int, help="Sets the RMSF peak height threshold for mobile residue range detection")
 
-    # Parse arguments
     args = parser.parse_args()
 
     # Load configuration from file if provided
@@ -111,8 +119,8 @@ def main():
     # Override config with command line arguments if provided
     config.update({k: v for k, v in vars(args).items() if v is not None})
 
-    # Run RMSD analysis with the provided configuration
-    run_rmsd_analysis(config)
+    # Run RMSF analysis with the provided configuration
+    run_rmsf_analysis(config)
 
 
 if __name__ == "__main__":

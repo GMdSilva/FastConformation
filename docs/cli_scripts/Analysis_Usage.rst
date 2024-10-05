@@ -107,7 +107,7 @@ The `rmsd_mode2d` function performs a 2D RMSD analysis. This analysis measures t
 
 .. code-block:: python
 
-   from fast_ensemble.ensemble_analysis.analysis_utils import load_config
+   from fast_conformation.ensemble_analysis.analysis_utils import load_config
    from script_name import run_2d_rmsd_analysis
 
    config = load_config('config.json')
@@ -141,7 +141,7 @@ The `rmsd_mode1d` function performs a 1D RMSD analysis. This analysis measures t
 
 .. code-block:: python
 
-   from fast_ensemble.ensemble_analysis.analysis_utils import load_config
+   from fast_conformation.ensemble_analysis.analysis_utils import load_config
    from script_name import run_rmsd_analysis
 
    config = load_config('config.json')
@@ -177,7 +177,7 @@ The `rmsf_plddt` function performs RMSF analysis, which measures the flexibility
 
 .. code-block:: python
 
-   from fast_ensemble.ensemble_analysis.analysis_utils import load_config
+   from fast_conformation.ensemble_analysis.analysis_utils import load_config
    from script_name import run_rmsf_analysis
 
    config = load_config('config.json')

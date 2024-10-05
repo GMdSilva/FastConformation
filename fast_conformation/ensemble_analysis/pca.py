@@ -11,7 +11,7 @@ from MDAnalysis.analysis import align, pca
 
 from tqdm import tqdm
 
-from fast_ensemble.ensemble_analysis.analysis_utils import parabola
+from fast_conformation.ensemble_analysis.analysis_utils import parabola
 
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'

@@ -1,10 +1,10 @@
-# FastEnsemble
-![FastEnsemble Logo](background_logo.png)
+# FastConformation
+![FastConformation Logo](background_logo.png)
 
-FastEnsemble is a Python-based application that integrates MSA generation, structure prediction via AlphaFold 2 (AF2), and interactive analysis of protein conformational ensembles, all in one place. Uniquely, this tool enables researchers to leverage ML to generate protein conformations and analyze their populations without running MD simulations.
+FastConformation is a Python-based application that integrates MSA generation, structure prediction via AlphaFold 2 (AF2), and interactive analysis of protein conformational ensembles, all in one place. Uniquely, this tool enables researchers to leverage ML to generate protein conformations and analyze their populations without running MD simulations.
 
 ## Citation
-FastEnsemble is based off of the research described in the manuscripts below.
+FastConformation is based off of the research described in the manuscripts below.
 
 Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput prediction of protein conformational distributions with subsampled AlphaFold2. Nat Commun 15, 2464 (2024). https://doi.org/10.1038/s41467-024-46715-9 
 
@@ -28,7 +28,7 @@ Monteiro da Silva, G., Cui, J.Y., Dalgarno, D.C. et al. High-throughput predicti
 
 ## Installation
 
-To install FastEnsemble, download and run the installation script provided in the repository:
+To install FastConformation, download and run the installation script provided in the repository:
 
 ```bash
 ./install.sh
@@ -51,7 +51,7 @@ Now, run any of the commands reported in the Usage section.
 
 The installation script sets up the environment and installs all necessary dependencies. 
 
-FastEnsemble relies on the following dependencies:
+FastConformation relies on the following dependencies:
 
 ### Conda Packages
 
@@ -88,13 +88,8 @@ Documentation can be found on [this ReadTheDocs page](https://fastensemble.readt
 
 ## OS Requirements
 
-This package has been tested on Linux RedHat7.
+This package has been tested on Linux RedHat7. Note: MacOS is currently not supported.
 
-## Usage
-Before running any commands, download this file and run it:
-```bash
-./fast_ensemble.sh
-```
 ### Running the GUI
 
 To start the graphical user interface, execute the following command:
@@ -110,7 +105,7 @@ This will launch the main application window, where you can access various funct
 First, run 
 
 ```bash
-fast_ensemble_init
+fast_conf_init
 ```
 
 Next, run any of the following, either specifying a config file path, or by specifying the parameters via command-line arguments. 
@@ -143,10 +138,10 @@ For more detailed instructions on how to use each tool, refer to the ReadTheDocs
     ```
 
 
-- **fast_ensemble_init**: Initialize sample config file.
+- **fast_conf_init**: Initialize sample config file.
 
     ```bash
-    fast_ensemble_init
+    fast_conf_init
     ```
 
 **Analysis:**
@@ -215,7 +210,7 @@ To get started quickly, download the sample files from the link below and add th
 
 ## Contributing
 
-We welcome contributions to FastEnsemble. If you would like to contribute, please follow these steps:
+We welcome contributions to FastConformation. If you would like to contribute, please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature-branch`).
@@ -228,7 +223,7 @@ Please ensure your code follows our coding standards and includes appropriate te
 
 ## License
 
-FastEnsemble is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+FastConformation is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
 
 ## Acknowledgements

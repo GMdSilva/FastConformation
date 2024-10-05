@@ -10,8 +10,8 @@ from sklearn.cluster import KMeans
 from scipy.optimize import curve_fit
 import MDAnalysis as mda
 from tqdm import tqdm
-from fast_ensemble.ensemble_analysis.analysis_utils import parabola
-from fast_ensemble.ensemble_analysis.analysis_utils import create_directory
+from fast_conformation.ensemble_analysis.analysis_utils import parabola
+from fast_conformation.ensemble_analysis.analysis_utils import create_directory
 
 
 TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaining: {remaining}]'

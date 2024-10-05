@@ -1,53 +1,53 @@
-fast\_ensemble.msa\_generation package
+fast\_conformation.msa\_generation package
 ======================================
 
 Submodules
 ----------
 
-fast\_ensemble.msa\_generation.colabfold module
+fast\_conformation.msa\_generation.colabfold module
 -----------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.colabfold
+.. automodule:: fast_conformation.msa_generation.colabfold
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.msa\_generation.get\_msa\_jackhmmer module
+fast\_conformation.msa\_generation.get\_msa\_jackhmmer module
 ---------------------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.get_msa_jackhmmer
+.. automodule:: fast_conformation.msa_generation.get_msa_jackhmmer
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.msa\_generation.jackhmmer module
+fast\_conformation.msa\_generation.jackhmmer module
 -----------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.jackhmmer
+.. automodule:: fast_conformation.msa_generation.jackhmmer
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.msa\_generation.msa\_utils module
+fast\_conformation.msa\_generation.msa\_utils module
 ------------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.msa_utils
+.. automodule:: fast_conformation.msa_generation.msa_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.msa\_generation.pairmsa module
+fast\_conformation.msa\_generation.pairmsa module
 ---------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.pairmsa
+.. automodule:: fast_conformation.msa_generation.pairmsa
    :members:
    :undoc-members:
    :show-inheritance:
 
-fast\_ensemble.msa\_generation.parsers module
+fast\_conformation.msa\_generation.parsers module
 ---------------------------------------------
 
-.. automodule:: fast_ensemble.msa_generation.parsers
+.. automodule:: fast_conformation.msa_generation.parsers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ fast\_ensemble.msa\_generation.parsers module
 Module contents
 ---------------
 
-.. automodule:: fast_ensemble.msa_generation
+.. automodule:: fast_conformation.msa_generation
    :members:
    :undoc-members:
    :show-inheritance:

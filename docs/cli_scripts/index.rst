@@ -1,7 +1,7 @@
 Command-Line Interface (CLI) Guide
 =====================================
 
-FastEnsemble provides command-line tools for performing various tasks such as MSA generation, ensemble prediction, and analysis. This section provides more detailed documentation for each CLI script.
+FastConformation provides command-line tools for performing various tasks such as MSA generation, ensemble prediction, and analysis. This section provides more detailed documentation for each CLI script.
 
 .. toctree::
    :maxdepth: 2

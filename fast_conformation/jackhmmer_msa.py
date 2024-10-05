@@ -2,8 +2,8 @@ import os
 import argparse
 import json
 import pickle
-from fast_ensemble.msa_generation import get_msa_jackhmmer
-from fast_ensemble.msa_generation.msa_utils import create_ram_disk, read_fasta, create_directory, save_dict_to_fasta
+from fast_conformation.msa_generation import get_msa_jackhmmer
+from fast_conformation.msa_generation.msa_utils import create_ram_disk, read_fasta, create_directory, save_dict_to_fasta
 import time
 
 def load_config(file_path):

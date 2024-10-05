@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QCheckBox
 import sys
-from fast_ensemble.predict_ensemble import run_ensemble_prediction
-from fast_ensemble.predict_ensemble import run_ensemble_prediction
-from fast_ensemble.gui.widget_base import AnalysisWidgetBase, merge_configs
+from fast_conformation.predict_ensemble import run_ensemble_prediction
+from fast_conformation.predict_ensemble import run_ensemble_prediction
+from fast_conformation.gui.widget_base import AnalysisWidgetBase, merge_configs
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QCheckBox, QFileDialog, QHBoxLayout
 
 class MakePredictionsWidget(AnalysisWidgetBase):
@@ -68,7 +68,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
             }
         """)
         
-        self.job_name_label = QLabel("MSA Path:")
+        self.job_name_label = QLabel("Job name:")
         self.job_name_input = QLineEdit()
 
         # MSA Path
@@ -144,7 +144,7 @@ class MakePredictionsWidget(AnalysisWidgetBase):
         self.run_button = QPushButton("Run")
         self.run_button.clicked.connect(lambda: self.run_analysis())
         self.output_path_button.clicked.connect(self.select_output_path)
-        layout.addWidget(self.run_button, 12, 1)
+        layout.addWidget(self.run_button, 13, 1)
         
     def select_msa_path(self):
         """

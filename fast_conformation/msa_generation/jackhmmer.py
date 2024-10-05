@@ -23,7 +23,7 @@ from urllib import request
 
 from absl import logging
 
-from fast_ensemble.msa_generation import msa_utils
+from fast_conformation.msa_generation import msa_utils
 # Internal import (7716).
 
 
