@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 
-from fast_conformation.msa_generation.msa_utils import create_directory
+from fast_ensemble.msa_generation.msa_utils import create_directory
 
 
 def validate_inputs(config):
@@ -19,6 +19,9 @@ def validate_inputs(config):
     if not os.path.isfile(config['msa_path']):
         raise ValueError(f"MSA path '{config['msa_path']}' is not a valid file.")
 
+    if not os.path.isfile(config['template_path']):
+        raise ValueError(f"Template path'{config['template_path']}' is not a valid file.")
+
     if not os.path.isdir(config['output_path']):
         raise ValueError(f"Output path '{config['output_path']}' is not a valid directory.")
 
@@ -33,12 +36,13 @@ def validate_inputs(config):
         raise ValueError(f"Seeds '{config['seeds']}' is not a valid integer.")
 
 
-def run_ensemble_prediction_single(msa_path, output_path, jobname, max_seq, extra_seq, env, seeds=10, save_all=False):
+def run_ensemble_prediction_single(msa_path, template_path, output_path, jobname, max_seq, extra_seq, env, seeds=10, save_all=False):
     """
     Run a single ensemble prediction with the specified parameters.
 
     Args:
         msa_path (str): Path to the MSA file.
+        template_path (str): Path to the template PDB file.
         output_path (str): Path to save the prediction results.
         jobname (str): Name of the job.
         max_seq (int): Maximum number of sequences to consider in the MSA.
@@ -52,12 +56,22 @@ def run_ensemble_prediction_single(msa_path, output_path, jobname, max_seq, extr
     """
     complete_output_path = f'{output_path}/{jobname}/predictions/alphafold2/{jobname}'
 
+    # if save_all:
+    #     command = (f"colabfold_batch {msa_path} {complete_output_path}_{max_seq}_{extra_seq} "
+    #                f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq} --save-all")
+    # else:
+    #     command = (f"colabfold_batch {msa_path} {complete_output_path}_{max_seq}_{extra_seq} "
+    #                f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq}")
+
     if save_all:
-        command = (f"colabfold_batch {msa_path} {complete_output_path}_{max_seq}_{extra_seq} "
-                   f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq} --save-all")
+        command = (f"colabfold_batch {msa_path} {complete_output_path}{max_seq}{extra_seq} "
+                   f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq} --save-all --use-gpu-relax 
+                   --custom-template-path {template_path}")
     else:
-        command = (f"colabfold_batch {msa_path} {complete_output_path}_{max_seq}_{extra_seq} "
-                   f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq}")
+        command = (f"colabfold_batch {msa_path} {complete_output_path}{max_seq}{extra_seq} "
+                   f"--use-dropout --num-seeds {seeds} --max-msa {max_seq}:{extra_seq} --use-gpu-relax 
+                   --custom-template-path {template_path}")
+
 
     print(f'Making prediction for {jobname} using max_seq: {max_seq} and extra_seq: {extra_seq} with {seeds} seeds...')
     print(f'\nRead {complete_output_path}_{max_seq}_{extra_seq}/log.txt to monitor output')
@@ -85,6 +99,7 @@ def run_ensemble_prediction(config):
     validate_inputs(config)
 
     msa_path = config['msa_path']
+    template_path = config['template_path']
     output_path = config['output_path']
     jobname = config['jobname']
     seq_pairs = config['seq_pairs']
@@ -117,6 +132,7 @@ def run_ensemble_prediction(config):
     print("***************************************************************")
     print(f"Job Name: {jobname}")
     print(f"MSA Path: {msa_path}")
+    print(f"Template Path: {template_path}")
     print(f"Output Path: {output_path}")
     print(f"Sequence Pairs: {seq_pairs}")
     print(f"Seeds: {seeds}")
@@ -133,7 +149,7 @@ def run_ensemble_prediction(config):
 
     # Run predictions
     for max_seq_v, extra_seq_v in seq_pairs:
-        run_ensemble_prediction_single(msa_path, output_path, jobname, max_seq_v, extra_seq_v, env, seeds, save_all)
+        run_ensemble_prediction_single(msa_path, template_path, output_path, jobname, max_seq_v, extra_seq_v, env, seeds, save_all)
 
     # Remove temporary MSA if subset
     if subset_msa_to:
@@ -189,6 +205,7 @@ def load_config(config_file):
     """
     default_config = {
         'msa_path': None,
+        'template_path': './',
         'output_path': './',
         'jobname': 'prediction_run',
         'seq_pairs': [[8, 16], [64, 128], [512, 1024]],
@@ -230,6 +247,7 @@ def main():
     parser.add_argument('--config_file', type=str, help="Path to the configuration file")
     parser.add_argument('--jobname', type=str, help="The job name")
     parser.add_argument('--msa_path', type=str, help="Path to the .a3m MSA from jackhmmer")
+    parser.add_argument('--template_path', type=str, help="Path to the PDB template file")
     parser.add_argument('--output_path', type=str, help="Path to save results to")
     parser.add_argument('--seq_pairs', type=str, help="List of [max_seq, extra_seq] pairs in the format [[max_seq1, extra_seq1], [max_seq2, extra_seq2], ...]")
     parser.add_argument('--seeds', type=int, nargs='+', help="Number of predictions to run")
@@ -246,6 +264,7 @@ def main():
 
     # Override config with command line arguments if provided
     config['msa_path'] = args.msa_path if args.msa_path else config.get('msa_path')
+    config['template_path'] = args.template_path if args.template_path else config.get('template_path')
     config['output_path'] = args.output_path if args.output_path else config.get('output_path')
     config['jobname'] = args.jobname if args.jobname else config.get('jobname')
     config['seq_pairs'] = args.seq_pairs if args.seq_pairs else config.get('seq_pairs')
