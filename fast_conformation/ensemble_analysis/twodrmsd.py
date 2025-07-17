@@ -96,12 +96,12 @@ class TwodRMSD:
         universe = self.prediction_dicts[trial]['mda_universe']
         rmsd_gr = calculate_rmsd(universe,
                                  ref=self.ref_gr,
-                                 align_range='backbone',
+                                 align_range=self.input_dict['align_range'],
                                  analysis_range=self.input_dict['analysis_range'])
 
         rmsd_alt = calculate_rmsd(universe,
                                   ref=self.ref_alt,
-                                  align_range='backbone',
+                                  align_range=self.input_dict['align_range'],
                                   analysis_range=self.input_dict['analysis_range'])
         rmsd_2d_data = np.array([rmsd_gr[self.input_dict['analysis_range']],
                                  rmsd_alt[self.input_dict['analysis_range']]]).T
